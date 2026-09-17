@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Tabular Data: Bank Account Fraud Detection · Group 6</title>
+
+    <meta
+        name="description"
+        content="Bài tập lớn phân tích dữ liệu dạng bảng: Bank Account Fraud Detection (NeurIPS 2022) - Group 6."
+    >
+
+    <link rel="stylesheet" href="../../css/base.css">
+    <link rel="stylesheet" href="../../css/page.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+</head>
+
+<body>
+
+    <!-- ================= HEADER ================= -->
+    <header class="header">
+        <div class="container nav">
+            <a href="../../index.html" class="logo">
+                GROUP 6 · CH01
+            </a>
+
+            <nav class="nav-links">
+                <a href="../../index.html">Trang chủ</a>
+                <a href="../../index.html#course">Môn học</a>
+                <a href="../../index.html#team">Thành viên</a>
+                <a href="../../index.html#assignments">Bài tập lớn</a>
+                <a
+                    href="https://github.com/dducsw/co5177-data-analytics-and-visualization-project"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    GitHub ↗
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- ================= HERO ================= -->
+        <section class="page-hero">
+            <div class="container">
+                <nav class="breadcrumb" aria-label="Breadcrumb">
+                    <a href="../../index.html">Trang chủ</a>
+                    <span class="breadcrumb-sep">/</span>
+                    <a href="../../index.html#assignments">Bài tập lớn</a>
+                    <span class="breadcrumb-sep">/</span>
+                    <span>Tabular Data</span>
+                </nav>
+
+                <div class="badge">
+                    BÀI TẬP LỚN 01 · TABULAR DATA
+                </div>
+
+                <h1>Bank Account Fraud Detection</h1>
+
+                <p class="page-hero-desc">
+                    Phân tích, xử lý và xây dựng mô hình học máy trên dữ liệu dạng bảng nhằm nhận diện các đơn mở tài khoản ngân hàng có hành vi gian lận danh tính.
+                </p>
+
+                <div class="meta-pills">
+                    <div class="pill">
+                        <strong>Lĩnh vực:</strong> Tài chính &amp; Ngân hàng
+                    </div>
+                    <div class="pill">
+                        <strong>Dạng bài toán:</strong> Binary Classification
+                    </div>
+                    <div class="pill">
+                        <strong>Tập dữ liệu:</strong> NeurIPS 2022 Suite (Kaggle)
+                    </div>
+                    <div class="pill pill-highlight">
+                        <strong>Thách thức chính:</strong> Mất cân bằng dữ liệu cực lớn
+                    </div>
+                </div>
+
+                <div class="page-actions">
+                    <a
+                        href="https://www.kaggle.com/datasets/sgpjesus/bank-account-fraud-dataset-neurips-2022"
+                        class="btn btn-primary"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Tập dữ liệu trên Kaggle ↗
+                    </a>
+
+                    <a
+                        href="https://github.com/dducsw/co5177-data-analytics-and-visualization-project/tree/main/tabular"
+                        class="btn btn-dark"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="margin-right: 7px;">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+                        </svg>
+                        Thư mục mã nguồn GitHub ↗
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= CONTENT ================= -->
+        <section class="section">
+            <div class="container">
+                <div class="detail-layout">
+                    <!-- CARD 1: OVERVIEW -->
+                        <div class="detail-card">
+                            <div class="detail-card-title">
+                                <h3>01. Tổng quan bài toán</h3>
+                                <span class="card-badge">Mô tả</span>
+                            </div>
+                            <p>
+                                Gian lận mở tài khoản ngân hàng (Bank Account Opening Fraud) là hành vi các đối tượng tội phạm sử dụng thông tin danh tính giả mạo hoặc danh tính tổng hợp (synthetic identity) nhằm mở tài khoản ngân hàng bất hợp pháp để rửa tiền hoặc vay tín chấp.
+                            </p>
+                            <p>
+                                Mục tiêu của bài tập lớn là ứng dụng các kỹ thuật phân tích và trực quan hóa dữ liệu dạng bảng, kết hợp mô hình hóa học máy phân loại nhị phân (<strong>Binary Classification: Fraud vs. Legitimate</strong>) để tự động phát hiện các yêu cầu mở tài khoản đáng ngờ với độ tin cậy cao.
+                            </p>
+
+                            <div class="highlight-box">
+                                <strong>Thách thức cốt lõi:</strong> Dữ liệu gian lận ngân hàng thường có tỷ lệ cực kỳ hiếm (dưới 2%), dẫn đến hiện tượng mất cân bằng mẫu nghiêm trọng. Đòi hỏi chiến lược tiền xử lý chuẩn mực, kỹ thuật re-sampling (SMOTE, class weighting) và các thước đo phù hợp như PR-AUC, F1-Score thay vì chỉ dựa vào Accuracy.
+                            </div>
+                        </div>
+
+                        <!-- CARD 2: DATASET -->
+                        <div class="detail-card">
+                            <div class="detail-card-title">
+                                <h3>02. Tập dữ liệu &amp; Đặc trưng</h3>
+                                <span class="card-badge">Dataset</span>
+                            </div>
+                            <p>
+                                Dự án sử dụng bộ dữ liệu học thuật tiêu chuẩn được công bố tại hội nghị <strong>NeurIPS 2022</strong>:
+                            </p>
+                            <div class="resource-list" style="margin-bottom: 14px;">
+                                <a
+                                    href="https://www.kaggle.com/datasets/sgpjesus/bank-account-fraud-dataset-neurips-2022"
+                                    class="resource-item"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <span><strong>Bank Account Fraud Dataset Suite (NeurIPS 2022)</strong> · Kaggle</span>
+                                    <span class="res-arrow">→</span>
+                                </a>
+                            </div>
+                            <p>
+                                Bộ dữ liệu gồm 6 biến thể (Base, Variant 1 đến 5) phản ánh tính dịch chuyển dữ liệu (data drift) theo thời gian và các điều kiện rủi ro khác nhau. Dữ liệu chứa hơn 30 thuộc tính bao gồm:
+                            </p>
+                            <ul style="padding-left: 20px; color: #4a5c73; font-size: 13px; line-height: 1.8;">
+                                <li><strong>Nhân khẩu học ứng viên:</strong> Độ tuổi, thu nhập, tình trạng việc làm, thông tin cư trú.</li>
+                                <li><strong>Hành vi phiên nộp đơn:</strong> Thời gian nộp, loại thiết bị, vận tốc thao tác trên hệ thống.</li>
+                                <li><strong>Thông tin tín dụng &amp; tài chính:</strong> Điểm tín dụng rủi ro, số tài khoản ngân hàng liên kết.</li>
+                                <li><strong>Cờ kiểm tra hệ thống:</strong> Khớp địa chỉ email, số điện thoại, cảnh báo nghi vấn.</li>
+                            </ul>
+                        </div>
+
+                        <!-- CARD 3: TARGET CLASSES -->
+                        <div class="detail-card">
+                            <div class="detail-card-title">
+                                <h3>03. Nhãn mục tiêu (Target Labels)</h3>
+                                <span class="card-badge">2 Classes</span>
+                            </div>
+                            <p>
+                                Bài toán phân loại nhị phân tập trung vào biến mục tiêu nhị phân đại diện cho trạng thái của đơn đăng ký:
+                            </p>
+                            <div class="class-grid" style="grid-template-columns: repeat(2, 1fr);">
+                                <div class="class-item">
+                                    <span class="class-item-num">Nhãn 0</span>
+                                    <span class="class-item-name">Legitimate (Hợp lệ)</span>
+                                    <span class="class-item-desc">Đơn mở tài khoản minh bạch, người dùng thực tế tuân thủ quy định ngân hàng.</span>
+                                </div>
+                                <div class="class-item" style="border-color: #d1e4fa; background: #f7faff;">
+                                    <span class="class-item-num" style="color: #d9383a;">Nhãn 1 (Target)</span>
+                                    <span class="class-item-name" style="color: #b31d28;">Fraud (Gian lận)</span>
+                                    <span class="class-item-desc">Đơn mở tài khoản có dấu hiệu gian lận danh tính, mạo danh hoặc thông tin phi pháp.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CARD 4: PIPELINE -->
+                        <div class="detail-card">
+                            <div class="detail-card-title">
+                                <h3>04. Cấu trúc nội dung thực hiện</h3>
+                                <span class="card-badge">Google Colab .ipynb</span>
+                            </div>
+                            <p style="font-size: 13px; color: #5d7088; margin-bottom: 14px;">
+                                Quy trình chuẩn 4 bước bắt buộc theo đặc tả yêu cầu của đề tài:
+                            </p>
+                            <div class="pipeline-list">
+                                <div class="pipeline-step">
+                                    <div class="pipeline-step-idx">1</div>
+                                    <div class="pipeline-step-content">
+                                        <h4>Mô tả tập dữ liệu</h4>
+                                        <p>Sử dụng Markdown để mô tả thông tin tổng quan. Dùng Plotly, Matplotlib hoặc Seaborn để trực quan dữ liệu.</p>
+                                    </div>
+                                </div>
+                                <div class="pipeline-step">
+                                    <div class="pipeline-step-idx">2</div>
+                                    <div class="pipeline-step-content">
+                                        <h4>Chuẩn bị dữ liệu</h4>
+                                        <p>Tiền xử lý bằng NumPy hoặc Pandas; xử lý missing values, outliers, ...; encoding dữ liệu dạng categorical; scaling dữ liệu dạng numerical; chia dữ liệu thành train, validation và test.</p>
+                                    </div>
+                                </div>
+                                <div class="pipeline-step">
+                                    <div class="pipeline-step-idx">3</div>
+                                    <div class="pipeline-step-content">
+                                        <h4>Phân tích và mô hình hóa</h4>
+                                        <p>Huấn luyện mô hình bằng Scikit-learn; so sánh kết quả giữa các mô hình hoặc tham số khác nhau.</p>
+                                    </div>
+                                </div>
+                                <div class="pipeline-step">
+                                    <div class="pipeline-step-idx">4</div>
+                                    <div class="pipeline-step-content">
+                                        <h4>Tổng kết và mở rộng</h4>
+                                        <p>Đánh giá kết quả qua độ chính xác, biểu đồ, confusion matrix, ...; trình bày nhận xét, hạn chế và đề xuất hướng mở rộng.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+
+                <!-- OTHER ASSIGNMENTS NAVIGATION -->
+                <div class="other-assignments">
+                    <div class="other-assignments-title">Xem các bài tập lớn khác</div>
+                    <div class="other-assignments-grid">
+                        <a href="../text/index.html" class="assignment-card">
+                            <div class="assignment-number">02</div>
+                            <div class="assignment-content">
+                                <span class="assignment-type">TEXT DATA</span>
+                                <h3>Vietnamese Financial News</h3>
+                                <p>Phân loại chủ đề tin tức tài chính VnEconomy với 5 nhãn mục tiêu.</p>
+                                <span class="view-project">Xem chi tiết bài →</span>
+                            </div>
+                        </a>
+
+                        <a href="../image/index.html" class="assignment-card">
+                            <div class="assignment-number">03</div>
+                            <div class="assignment-content">
+                                <span class="assignment-type">IMAGE DATA</span>
+                                <h3>Intel Image Classification</h3>
+                                <p>Phân loại ảnh phong cảnh tự nhiên với 6 nhãn (~25.000 ảnh từ Kaggle).</p>
+                                <span class="view-project">Xem chi tiết bài →</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <span>Group 6 · CH01 · SDH_HK261 · 2026–2027 · Đại học Bách Khoa – ĐHQG-HCM</span>
+        </div>
+    </footer>
+
+</body>
+</html>

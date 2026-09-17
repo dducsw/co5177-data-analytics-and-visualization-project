@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Text Data: Vietnamese Financial News Classification · Group 6</title>
+
+    <meta
+        name="description"
+        content="Bài tập lớn phân tích dữ liệu văn bản: Vietnamese Financial News Classification (VnEconomy.vn) - Group 6."
+    >
+
+    <link rel="stylesheet" href="../../css/base.css">
+    <link rel="stylesheet" href="../../css/page.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+</head>
+
+<body>
+
+    <!-- ================= HEADER ================= -->
+    <header class="header">
+        <div class="container nav">
+            <a href="../../index.html" class="logo">
+                GROUP 6 · CH01
+            </a>
+
+            <nav class="nav-links">
+                <a href="../../index.html">Trang chủ</a>
+                <a href="../../index.html#course">Môn học</a>
+                <a href="../../index.html#team">Thành viên</a>
+                <a href="../../index.html#assignments">Bài tập lớn</a>
+                <a
+                    href="https://github.com/dducsw/co5177-data-analytics-and-visualization-project"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    GitHub ↗
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- ================= HERO ================= -->
+        <section class="page-hero">
+            <div class="container">
+                <nav class="breadcrumb" aria-label="Breadcrumb">
+                    <a href="../../index.html">Trang chủ</a>
+                    <span class="breadcrumb-sep">/</span>
+                    <a href="../../index.html#assignments">Bài tập lớn</a>
+                    <span class="breadcrumb-sep">/</span>
+                    <span>Text Data</span>
+                </nav>
+
+                <div class="badge">
+                    BÀI TẬP LỚN 02 · TEXT DATA
+                </div>
+
+                <h1>Vietnamese Financial News Classification</h1>
+
+                <p class="page-hero-desc">
+                    Xử lý ngôn ngữ tự nhiên (NLP) và xây dựng mô hình phân loại chủ đề tin tức kinh tế – tài chính tiếng Việt tự động thu thập từ báo điện tử VnEconomy.vn.
+                </p>
+
+                <div class="meta-pills">
+                    <div class="pill">
+                        <strong>Lĩnh vực:</strong> Xử lý ngôn ngữ tự nhiên (NLP)
+                    </div>
+                    <div class="pill">
+                        <strong>Dạng bài toán:</strong> Multi-class Topic Classification
+                    </div>
+                    <div class="pill">
+                        <strong>Nguồn dữ liệu:</strong> VnEconomy.vn (Tự cào qua crawler riêng)
+                    </div>
+                    <div class="pill pill-highlight">
+                        <strong>Số lượng nhãn:</strong> 5 Chuyên mục kinh tế
+                    </div>
+                </div>
+
+                <div class="page-actions">
+                    <a
+                        href="https://vneconomy.vn/"
+                        class="btn btn-primary"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Nguồn báo VnEconomy.vn ↗
+                    </a>
+
+                    <a
+                        href="https://github.com/dducsw/co5177-data-analytics-and-visualization-project/tree/main/text/crawler"
+                        class="btn btn-dark"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="margin-right: 7px;">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+                        </svg>
+                        Module Crawler (GitHub) ↗
+                    </a>
+
+                    <a
+                        href="https://github.com/dducsw/co5177-data-analytics-and-visualization-project/tree/main/text"
+                        class="btn btn-outline"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Thư mục mã nguồn /text ↗
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= CONTENT ================= -->
+        <section class="section">
+            <div class="container">
+                <div class="detail-layout">
+                    <!-- CARD 1: OVERVIEW -->
+                        <div class="detail-card">
+                            <div class="detail-card-title">
+                                <h3>01. Tổng quan bài toán</h3>
+                                <span class="card-badge">NLP</span>
+                            </div>
+                            <p>
+                                Tin tức tài chính đóng vai trò cốt lõi trong việc điều hướng thị trường chứng khoán, đầu tư và chính sách kinh tế. Tuy nhiên, lượng tin bài xuất bản hàng ngày là vô cùng lớn, đòi hỏi hệ thống tự động lọc, trích xuất và phân loại vào các nhóm nội dung thích hợp.
+                            </p>
+                            <p>
+                                Dự án tập trung giải quyết bài toán <strong>phân loại văn bản đa lớp (Multi-class Text Classification)</strong> cho bản tin tài chính tiếng Việt, từ khâu tự động thu thập (crawling) dữ liệu thực tế đến tiền xử lý ngôn ngữ học đặc thù của tiếng Việt và áp dụng các mô hình học máy / học sâu.
+                            </p>
+
+                            <div class="highlight-box">
+                                <strong>Đặc thù tiếng Việt trong NLP:</strong> Tiếng Việt là ngôn ngữ đơn lập, ranh giới từ không tương ứng với dấu khoảng trắng (ví dụ: "thị trường", "bất động sản", "chứng khoán" là các từ ghép mang ý nghĩa độc lập). Cần tiến hành tách từ (Word Segmentation) và chuẩn hóa bảng mã Unicode để mô hình đạt độ chuẩn xác cao nhất.
+                            </div>
+                        </div>
+
+                        <!-- CARD 2: DATASET & CRAWLER -->
+                        <div class="detail-card">
+                            <div class="detail-card-title">
+                                <h3>02. Tập dữ liệu &amp; Module Crawler</h3>
+                                <span class="card-badge">Data Collection</span>
+                            </div>
+                            <p>
+                                Bộ dữ liệu được nhóm tự xây dựng độc lập thông qua module crawler chuyên biệt đặt tại <a href="https://github.com/dducsw/co5177-data-analytics-and-visualization-project/tree/main/text/crawler" target="_blank" rel="noopener noreferrer" style="color: #1463d8; font-weight: 600;">text/crawler/</a>, thu thập trực tiếp từ trang tin tức kinh tế hàng đầu Việt Nam: <strong>VnEconomy.vn</strong>.
+                            </p>
+                            <div class="resource-list" style="margin-bottom: 14px;">
+                                <a
+                                    href="https://vneconomy.vn/"
+                                    class="resource-item"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <span><strong>VnEconomy.vn</strong> · Tạp chí điện tử Kinh tế Việt Nam</span>
+                                    <span class="res-arrow">→</span>
+                                </a>
+                            </div>
+                            <p>
+                                Các trường dữ liệu chính được trích xuất từ mỗi bài báo bao gồm:
+                            </p>
+                            <ul style="padding-left: 20px; color: #4a5c73; font-size: 13px; line-height: 1.8;">
+                                <li><strong>Tiêu đề (Title):</strong> Tóm tắt ngắn gọn nội dung trọng tâm của bản tin.</li>
+                                <li><strong>Mô tả ngắn (Sapo):</strong> Đoạn tóm tắt mở đầu bài báo mang nhiều từ khóa phân loại.</li>
+                                <li><strong>Nội dung đầy đủ (Content):</strong> Thân bài báo đã được bóc tách thẻ HTML và làm sạch.</li>
+                                <li><strong>Thời gian xuất bản (Datetime):</strong> Ngày giờ phát hành bản tin.</li>
+                                <li><strong>Chuyên mục gốc (Label / Category):</strong> Nhãn thực tế dùng làm ground truth cho bài toán học có giám sát.</li>
+                            </ul>
+                        </div>
+
+                        <!-- CARD 3: TARGET LABELS -->
+                        <div class="detail-card">
+                            <div class="detail-card-title">
+                                <h3>03. 5 Nhãn mục tiêu (Target Labels)</h3>
+                                <span class="card-badge">5 Classes</span>
+                            </div>
+                            <p>
+                                Bài toán phân loại văn bản chia thành 5 nhóm chủ đề kinh tế tài chính chính yếu:
+                            </p>
+                            <div class="class-grid">
+                                <div class="class-item">
+                                    <span class="class-item-num">Nhãn 01</span>
+                                    <span class="class-item-name">Chứng khoán</span>
+                                    <span class="class-item-desc">Stock Market: VN-Index, giao dịch cổ phiếu, trái phiếu, thanh khoản thị trường, doanh nghiệp niêm yết.</span>
+                                </div>
+                                <div class="class-item">
+                                    <span class="class-item-num">Nhãn 02</span>
+                                    <span class="class-item-name">Tài chính</span>
+                                    <span class="class-item-desc">Finance &amp; Banking: Ngân hàng thương mại, lãi suất điều hành, tỷ giá ngoại tệ, chính sách tiền tệ.</span>
+                                </div>
+                                <div class="class-item">
+                                    <span class="class-item-num">Nhãn 03</span>
+                                    <span class="class-item-name">Bất động sản</span>
+                                    <span class="class-item-desc">Real Estate: Thị trường nhà đất, quy hoạch đô thị, phân khúc căn hộ, nguồn cung và pháp lý dự án.</span>
+                                </div>
+                                <div class="class-item">
+                                    <span class="class-item-num">Nhãn 04</span>
+                                    <span class="class-item-name">Thế giới</span>
+                                    <span class="class-item-desc">World Economy: Kinh tế quốc tế, chính sách Fed/ECB, thương mại toàn cầu, giá dầu và xung đột kinh tế.</span>
+                                </div>
+                                <div class="class-item">
+                                    <span class="class-item-num">Nhãn 05</span>
+                                    <span class="class-item-name">Thị trường</span>
+                                    <span class="class-item-desc">Domestic Market: Hàng hóa tiêu dùng, xuất nhập khẩu nông sản, chuỗi cung ứng công nghiệp và bán lẻ.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CARD 4: PIPELINE -->
+                        <div class="detail-card">
+                            <div class="detail-card-title">
+                                <h3>04. Cấu trúc nội dung thực hiện</h3>
+                                <span class="card-badge">Google Colab .ipynb</span>
+                            </div>
+                            <p style="font-size: 13px; color: #5d7088; margin-bottom: 14px;">
+                                Quy trình chuẩn 4 bước bắt buộc theo đặc tả yêu cầu của đề tài:
+                            </p>
+                            <div class="pipeline-list">
+                                <div class="pipeline-step">
+                                    <div class="pipeline-step-idx">1</div>
+                                    <div class="pipeline-step-content">
+                                        <h4>Mô tả tập dữ liệu</h4>
+                                        <p>Sử dụng Markdown để mô tả thông tin tổng quan. Dùng Plotly, Matplotlib hoặc Seaborn để trực quan dữ liệu.</p>
+                                    </div>
+                                </div>
+                                <div class="pipeline-step">
+                                    <div class="pipeline-step-idx">2</div>
+                                    <div class="pipeline-step-content">
+                                        <h4>Chuẩn bị dữ liệu</h4>
+                                        <p>Tiền xử lý bằng NumPy hoặc Pandas; xử lý missing values, outliers, ...; encoding dữ liệu dạng categorical; scaling dữ liệu dạng numerical; chia dữ liệu thành train, validation và test.</p>
+                                    </div>
+                                </div>
+                                <div class="pipeline-step">
+                                    <div class="pipeline-step-idx">3</div>
+                                    <div class="pipeline-step-content">
+                                        <h4>Phân tích và mô hình hóa</h4>
+                                        <p>Huấn luyện mô hình bằng Scikit-learn; so sánh kết quả giữa các mô hình hoặc tham số khác nhau.</p>
+                                    </div>
+                                </div>
+                                <div class="pipeline-step">
+                                    <div class="pipeline-step-idx">4</div>
+                                    <div class="pipeline-step-content">
+                                        <h4>Tổng kết và mở rộng</h4>
+                                        <p>Đánh giá kết quả qua độ chính xác, biểu đồ, confusion matrix, ...; trình bày nhận xét, hạn chế và đề xuất hướng mở rộng.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+
+                <!-- OTHER ASSIGNMENTS NAVIGATION -->
+                <div class="other-assignments">
+                    <div class="other-assignments-title">Xem các bài tập lớn khác</div>
+                    <div class="other-assignments-grid">
+                        <a href="../tabular/index.html" class="assignment-card">
+                            <div class="assignment-number">01</div>
+                            <div class="assignment-content">
+                                <span class="assignment-type">TABULAR DATA</span>
+                                <h3>Bank Account Fraud Detection</h3>
+                                <p>Phân loại đơn mở tài khoản ngân hàng gian lận (NeurIPS 2022).</p>
+                                <span class="view-project">Xem chi tiết bài →</span>
+                            </div>
+                        </a>
+
+                        <a href="../image/index.html" class="assignment-card">
+                            <div class="assignment-number">03</div>
+                            <div class="assignment-content">
+                                <span class="assignment-type">IMAGE DATA</span>
+                                <h3>Intel Image Classification</h3>
+                                <p>Phân loại ảnh phong cảnh tự nhiên với 6 nhãn (~25.000 ảnh từ Kaggle).</p>
+                                <span class="view-project">Xem chi tiết bài →</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <span>Group 6 · CH01 · SDH_HK261 · 2026–2027 · Đại học Bách Khoa – ĐHQG-HCM</span>
+        </div>
+    </footer>
+
+</body>
+</html>
