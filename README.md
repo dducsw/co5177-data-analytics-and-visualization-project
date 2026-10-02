@@ -1,9 +1,9 @@
 # Assignment: CO5177 Data Analytics & Visualisation
 
-- GVHD: TS. Lê Thành Sách (ltsach@hcmut.edu.vn)
-- SVTH: Lê Đình Đức (MSSV: 2310774, github: dducsw) (duc.ledinh@hcmut.edu.vn)
-        
-- Nguyễn Văn Công Thành (MSSV: 2313133, github: NguyenVanCongThanh) (thanh.nguyen2313133@hcmut.edu.vn)
+- **GVHD:** TS. Lê Thành Sách (ltsach@hcmut.edu.vn)
+- **SVTH:** 
+    - Lê Đình Đức (MSSV: 2310774, github: dducsw) (duc.ledinh@hcmut.edu.vn)
+    - Nguyễn Văn Công Thành (MSSV: 2313133, github: NguyenVanCongThanh) (thanh.nguyen2313133@hcmut.edu.vn)
 
 ## Mô tả repo
 

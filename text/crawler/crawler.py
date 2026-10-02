@@ -3,15 +3,19 @@ import hashlib
 import os
 import re
 import sys
+import threading
 import time
 import xml.etree.ElementTree as ET
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from typing import Dict, List, Optional, Set, Tuple
 
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 from tqdm import tqdm
 
 # Handle Windows terminal encoding
@@ -32,7 +36,7 @@ HEADERS = {
 }
 
 # ---------------------------------------------------------------------------
-# 5 chuyên mục cha chính xác theo cấu trúc VnEconomy
+# 5 chuyên mục chính xác theo cấu trúc VnEconomy
 # Chỉ nhận bài khi article:section khớp đúng 1 trong 5 tên này
 # ---------------------------------------------------------------------------
 TARGET_CATEGORIES: Set[str] = {
@@ -42,6 +46,29 @@ TARGET_CATEGORIES: Set[str] = {
     "Thế giới",
     "Thị trường",
 }
+
+thread_local = threading.local()
+
+
+def get_session() -> requests.Session:
+    """Get or create thread-local requests session with connection pool and retry."""
+    if not hasattr(thread_local, "session"):
+        session = requests.Session()
+        retry_strategy = Retry(
+            total=3,
+            backoff_factor=0.3,
+            status_forcelist=[429, 500, 502, 503, 504],
+        )
+        adapter = HTTPAdapter(
+            pool_connections=20,
+            pool_maxsize=20,
+            max_retries=retry_strategy,
+        )
+        session.mount("https://", adapter)
+        session.mount("http://", adapter)
+        session.headers.update(HEADERS)
+        thread_local.session = session
+    return thread_local.session
 
 
 def get_md5_hash(text: str) -> str:
@@ -75,11 +102,10 @@ def parse_datetime_iso(date_str: str) -> Tuple[str, str]:
     return date_str, ""
 
 
-
-
-def get_monthly_sitemap_urls(session: requests.Session) -> List[str]:
+def get_monthly_sitemap_urls(session: Optional[requests.Session] = None) -> List[str]:
     """Fetch all monthly news sitemaps from sitemap index."""
-    response = session.get(SITEMAP_INDEX_URL, headers=HEADERS, timeout=15)
+    s = session or get_session()
+    response = s.get(SITEMAP_INDEX_URL, timeout=15)
     response.raise_for_status()
     root = ET.fromstring(response.content)
 
@@ -91,9 +117,12 @@ def get_monthly_sitemap_urls(session: requests.Session) -> List[str]:
     return sitemap_urls
 
 
-def get_article_urls_from_sitemap(sitemap_url: str, session: requests.Session) -> List[str]:
+def get_article_urls_from_sitemap(
+    sitemap_url: str, session: Optional[requests.Session] = None
+) -> List[str]:
     """Extract valid article URLs from monthly sitemap."""
-    response = session.get(sitemap_url, headers=HEADERS, timeout=15)
+    s = session or get_session()
+    response = s.get(sitemap_url, timeout=15)
     response.raise_for_status()
     root = ET.fromstring(response.content)
 
@@ -105,10 +134,11 @@ def get_article_urls_from_sitemap(sitemap_url: str, session: requests.Session) -
     return article_urls
 
 
-def parse_article(url: str, session: requests.Session) -> Optional[Dict[str, str]]:
+def parse_article(url: str, session: Optional[requests.Session] = None) -> Optional[Dict[str, str]]:
     """Parse article metadata, clean content, and return structured sample."""
     try:
-        response = session.get(url, headers=HEADERS, timeout=10)
+        s = session or get_session()
+        response = s.get(url, timeout=8)
         if response.status_code != 200:
             return None
 
@@ -116,26 +146,39 @@ def parse_article(url: str, session: requests.Session) -> Optional[Dict[str, str
 
         # 1. Category extraction & validation
         meta_section = soup.find("meta", property="article:section")
-        raw_category = meta_section["content"].strip() if meta_section and meta_section.get("content") else ""
+        raw_category = (
+            meta_section["content"].strip()
+            if meta_section and meta_section.get("content")
+            else ""
+        )
 
-        # Chỉ nhận bài thuộc đúng 1 trong 5 chuyên mục cha chính của VnEconomy
+        # Chỉ nhận bài thuộc đúng 1 trong 5 chuyên mục chính của VnEconomy
         if raw_category not in TARGET_CATEGORIES:
             return None
         category = raw_category
 
-
         # 2. Title extraction (OG title -> H1 article title)
         meta_title = soup.find("meta", property="og:title")
-        title = meta_title["content"].strip() if meta_title and meta_title.get("content") else ""
+        title = (
+            meta_title["content"].strip()
+            if meta_title and meta_title.get("content")
+            else ""
+        )
         if not title:
-            h1 = soup.select_one("h1.article-header__title, h1.article-title, .article-title")
+            h1 = soup.select_one(
+                "h1.article-header__title, h1.article-title, .article-title"
+            )
             title = h1.get_text(strip=True) if h1 else ""
         if not title:
             return None
 
         # 3. Summary (Sapo)
         meta_desc = soup.find("meta", property="og:description")
-        summary = meta_desc["content"].strip() if meta_desc and meta_desc.get("content") else ""
+        summary = (
+            meta_desc["content"].strip()
+            if meta_desc and meta_desc.get("content")
+            else ""
+        )
         if not summary:
             sapo_elem = soup.select_one("h4.article-content__lead, .detail-sapo")
             summary = sapo_elem.get_text(strip=True) if sapo_elem else ""
@@ -166,7 +209,11 @@ def parse_article(url: str, session: requests.Session) -> Optional[Dict[str, str
         for tag in editor.find_all(unwanted_selectors):
             tag.decompose()
 
-        paragraphs = [p.get_text(strip=True) for p in editor.find_all("p") if p.get_text(strip=True)]
+        paragraphs = [
+            p.get_text(strip=True)
+            for p in editor.find_all("p")
+            if p.get_text(strip=True)
+        ]
         content = "\n".join(paragraphs)
 
         # Minimum content filter: at least 100 words
@@ -181,7 +228,11 @@ def parse_article(url: str, session: requests.Session) -> Optional[Dict[str, str
 
         # 6. Author
         meta_author = soup.find("meta", property="article:author")
-        author = meta_author["content"].strip() if meta_author and meta_author.get("content") else ""
+        author = (
+            meta_author["content"].strip()
+            if meta_author and meta_author.get("content")
+            else ""
+        )
         if not author:
             author_elem = soup.find("span", class_="article-meta__author")
             author = author_elem.get_text(strip=True) if author_elem else ""
@@ -207,13 +258,14 @@ def crawl_vneconomy(
     target_per_category: int = 500,
     max_total: int = 2500,
     max_per_month_category: int = 60,
-    delay: float = 0.25,
+    max_workers: int = 10,
     output_dir: str = "data",
 ) -> pd.DataFrame:
-    """Crawl VnEconomy articles with class balancing, temporal stratification, and deduplication."""
-    os.makedirs(output_dir, exist_ok=True)
-    csv_path = os.path.join(output_dir, "vneconomy_articles.csv")
-    jsonl_path = os.path.join(output_dir, "vneconomy_articles.jsonl")
+    """Crawl VnEconomy articles with concurrent workers, class balancing, and deduplication."""
+    abs_output_dir = os.path.abspath(output_dir)
+    os.makedirs(abs_output_dir, exist_ok=True)
+    csv_path = os.path.join(abs_output_dir, "vneconomy_articles.csv")
+    jsonl_path = os.path.join(abs_output_dir, "vneconomy_articles.jsonl")
 
     existing_articles: List[Dict[str, str]] = []
     crawled_urls: Set[str] = set()
@@ -243,88 +295,120 @@ def crawl_vneconomy(
         except Exception as e:
             print(f"Warning: Could not read existing checkpoint: {e}")
 
-    if len(existing_articles) >= max_total:
-        print(f"Target already reached ({len(existing_articles)} >= {max_total}).")
+    # Check if target already reached for all 5 categories
+    if all(category_counts[c] >= target_per_category for c in TARGET_CATEGORIES):
+        print(f"Target already reached for all 5 categories ({len(existing_articles)} articles).")
         return pd.DataFrame(existing_articles)
 
-    session = requests.Session()
+    session = get_session()
     sitemaps = get_monthly_sitemap_urls(session)
     print(f"Found {len(sitemaps)} monthly news sitemaps.")
 
-    collected_articles = existing_articles
+    collected_articles = list(existing_articles)
+    lock = threading.Lock()
+    last_save_time = time.time()
 
-    for sitemap_url in sitemaps:
-        if len(collected_articles) >= max_total:
-            break
+    def save_checkpoint(force: bool = False):
+        nonlocal last_save_time
+        now = time.time()
+        if force or (now - last_save_time > 15):
+            with lock:
+                df_curr = pd.DataFrame(collected_articles)
+                df_curr.to_csv(csv_path, index=False, encoding="utf-8-sig")
+                df_curr.to_json(jsonl_path, orient="records", lines=True, force_ascii=False)
+                last_save_time = now
 
+    pbar = tqdm(
+        total=max_total,
+        initial=len(collected_articles),
+        desc="Total Crawled",
+        unit="articles",
+    )
+
+    for sitemap_idx, sitemap_url in enumerate(sitemaps):
         all_met = all(category_counts[cat] >= target_per_category for cat in TARGET_CATEGORIES)
-        if all_met:
-            print("Target per category reached for all 5 categories.")
+        if all_met or len(collected_articles) >= max_total:
+            print("\nTarget quota reached for all 5 categories!")
             break
 
-        # Extract year-month from sitemap URL
         ym_match = re.search(r"news-(\d{4}-\d{2})", sitemap_url)
         current_ym = ym_match.group(1) if ym_match else ""
 
         try:
             article_urls = get_article_urls_from_sitemap(sitemap_url, session)
         except Exception as e:
-            print(f"Error loading sitemap {sitemap_url}: {e}")
+            print(f"\nError loading sitemap {sitemap_url}: {e}")
             continue
 
-        print(f"\nProcessing sitemap: {sitemap_url} ({len(article_urls)} URLs)")
+        # Filter out already seen URLs before dispatching
+        urls_to_crawl = [u for u in article_urls if u not in crawled_urls]
+        if not urls_to_crawl:
+            continue
 
-        for url in tqdm(article_urls, desc=f"Sitemap {current_ym}", unit="article"):
-            if len(collected_articles) >= max_total:
-                break
+        print(f"\n[Sitemap {current_ym}] Dispatching {len(urls_to_crawl)} URLs with {max_workers} threads...")
 
-            if url in crawled_urls:
-                continue
+        def worker_fetch(u: str) -> Optional[Dict[str, str]]:
+            return parse_article(u)
 
-            crawled_urls.add(url)
-            article = parse_article(url, session)
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            future_to_url = {executor.submit(worker_fetch, u): u for u in urls_to_crawl}
 
-            if not article:
-                continue
+            for future in as_completed(future_to_url):
+                u = future_to_url[future]
+                with lock:
+                    crawled_urls.add(u)
 
-            cat = article["category"]
+                # Early check: if all categories reached
+                if all(category_counts[cat] >= target_per_category for cat in TARGET_CATEGORIES):
+                    executor.shutdown(wait=False, cancel_futures=True)
+                    break
 
-            # Check overall quota for this category
-            if category_counts[cat] >= target_per_category:
-                continue
+                try:
+                    article = future.result()
+                except Exception:
+                    article = None
 
-            # Check temporal stratification quota per month
-            ym = article.get("published_year_month") or current_ym
-            if max_per_month_category > 0 and month_cat_counts[(ym, cat)] >= max_per_month_category:
-                continue
+                if not article:
+                    continue
 
-            # Content deduplication by normalized title
-            t_hash = normalize_title_hash(article["title"])
-            if t_hash in seen_title_hashes:
-                continue
+                cat = article["category"]
 
-            seen_title_hashes.add(t_hash)
-            collected_articles.append(article)
-            category_counts[cat] += 1
-            month_cat_counts[(ym, cat)] += 1
+                with lock:
+                    if category_counts[cat] >= target_per_category:
+                        continue
 
-            if delay > 0:
-                time.sleep(delay)
+                    ym = article.get("published_year_month") or current_ym
+                    # Only enforce month cap if we are still early in sitemaps; relax if later to ensure 500
+                    if max_per_month_category > 0 and sitemap_idx < 10:
+                        if month_cat_counts[(ym, cat)] >= max_per_month_category:
+                            continue
 
-            # Checkpoint save every 50 articles
-            if len(collected_articles) % 50 == 0:
-                df_temp = pd.DataFrame(collected_articles)
-                df_temp.to_csv(csv_path, index=False, encoding="utf-8-sig")
-                df_temp.to_json(jsonl_path, orient="records", lines=True, force_ascii=False)
+                    t_hash = normalize_title_hash(article["title"])
+                    if t_hash in seen_title_hashes:
+                        continue
+
+                    seen_title_hashes.add(t_hash)
+                    collected_articles.append(article)
+                    category_counts[cat] += 1
+                    month_cat_counts[(ym, cat)] += 1
+                    pbar.update(1)
+
+                save_checkpoint(force=False)
+
+        save_checkpoint(force=True)
+        print(f"Status after {current_ym}: {dict(category_counts)}")
+
+    pbar.close()
+    save_checkpoint(force=True)
 
     df_final = pd.DataFrame(collected_articles)
     df_final.to_csv(csv_path, index=False, encoding="utf-8-sig")
     df_final.to_json(jsonl_path, orient="records", lines=True, force_ascii=False)
 
-    print("\n================ Crawling Finished ================")
+    print("\n================ Crawling Completed ================")
     print(f"Total articles collected: {len(df_final)}")
     print(f"Category distribution:\n{pd.Series(category_counts)}")
-    print(f"Output saved to: {csv_path} and {jsonl_path}")
+    print(f"Saved to:\n  - {csv_path}\n  - {jsonl_path}")
 
     return df_final
 
@@ -349,13 +433,13 @@ def main():
         "--max-per-month-category",
         type=int,
         default=60,
-        help="Max articles per category per month for temporal balance (default: 60, 0 to disable)",
+        help="Max articles per category per month (default: 60, 0 to disable)",
     )
     parser.add_argument(
-        "--delay",
-        type=float,
-        default=0.25,
-        help="Delay between requests in seconds (default: 0.25)",
+        "--workers",
+        type=int,
+        default=10,
+        help="Number of concurrent worker threads (default: 10)",
     )
     parser.add_argument(
         "--output-dir",
@@ -370,7 +454,7 @@ def main():
         target_per_category=args.target_per_category,
         max_total=args.max_total,
         max_per_month_category=args.max_per_month_category,
-        delay=args.delay,
+        max_workers=args.workers,
         output_dir=args.output_dir,
     )
 
