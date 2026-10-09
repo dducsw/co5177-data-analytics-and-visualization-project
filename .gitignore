@@ -50,6 +50,7 @@ desktop.ini
 # Logs & temp files
 *.log
 *.tmp
+*.pkl
 
 # Local workspace & draft rules
 .agents/
@@ -58,3 +59,5 @@ draft/
 tabular/data/*.csv
 tabular/docs/*.md
 tabular/docs/**/*.md
+text\eda_groups.csv
+eda_new.ipynb
