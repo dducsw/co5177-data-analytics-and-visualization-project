@@ -3,6 +3,8 @@
 Bài tập lớn xử lý ngôn ngữ tự nhiên và phân loại văn bản (Text Data).
 
 - **Tập dữ liệu**: Tự thu thập từ báo điện tử [VnEconomy.vn](https://vneconomy.vn/) qua module crawler riêng (`text/crawler/`).
+- **Google Drive**: [Thư mục dữ liệu & tài nguyên](https://drive.google.com/drive/u/1/folders/1VIsnqQbnRzNnxftWnVQEZjgnp9mq5f9N)
+- **Notebook**: [`text-classification.ipynb`](text-classification.ipynb)
 - **Bài toán**: Phân loại chủ đề tin tức kinh tế - tài chính đa lớp (Multi-class Topic Classification).
 - **5 Nhãn mục tiêu**:
   1. `Chứng khoán` (Stock Market)
