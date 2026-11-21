@@ -1,13 +1,13 @@
 # Thu Thập Dữ Liệu Văn Bản (Text Crawler)
 ## Đề tài: Phân loại Tin tức Tài chính Tiếng Việt (Vietnamese Financial News Classification)
 
-Tài liệu này định nghĩa mục tiêu, phạm vi và đặc tả kỹ thuật của hệ thống thu thập dữ liệu (Crawler) từ báo điện tử **VnEconomy** nhằm đáp ứng toàn diện các tiêu chí trong bài tập lớn môn học.
+Tài liệu này định nghĩa mục tiêu, phạm vi và đặc tả kỹ thuật của hệ thống thu thập dữ liệu (Crawler) từ báo điện tử **VnEconomy** nhằm đáp ứng toàn diện các tiêu chí của bài tập lớn.
 
 ---
 
-## 1. Đối chiếu mục tiêu với yêu cầu Assignment (CO5177)
+## 1. Đối chiếu mục tiêu với yêu cầu bài tập lớn (CO5177)
 
-| Tiêu chí Assignment | Yêu cầu bài tập lớn | Thiết kế hệ thống Crawler | Trạng thái |
+| Tiêu chí | Yêu cầu bài tập lớn | Thiết kế hệ thống Crawler | Trạng thái |
 | :--- | :--- | :--- | :---: |
 | **Loại dữ liệu** | Dữ liệu văn bản (Text Data) | Bài báo kinh tế, tài chính tiếng Việt | Đạt |
 | **Quy mô mẫu** | Tối thiểu **2.000 samples** | Mục tiêu crawl: **2.500 – 3.000 bài** (dự phòng suy hao sau deduplication và filtering) | Đạt |
