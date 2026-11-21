@@ -3,6 +3,8 @@
 Bài tập lớn thị giác máy tính và phân loại hình ảnh (Computer Vision).
 
 - **Tập dữ liệu**: [Intel Image Classification (Kaggle)](https://www.kaggle.com/datasets/puneet6060/intel-image-classification) (~25.000 ảnh phong cảnh tự nhiên).
+- **Google Drive**: [Thư mục dữ liệu & tài nguyên](https://drive.google.com/drive/u/1/folders/1tvKO5ngr-TreH7GLJ77_DFR3ilTZoxUP)
+- **Notebook**: [`intel-image-classification.ipynb`](intel-image-classification.ipynb)
 - **Bài toán**: Phân loại ảnh phong cảnh đa lớp (Multi-class Scene Classification: 6 nhãn).
 - **6 Lớp mục tiêu**:
   1. `buildings` (Nhà cao tầng, công trình)
