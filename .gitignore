@@ -61,3 +61,20 @@ tabular/docs/*.md
 tabular/docs/**/*.md
 text\eda_groups.csv
 eda_new.ipynb
+
+# LaTeX build artifacts
+reports/**/*.aux
+reports/**/*.bbl
+reports/**/*.blg
+reports/**/*.fdb_latexmk
+reports/**/*.fls
+reports/**/*.lof
+reports/**/*.lol
+reports/**/*.lot
+reports/**/*.out
+reports/**/*.toc
+reports/**/*.synctex.gz
+reports/**/_minted-*/
+!reports/starter/report.bbl
+!reports/template/report.bbl
+!reports/template/report.lol

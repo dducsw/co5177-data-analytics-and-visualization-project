@@ -1,0 +1,10 @@
+\begin{thebibliography}{1}
+
+\bibitem{pedregosa2011scikit}
+Fabian Pedregosa, Ga{\"e}l Varoquaux, Alexandre Gramfort, Vincent Michel,
+  Bertrand Thirion, Olivier Grisel, Mathieu Blondel, Peter Prettenhofer, Ron
+  Weiss, Vincent Dubourg, et~al.
+\newblock Scikit-learn: Machine learning in python.
+\newblock {\em Journal of machine learning research}, 12:2825--2830, 2011.
+
+\end{thebibliography}

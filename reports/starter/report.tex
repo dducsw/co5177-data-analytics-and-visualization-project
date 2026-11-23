@@ -1,0 +1,72 @@
+% 'draft' mode can be used to speed up compilation
+\documentclass[twoside,final]{hcmut-report}
+\usepackage{codespace}
+
+% Encodings & symbols
+\usepackage{gensymb,textcomp}
+
+% Better tables
+\usepackage{array,longtable,multicol,multirow,siunitx,tabularx}
+
+% Better lists
+\usepackage{enumitem}
+
+% Graphics
+\usepackage{caption,float}
+\usepackage[export]{adjustbox}
+
+% Cross-references (use \Cref{} instead of \ref{})
+\usepackage[nameinlink]{cleveref}
+
+% Graphics search paths
+\graphicspath{{graphics/}{figures/}}
+
+% --- Metadata (Update per report) ---
+\coursename{CO5177 -- Programming Foundations for Data Analysis and Visualization}
+\reporttype{Course Project Report}
+\title{[Modality / Report Title]}
+\advisor{& Dr. Lê Thành Sách &}
+\stuname{%
+  & Student 1 & ID 1 \\
+  & Student 2 & ID 2 \\
+  & Student 3 & ID 3 \\
+}
+
+\AtBeginDocument{\counterwithin{lstlisting}{section}}
+
+\begin{document}
+\coverpage%
+
+% Uncomment and fill in for group submissions
+% \section*{Member List \& Workload}
+% \newcounter{memberrowno}
+% \setcounter{memberrowno}{0}
+% \begin{center}
+%   \begin{tabular}{>{\stepcounter{memberrowno}\thememberrowno}llcc}
+%     \toprule
+%     \multicolumn{1}{c}{\textbf{No.}} & \textbf{Full name} & \textbf{Student ID} & \textbf{Contribution} \\
+%     \midrule
+%     & Student 1 & xxxxxxx & 33.3\% \\
+%     & Student 2 & xxxxxxx & 33.3\% \\
+%     & Student 3 & xxxxxxx & 33.3\% \\
+%     \bottomrule
+%   \end{tabular}
+% \end{center}
+% \clearpage
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+\clearpage
+\input{chapters/01_introduction.tex}
+\input{chapters/02_eda.tex}
+\input{chapters/03_methodology.tex}
+\input{chapters/04_experiments.tex}
+\input{chapters/05_conclusion.tex}
+
+\clearpage
+\bibliographystyle{plain}
+\bibliography{refs/references.bib}
+
+\end{document}
