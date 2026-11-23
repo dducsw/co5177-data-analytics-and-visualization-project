@@ -1,96 +1,162 @@
 \section{Dữ liệu văn bản: Phân loại tin tức kinh tế -- tài chính tiếng Việt}
 \label{sec:text}
 
-\subsection{Thu thập dữ liệu và Chuẩn hóa tiếng Việt}
-Thay vì dùng tập có sẵn, nhóm tự xây dựng bộ thu thập (\textit{crawler}) từ trang báo \textbf{VnEconomy} (giai đoạn 05/11/2025 -- 21/11/2026), thu được tập dữ liệu cân bằng gồm \textbf{5.000 bài viết} chia đều cho \textbf{5 chuyên mục} (1.000 bài/lớp): \textit{Bất động sản}, \textit{Chứng khoán}, \textit{Thế giới}, \textit{Thị trường}, và \textit{Tài chính}. Kiểm tra toàn vẹn cho thấy 0 giá trị thiếu, 0 trùng lặp ID/URL/nội dung.
+\subsection{Thu thập ngữ liệu, phân tầng chủ đề và chuẩn hóa tiếng Việt}
+Trong lĩnh vực xử lý ngôn ngữ tự nhiên cho tài chính (\textit{Financial NLP}), phân loại tự động tin tức kinh tế theo chuyên mục là bước tiền đề cho nhiều tác vụ phân tích vĩ mô và hỗ trợ đầu tư. Nhóm xây dựng quy trình thu thập tự động từ báo điện tử \textit{VnEconomy.vn} dựa trên tệp \texttt{sitemap.xml} trong giai đoạn từ ngày 05/11/2025 đến ngày 21/11/2026. Quá trình lấy mẫu được kiểm soát phân tầng theo tháng để tránh co cụm sự kiện, khử trùng lặp thời gian thực bằng mã băm MD5 của đường dẫn URL và loại trừ các bài dưới 100 từ, ấn phẩm PR/đa phương tiện cũng như chuyên mục \textit{Doanh nghiệp} (vốn trùng lặp mạnh từ vựng kết quả kinh doanh với mục \textit{Chứng khoán}).
 
-Ở bước chuẩn hóa tiếng Việt:
-\begin{itemize}[leftmargin=*]
-  \item Chuyển 193 bài chưa chuẩn mã Unicode sang dạng dựng sẵn \textbf{NFC}.
-  \item Thống nhất quy tắc bỏ dấu kiểu cũ (94.955 từ) sang kiểu mới (tổng 119.799 từ chuẩn hóa, ví dụ: \textit{hòa bình, thủy sản, Ủy ban}) để tránh phân mảnh từ vựng.
-  \item Tách từ tiếng Việt bằng thư viện \texttt{underthesea}, rút gọn từ trung bình 1.075 âm tiết/bài xuống 737 token/bài (tổng 3.684.703 token, 55.653 từ vựng duy nhất; lọc từ xuất hiện $\ge 5$ bài còn 9.497 từ nhưng vẫn phủ 97,9\% tổng token).
-\end{itemize}
+Kết quả thu được một tập ngữ liệu sạch gồm \textbf{5.000 bài báo} và 11 trường thông tin (không có giá trị thiếu, 0 bản ghi trùng lặp về mã định danh, URL hay toàn văn), phân bổ đồng đều \textbf{1.000 bài cho mỗi lớp} thuộc 5 chuyên mục: \textit{Bất động sản}, \textit{Chứng khoán}, \textit{Thế giới}, \textit{Thị trường}, và \textit{Tài chính}. Cách phân tầng 5 lớp này bám sát cấu trúc chuyên mục tòa soạn và ánh xạ tương ứng với khung phân loại kinh tế học JEL (\textit{G1: Chứng khoán}, \textit{G2: Tài chính -- Ngân hàng}, \textit{R3: Bất động sản}, \textit{F3: Kinh tế quốc tế}, \textit{E \& L: Thị trường hàng hóa và sản xuất}).
 
-\subsection{Khám phá dữ liệu (EDA) và Phát hiện rò rỉ thông tin}
-Phân tích EDA chỉ ra ba đặc điểm quan trọng ảnh hưởng trực tiếp đến thiết kế mô hình:
-\begin{enumerate}[leftmargin=*]
-  \item \textbf{Độ dài văn bản (\Cref{fig:text_length}):} Trung vị độ dài các lớp dao động từ 894,5 âm tiết (\textit{Chứng khoán}) đến 1.128,0 âm tiết (\textit{Thị trường}). Kiểm định Kruskal-Wallis ($H = 105,7, p = 6{,}0\times 10^{-22}, \eta^2 = 0{,}020$) cho thấy sự khác biệt độ dài có ý nghĩa thống kê nhưng kích thước hiệu ứng nhỏ, không thể dùng độ dài làm đặc trưng phân loại chính.
-  \item \textbf{Bài gần trùng và chuỗi tin định kỳ (\Cref{fig:text_dup}):} Dùng độ tương đồng Cosine trên TF-IDF với ngưỡng $0,90$, nhóm phát hiện \textbf{18 nhóm gần trùng} gồm \textbf{248 bài (5,0\%)}, tập trung mạnh ở \textit{Tài chính} (141 bài) và \textit{Chứng khoán} (86 bài), trong đó nhóm lớn nhất có tới 125 bản tin định kỳ. Nếu chia tập ngẫu nhiên, các bài gần trùng sẽ lọt vào cả Train và Test, gây ảo giác độ chính xác.
-  \item \textbf{Từ khóa đặc trưng và rò rỉ tên tác giả (\Cref{fig:text_keywords,fig:text_author}):} Phân tích \textit{Log-odds Z-score} cho thấy các từ khóa phân tách rõ rệt theo chuyên mục (khi loại bỏ chuỗi lặp, 9--10/10 từ khóa top đầu ở 4 lớp vẫn giữ nguyên, riêng \textit{Tài chính} giữ 6/10). Đáng chú ý, chỉ dựa vào tên tác giả (\texttt{author\_clean}, 222 tác giả, 10 tác giả đầu viết 46,5\% số bài) đã đoán đúng tới \textbf{92,3\%} chuyên mục (so với 20\% ngẫu nhiên), dù tên tác giả xuất hiện trong nội dung chỉ ở 7 bài.
-\end{enumerate}
+Vì tiếng Việt tồn tại đồng thời hai dạng mã hóa Unicode và hai quy tắc bỏ dấu thanh, văn bản thô được xử lý qua ba bước trước khi khám phá: (i) chuẩn hóa toàn bộ 193 bài chưa dựng sẵn về chuẩn \textbf{Unicode NFC} ($193 \rightarrow 0$); (ii) quy chuẩn 94.955 từ đặt dấu kiểu cũ (\textit{hoà, thuỷ, uỷ}) về quy tắc kiểu mới (\textit{hòa, thủy, ủy}, nâng tổng số từ chuẩn lên 119.799) trong khi vẫn bảo toàn các ngoại lệ như vần \textit{ua}; và (iii) phân đoạn từ ghép bằng thư viện \texttt{underthesea} (giữ nguyên viết hoa khi tách từ để nhận diện thực thể như \textit{Ngân hàng Nhà nước}, sau đó mới đưa về chữ thường). Bước phân đoạn rút gọn độ dài trung bình từ 1.075 âm tiết xuống còn 737 token/bài trên tổng cộng 3.684.703 token và 55.653 từ vựng duy nhất. Trong đó, 32.623 từ (58,6\%) chỉ xuất hiện đúng một lần (\textit{hapax legomena}); chỉ cần giữ các từ có mặt ở tối thiểu 5 bài đã thu gọn bảng từ vựng xuống còn 9.497 từ (17,1\%) nhưng vẫn bao phủ tới 97,9\% tổng số token.
+
+\subsection{Khám phá ngữ liệu và nhận diện các nguồn rò rỉ thông tin}
+
+\subsubsection{Phân bố thời gian, độ dài bài viết và cụm bài gần trùng}
+Do áp dụng hạn mức cân bằng theo lớp và lấy mẫu đều theo tháng (\Cref{fig:text_dist_len}, trên), phân bố nhãn không phản ánh tỷ trọng xuất bản tự nhiên của tòa soạn và không được dùng để suy luận về trôi dạt theo thời gian. Xét độ dài thân bài theo âm tiết (\Cref{fig:text_dist_len}, dưới), tất cả các chuyên mục đều có phân phối lệch phải (bài dài nhất thuộc \textit{Chứng khoán} với 5.153 âm tiết); trung vị cao nhất là \textit{Thị trường} (1.128,0 âm tiết) và thấp nhất là \textit{Chứng khoán} (894,5 âm tiết). Dù kiểm định phi tham số Kruskal-Wallis cho sự khác biệt có ý nghĩa thống kê ($H = 105,7;\; p = 6{,}0 \times 10^{-22}$), kích thước hiệu ứng rất nhỏ ($\eta^2 = 0,020$), cho thấy độ dài chỉ là đặc trưng phụ, không đủ khả năng phân tách chủ đề.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.86\linewidth]{text/c11_f0.png}
-  \caption{Phân phối độ dài bài viết (âm tiết) theo 5 chuyên mục VnEconomy: các chuyên mục có phân phối giao thoa mạnh ($\eta^2 = 0,020$), khẳng định cần dựa vào ngữ nghĩa từ vựng thay vì thống kê độ dài.}
-  \label{fig:text_length}
+  \includegraphics[width=0.90\linewidth]{text/c10_f0.png}\\[4pt]
+  \includegraphics[width=0.90\linewidth]{text/c11_f0.png}
+  \caption{Phân bố số lượng bài theo chuyên mục và tháng xuất bản (trên) cùng phân bố độ dài âm tiết giữa 5 lớp (dưới).}
+  \label{fig:text_dist_len}
 \end{figure}
 
+Một rủi ro rò rỉ đặc thù của ngữ liệu báo chí tài chính là các bản tin định kỳ có khuôn mẫu lặp lại (như bản tin giá vàng hàng ngày hoặc chuyên mục \textit{Blog chứng khoán}). Nhóm sử dụng TF-IDF n-gram ký tự (4--5 gram) để đo độ tương đồng Cosine giữa mọi cặp bài (\Cref{fig:text_dup}): độ tương đồng giữa hai bài bất kỳ nhìn chung thấp (trung bình 0,137; bách phân vị thứ 99 $p_{99} = 0,385$; lớn nhất 0,953). Khi kết hợp đồ thị liên thông ở ngưỡng nội dung $\ge 0,90$ với các chuỗi tiền tố tiêu đề có độ tương đồng nội bộ vượt $p_{99}$ ($\ge 0,40$, ví dụ \textit{Blog chứng khoán}: 59 bài, cosine 0,452; \textit{Xu thế dòng tiền}: 20 bài, cosine 0,695), thuật toán phát hiện \textbf{18 nhóm gần trùng gồm 248 bài (5,0\% ngữ liệu)}, nhóm lớn nhất chứa 125 bài. Các bài gần trùng tập trung chủ yếu ở \textit{Tài chính} (141 bài) và \textit{Chứng khoán} (86 bài), trong khi \textit{Bất động sản} không có bài lặp nào (tiền tố địa danh như \textit{Hà Nội} chỉ có cosine nội bộ 0,186 nên không bị gom nhầm).
+
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.86\linewidth]{text/c14_f0.png}
-  \caption{Phân tích các cặp bài viết gần trùng (Cosine $\ge 0,90$): phát hiện 18 nhóm (248 bài, 5,0\% tập dữ liệu), là căn cứ để thiết kế phân chia nhóm chống rò rỉ.}
+  \includegraphics[width=0.72\linewidth]{text/c14_f0.png}
+  \caption{Phân bố độ tương đồng Cosine theo n-gram ký tự giữa các cặp bài viết (trục tung thang log) dùng để xác định ngưỡng gom cụm bài gần trùng.}
   \label{fig:text_dup}
 \end{figure}
 
+\subsubsection{Từ khóa đặc trưng, cụm từ Bigram và độ giao thoa giữa các chuyên mục}
+Danh sách từ dừng (\textit{stopwords}) khảo sát chiếm 28,8\% tổng lượng token; sau khi lọc bỏ, các từ có tần suất cao nhất toàn tập đều là từ vựng kinh tế chung như \textit{tăng, giá, thị\_trường, doanh\_nghiệp, đồng} (\Cref{fig:text_vocab}, trên). Để tách lọc từ khóa riêng biệt của từng lớp, nhóm áp dụng phương pháp \textit{Bayesian Log-odds Ratio} có tiền nghiệm Dirichlet \cite{monroe2008fightin} (\Cref{fig:text_vocab}, dưới).
+
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.88\linewidth]{text/c25_f0.png}
-  \caption{Top từ khóa đặc trưng từng chuyên mục theo \textit{Log-odds Z-score}: phản ánh đúng ngữ nghĩa chuyên ngành (ví dụ mã chứng khoán, bất động sản, tỷ giá, địa chính trị).}
-  \label{fig:text_keywords}
+  \includegraphics[width=0.68\linewidth]{text/c20_f0.png}\\[4pt]
+  \includegraphics[width=0.96\linewidth]{text/c25_f0.png}
+  \caption{Top 20 từ xuất hiện nhiều nhất sau lọc \textit{stopwords} (trên) và từ khóa đặc trưng của từng chuyên mục theo điểm \textit{Log-odds Z-score} (dưới).}
+  \label{fig:text_vocab}
 \end{figure}
 
-\subsection{Thiết kế Pipeline chống rò rỉ và Huấn luyện mô hình}
-Để ngăn rò rỉ các bài viết gần trùng, dữ liệu được chia bằng \textbf{StratifiedGroupKFold} theo mã nhóm gần trùng (\texttt{dup\_group}): \textbf{Train/Val} gồm 3.933 bài và \textbf{Test} độc lập gồm 1.067 bài (0 nhóm trùng giữa Train/Val và Test).
+Thử nghiệm đối chiếu trước và sau khi khử 230 bài lặp định kỳ (5.000 $\rightarrow$ 4.770 bài) làm lộ rõ tác động méo từ vựng của chuỗi bài trùng: bốn lớp \textit{Bất động sản} (10/10), \textit{Thị trường} (10/10), \textit{Chứng khoán} (9/10) và \textit{Thế giới} (9/10) hầu như không đổi top 10 từ khóa, nhưng lớp \textit{Tài chính} chỉ giữ lại 6/10 từ. Chuỗi bản tin giá vàng định kỳ đã đẩy các từ \textit{vàng, mua, bán, giá} lên đầu bảng; khi khử lặp, các từ khóa cốt lõi của lĩnh vực ngân hàng -- tài chính (\textit{ngân\_hàng, tài\_chính, khách\_hàng, tín\_dụng, thanh\_toán, thuế}) lập tức chiếm lại các vị trí dẫn đầu.
 
-Nhóm sử dụng biểu diễn TF-IDF kết hợp tối ưu siêu tham số qua \texttt{GridSearchCV} trên 3 mô hình: \textbf{LinearSVC}, \textbf{Logistic Regression}, và \textbf{Multinomial Naive Bayes}.
+Mở rộng sang phân tích cụm 2 từ (\textit{Bigram}) và ma trận tương đồng Cosine giữa vector trọng tâm TF-IDF của 5 chuyên mục (\Cref{fig:text_sim_bigram}) cho thấy các lớp không hoàn toàn rời nhau: hai cặp có mức độ giao thoa từ vựng cao nhất là \textit{Thị trường -- Tài chính} (0,775) và \textit{Bất động sản -- Thị trường} (0,759), tiếp đến là \textit{Bất động sản -- Tài chính} (0,685) và \textit{Chứng khoán -- Tài chính} (0,680). Ngược lại, \textit{Bất động sản -- Chứng khoán} (0,512) và \textit{Bất động sản -- Thế giới} (0,531) tách biệt nhất. Ở cấp độ cụm từ, các bigram như \textit{chủ đầu\_tư} (302 bài), \textit{dòng tiền} (665 bài), \textit{hãng tin} (480 bài), \textit{chuỗi cung\_ứng} (279 bài) và \textit{ngân\_hàng nhà\_nước} (274 bài) mang tính định danh cao, củng cố cơ sở mở rộng không gian đặc trưng sang n-gram $(1, 2)$.
 
-\subsection{Kết quả thực nghiệm, Kiểm chứng độ bền và Phân tích lỗi}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.92\linewidth]{text/c30_f0.png}\\[4pt]
+  \includegraphics[width=0.96\linewidth]{text/c30_f1.png}
+  \caption{Ma trận tương đồng Cosine giữa 5 chuyên mục kèm top 10 bigram toàn tập (trên) và các bigram tiêu biểu theo từng chuyên mục (dưới).}
+  \label{fig:text_sim_bigram}
+\end{figure}
 
-\Cref{tab:text_results} và \Cref{fig:text_compare} tổng hợp kết quả đánh giá trên CV và tập Test độc lập (1.067 bài). \textbf{LinearSVC} ($C=100$, n-gram $(1,2)$, bỏ stopword) đạt hiệu năng cao nhất với Test Macro-F1 = \textbf{0,9668} (CI 95\%: $[0,956; 0,977]$), kế đến là Logistic Regression ($0,9603$) và MultinomialNB ($0,9207$). Kiểm định McNemar giữa LinearSVC (1.031/1.067 bài đúng) và Logistic Regression (1.024/1.067 bài đúng) cho $p = 0,118$ (hiệu Macro-F1 $= +0,0066$), cho thấy hai mô hình tuyến tính này tương đương thống kê ở mức $\alpha = 0,05$.
+\subsubsection{Đặc trưng số, mã cổ phiếu và rủi ro rò rỉ tên tác giả}
+\Cref{fig:text_num_author} (bên trái) so sánh mật độ ba nhóm thực thể số giữa các chuyên mục. \textit{Chứng khoán} vượt trội ở cả ba chỉ tiêu: 92,7\% bài chứa ký hiệu \texttt{\%} (trung vị 8,0 lần/bài), 74,7\% bài đề cập số tiền (trung vị 3,0 lần/bài) và 92,3\% bài xuất hiện mã 3 chữ cái viết hoa ước lượng mã cổ phiếu (trung vị 13,0 mã/bài). Trái lại, \textit{Bất động sản} có trung vị cả ba chỉ tiêu đều bằng 0 (chỉ 37,0\% bài chứa số tiền và 44,4\% chứa \texttt{\%}).
+
+Ở góc độ siêu dữ liệu (\Cref{fig:text_num_author}, bên phải), toàn bộ 5.000 bài được viết bởi 222 tác giả/bút danh, trong đó 10 tác giả năng suất nhất chiếm tới 46,5\% tổng số bài. Đánh giá bằng phương pháp \textit{leave-one-out} cho thấy chỉ dựa vào tên tác giả đã dự đoán đúng \textbf{92,3\%} nhãn chuyên mục trên 4.885 bài (so với 20\% đoán ngẫu nhiên), bởi phóng viên tòa soạn được phân công chuyên trách rất hẹp theo từng mảng tin. Do tên tác giả chỉ vô tình xuất hiện trong thân bài ở 7 trường hợp, trường \texttt{author} bị loại hoàn toàn khỏi tập đặc trưng đầu vào và chỉ giữ lại để kiểm chứng rò rỉ văn phong ở bước hậu kiểm.
+
+\begin{figure}[H]
+  \centering
+  \begin{minipage}[b]{0.48\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{text/c33_f0.png}
+  \end{minipage}\hfill
+  \begin{minipage}[b]{0.50\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{text/c36_f0.png}
+  \end{minipage}
+  \caption{Tỷ lệ bài viết chứa thực thể số, phần trăm, mã cổ phiếu (trái) và phân bố chuyên mục của 10 tác giả viết nhiều nhất (phải).}
+  \label{fig:text_num_author}
+\end{figure}
+
+\subsection{Phân chia dữ liệu chống rò rỉ và tối ưu siêu tham số}
+Để triệt tiêu rò rỉ từ các bản tin lặp định kỳ, tập ngữ liệu được chia bằng \texttt{StratifiedGroupKFold} theo mã cụm \texttt{dup\_group}, tạo ra \textbf{3.933 bài Train/Val} và \textbf{1.067 bài Test} với 0 cụm trùng lặp giữa hai phía (\Cref{fig:text_split_cv}, trên). Do toàn bộ cụm 125 bản tin giá vàng cùng rơi vào một phía, lớp \textit{Tài chính} có 293 bài ở tập Test (707 bài ở Train/Val), trong khi bốn lớp còn lại dao động quanh 185--207 bài Test. Vì lý do chênh lệch quy mô lớp nhẹ trên tập Test này, \textbf{Macro-F1} được chọn làm chỉ số đánh giá chính.
+
+Toàn bộ bước trích xuất TF-IDF (\texttt{token\_pattern=r"\textbackslash S+"} để giữ nguyên từ ghép nối gạch dưới, \texttt{sublinear\_tf=True} nhằm hạn chế ảnh hưởng của việc 9,8\% nội dung sapo lặp lại ở thân bài, chuẩn hóa L2) được đóng gói trong \texttt{Pipeline} và chỉ \texttt{fit} trên các fold huấn luyện. Nhóm sử dụng 5-Fold \texttt{GridSearchCV} (chia nhóm theo \texttt{dup\_group}) để tối ưu đồng thời dải n-gram $(1, 1)$ vs $(1, 2)$, tùy chọn lọc stopwords và tham số điều hòa cho ba mô hình: \texttt{MultinomialNB} ($\alpha$), \texttt{LogisticRegression} ($C$) và \texttt{LinearSVC} ($C$).
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\linewidth]{text/c39_f0.png}\\[4pt]
+  \includegraphics[width=0.92\linewidth]{text/c43_f0.png}
+  \caption{Phân bố số bài giữa tập Train/Val và Test sau \texttt{StratifiedGroupKFold} (trên) và đường cong CV Macro-F1 theo siêu tham số điều hòa của ba mô hình (dưới).}
+  \label{fig:text_split_cv}
+\end{figure}
+
+Đồ thị tìm kiếm lưới (\Cref{fig:text_split_cv}, dưới) cho thấy hai mô hình tuyến tính ổn định cao qua 5 fold: \texttt{LinearSVC} đạt CV Macro-F1 \textbf{0,9582 $\pm$ 0,0033} tại $C=100$, n-gram $(1, 2)$, bỏ stopwords; \texttt{LogisticRegression} đạt \textbf{0,9523 $\pm$ 0,0046} tại điểm đỉnh nội tại $C=30$, n-gram $(1, 1)$, giữ stopwords; còn \texttt{MultinomialNB} đạt 0,9205 $\pm$ 0,0037 tại $\alpha = 0,003$, n-gram $(1, 2)$, bỏ stopwords. Dù tham số tối ưu của \texttt{LinearSVC} nằm tại biên phải lưới ($C=100$), đường cong hiệu năng thực tế đã tiệm cận bão hòa ngay từ $C \ge 10$, nên việc dừng tìm kiếm tại đây tránh được nguy cơ quá khớp.
+
+\subsection{Kết quả trên tập Test, kiểm chứng độ ổn định và phân tích lỗi}
+
+\Cref{tab:text_results} và \Cref{fig:text_eval} trình bày kết quả đánh giá một lần duy nhất trên tập Test độc lập (1.067 bài) kèm khoảng tin cậy 95\% Bootstrap (1.000 lần lấy mẫu). \texttt{LinearSVC} đạt hiệu năng cao nhất với \textbf{Macro-F1 = 0,9668} (1.031/1.067 bài đúng), theo sát là \texttt{LogisticRegression} với \textbf{0,9603} (1.024/1.067 bài đúng), bỏ xa \texttt{MultinomialNB} (0,9207). Tuy nhiên, kiểm định McNemar giữa hai mô hình tuyến tính cho $p = 0,118 > 0,05$, đồng thời khoảng tin cậy 95\% của hiệu số Macro-F1 ($+0,0066$) là $[-0,0006;\; +0,0140]$ chứa giá trị 0, chứng tỏ sự chênh lệch 7 bài giữa \texttt{LinearSVC} và \texttt{LogisticRegression} chưa có ý nghĩa thống kê ở mức 5\%.
 
 \begin{table}[H]
   \centering
-  \caption{Đối chiếu hiệu năng 3 mô hình phân loại văn bản trên Cross-Validation và tập Test độc lập (1.067 bài).}
+  \caption{Đối chiếu kết quả Cross-Validation và tập Test độc lập (1.067 bài) của ba mô hình phân loại văn bản.}
   \label{tab:text_results}
   \resizebox{\linewidth}{!}{%
-  \begin{tabular}{l c c c c}
+  \begin{tabular}{l l c c c c}
     \toprule
-    \textbf{Mô hình} & \textbf{CV Macro-F1} & \textbf{Test Accuracy} & \textbf{Test Macro-F1} & \textbf{CI 95\% (Test Macro-F1)} \\
+    \textbf{Mô hình} & \textbf{Cấu hình tối ưu} & \textbf{CV Macro-F1} & \textbf{Test Acc} & \textbf{Test Macro-F1} & \textbf{CI 95\% Bootstrap} \\
     \midrule
-    MultinomialNB & $0,9205 \pm 0,0037$ & 0,9203 & 0,9207 & $[0,904;\; 0,936]$ \\
-    Logistic Regression & $0,9523 \pm 0,0046$ & 0,9597 & 0,9603 & $[0,949;\; 0,971]$ \\
-    LinearSVC & $\mathbf{0,9582 \pm 0,0033}$ & \textbf{0,9663} & \textbf{0,9668} & $\mathbf{[0,956;\; 0,977]}$ \\
+    MultinomialNB & $\alpha=0,003$, $(1,2)$, bỏ SW & $0,9205 \pm 0,0037$ & 0,9203 & 0,9207 & $[0,904;\; 0,936]$ \\
+    Logistic Regression & $C=30$, $(1,1)$, giữ SW & $0,9523 \pm 0,0046$ & 0,9597 & 0,9603 & $[0,949;\; 0,971]$ \\
+    LinearSVC & $C=100$, $(1,2)$, bỏ SW & $\mathbf{0,9582 \pm 0,0033}$ & \textbf{0,9663} & \textbf{0,9668} & $\mathbf{[0,956;\; 0,977]}$ \\
     \bottomrule
   \end{tabular}%
   }
 \end{table}
 
-\begin{figure}[H]
+\begin{table}[H]
   \centering
-  \includegraphics[width=0.86\linewidth]{text/c46_f0.png}
-  \caption{So sánh Macro-F1 kèm khoảng tin cậy 95\% trên tập Test (1.067 bài): LinearSVC (0,9668) và Logistic Regression (0,9603) vượt trội rõ rệt so với MultinomialNB (0,9207).}
-  \label{fig:text_compare}
-\end{figure}
+  \caption{Báo cáo phân loại chi tiết theo từng chuyên mục của \texttt{LinearSVC} trên tập Test (1.067 bài).}
+  \label{tab:text_perclass}
+  \begin{tabular}{l c c c r}
+    \toprule
+    \textbf{Chuyên mục} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} & \textbf{Số bài (Support)} \\
+    \midrule
+    Bất động sản & 0,952 & 0,961 & 0,957 & 207 \\
+    Chứng khoán & 0,989 & 0,943 & 0,965 & 192 \\
+    Thế giới & 0,990 & 1,000 & \textbf{0,995} & 190 \\
+    Thị trường & 0,977 & 0,935 & 0,956 & 185 \\
+    Tài chính & 0,941 & 0,983 & 0,962 & 293 \\
+    \midrule
+    \textbf{Macro avg} & \textbf{0,970} & \textbf{0,964} & \textbf{0,967} & \textbf{1.067} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.82\linewidth]{text/c47_f0.png}
-  \caption{Ma trận nhầm lẫn của LinearSVC trên tập Test: lớp \textit{Thế giới} đạt F1 = 0,995; tổng số ca dự đoán sai là 36/1.067 bài, chủ yếu giữa các chuyên mục kinh tế giao thoa như \textit{Tài chính}, \textit{Thị trường} và \textit{Chứng khoán}.}
-  \label{fig:text_cm}
+  \includegraphics[width=0.72\linewidth]{text/c46_f0.png}\\[4pt]
+  \includegraphics[width=0.96\linewidth]{text/c47_f0.png}
+  \caption{So sánh hiệu năng trên tập Test kèm khoảng tin cậy 95\% (trên) và ma trận nhầm lẫn của cả ba mô hình (dưới).}
+  \label{fig:text_eval}
 \end{figure}
 
-\paragraph{Kiểm chứng độ bền (\textit{Robustness}) và Phân tích lỗi:}
-\begin{itemize}[leftmargin=*]
-  \item \textbf{Khử trùng hoàn toàn trên Test:} Khi loại bỏ các bài thuộc nhóm gần trùng trên tập Test (còn 939 bài), Macro-F1 của LinearSVC chỉ giảm nhẹ từ $0,9668$ xuống \textbf{0,9611} (Accuracy $= 0,9617$), chứng minh mô hình không học vẹt bản tin lặp.
-  \item \textbf{Bóc tách đặc trưng số (\texttt{text\_seg} vs \texttt{text\_num}):} Thay thế số và tỷ lệ phần trăm bằng token đại diện (\texttt{\_so\_}, \texttt{\_pct\_}) giúp CV Macro-F1 tăng nhẹ từ $0,9582 \pm 0,0033$ lên $0,9592 \pm 0,0026$ (giảm phương sai giữa các fold).
-  \item \textbf{Kiểm chứng rò rỉ văn phong tác giả (\Cref{fig:text_author}):} Khi chia \texttt{StratifiedGroupKFold} theo \texttt{author\_clean} (đánh giá trên bài của các tác giả chưa từng xuất hiện trong Train), CV Macro-F1 giảm từ $0,9582 \pm 0,0033$ xuống \textbf{0,8519 $\pm$ 0,1030}. Điều này chứng minh một phần hiệu năng cao của mô hình đến từ đặc trưng văn phong riêng của phóng viên chuyên mục.
-  \item \textbf{Phân tích 36 ca lỗi trên Test (\Cref{fig:text_cm}):} Có 23 ca nằm ở vùng biên mờ (hiệu điểm top-1 và top-2 $< 0,5$) do giao thoa chủ đề thực sự (ví dụ tin ngân hàng -- chứng khoán -- bất động sản), và 13 ca mô hình tự tin cao ($\ge 0,5$) nhưng gán nhầm nhãn chuyên mục của tòa soạn.
-\end{itemize}
+Xét chi tiết từng lớp ở \Cref{tab:text_perclass} và \Cref{fig:text_eval}, \textit{Thế giới} đạt F1 tới 0,995 (Recall đạt 1,000, chỉ nhầm duy nhất 1 bài sang lớp này). Ba mươi sáu ca dự đoán sai của \texttt{LinearSVC} tập trung đúng vào những cặp có độ tương đồng Cosine lớn nhất ở bước EDA: \textit{Chứng khoán $\rightarrow$ Tài chính} (10 bài), \textit{Thị trường $\rightarrow$ Bất động sản} (7 bài), \textit{Bất động sản $\rightarrow$ Tài chính} (5 bài) và \textit{Thị trường $\rightarrow$ Tài chính} (3 bài).
 
-\begin{figure}[H]
+Để kiểm tra độ ổn định của \texttt{LinearSVC} trước các nguy cơ đã nhận diện ở bước EDA, nhóm thực hiện ba kiểm chứng bổ sung (\Cref{tab:text_robustness}):
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Loại bỏ bài gần trùng trên tập Test:} Khi rút tập Test từ 1.067 bài xuống còn 939 bài độc lập hoàn toàn (loại bỏ các bản tin trong cụm lặp), Macro-F1 chỉ giảm 0,0057 (từ 0,9668 xuống 0,9611; Accuracy 0,9617), xác nhận điểm số cao không bị thổi phồng bởi tin định kỳ.
+  \item \textbf{Bóc tách đặc trưng số (\texttt{text\_seg} vs \texttt{text\_num}):} Thay các con số và ký hiệu phần trăm thành token đại diện (\texttt{\_so\_}, \texttt{\_pct\_}) chỉ làm thay đổi CV Macro-F1 $+0,0010$ (0,9592 so với 0,9582), cho thấy thông tin số trừu tượng không bổ sung nhiều ngoài ngữ nghĩa từ vựng chuyên ngành sẵn có.
+  \item \textbf{Cô lập hoàn toàn theo tác giả:} Khi chia 5-Fold \texttt{StratifiedGroupKFold} theo \texttt{author\_clean} (đánh giá trên bài của các phóng viên chưa từng xuất hiện trong tập huấn luyện), CV Macro-F1 giảm xuống còn $0,8519 \pm 0,1030$. Sự sụt giảm và biến động lớn giữa các fold phản ánh cấu trúc chuyên trách hẹp của phóng viên (khi một phóng viên phụ trách mảng tin ngách bị tách sang fold kiểm tra, tập huấn luyện thiếu hụt nhóm từ vựng tương ứng), nhưng mức F1 xấp xỉ 0,85 vẫn cho thấy mô hình nắm bắt được cốt lõi chủ đề thay vì phụ thuộc hoàn toàn vào văn phong cá nhân.
+\end{enumerate}
+
+\begin{table}[H]
   \centering
-  \includegraphics[width=0.84\linewidth]{text/c36_f0.png}
-  \caption{Phân bố bài viết theo tác giả: 10 tác giả viết nhiều nhất chiếm 46,5\% tổng số bài, giải thích vì sao chỉ dùng tên tác giả đã đoán đúng 92,3\% chuyên mục và làm CV giảm xuống 0,8519 khi chia tách theo tác giả.}
-  \label{fig:text_author}
-\end{figure}
+  \caption{Tổng hợp kết quả ba thực nghiệm kiểm chứng độ ổn định của \texttt{LinearSVC}.}
+  \label{tab:text_robustness}
+  \begin{tabularx}{\linewidth}{l X c}
+    \toprule
+    \textbf{Thực nghiệm} & \textbf{Thiết lập so sánh} & \textbf{Macro-F1} \\
+    \midrule
+    Loại bài gần trùng (Test) & Test đầy đủ (1.067 bài) $\rightarrow$ Test độc lập (939 bài) & $0,9668 \rightarrow 0,9611$ \\
+    Đặc trưng số (5-Fold CV) & \texttt{text\_seg} (bỏ số) vs \texttt{text\_num} (\texttt{\_so\_}, \texttt{\_pct\_}) & $0,9582 \rightarrow 0,9592$ \\
+    Cô lập tác giả (5-Fold CV) & Nhóm theo \texttt{dup\_group} $\rightarrow$ Nhóm theo \texttt{author\_clean} & $0,9582 \rightarrow 0,8519 \pm 0,1030$ \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+Cuối cùng, kiểm tra trọng số hồi quy dương lớn nhất của \texttt{LinearSVC} xác nhận mô hình ra quyết định dựa trên đúng thuật ngữ chuyên môn: \textit{đô\_thị, bất\_động\_sản, bộ xây\_dựng, dự\_án} (Bất động sản); \textit{chứng\_khoán, cổ\_phiếu, vnindex, nâng hạng, thanh\_khoản} (Chứng khoán); \textit{mỹ, trung\_quốc, hãng tin, nền kinh\_tế, châu\_âu} (Thế giới); \textit{công\_thương, bộ công\_thương, tiêu\_dùng, sản\_xuất} (Thị trường); và \textit{ngân\_hàng, tài\_chính, bộ tài\_chính, bảo\_hiểm, tín\_dụng} (Tài chính). Phân tích biên quyết định (\textit{margin} = hiệu điểm lớp cao nhất và cao thứ hai) trên 36 ca sai cho thấy \textbf{23 ca (63,9\%)} rơi vào vùng biên mờ ($< 0,5$), bắt nguồn trực tiếp từ tính liên ngành của tin tức — chẳng hạn bài về đầu tư cảng Chân Mây (giao thoa \textit{Thị trường} và \textit{Bất động sản}, biên 0,002), giá vật liệu xây dựng (biên 0,015) hay nghĩa vụ tài chính đất đai (biên 0,059). Chỉ có 13 ca (36,1\%) có biên tự tin cao ($\ge 0,5$), chủ yếu liên quan đến lựa chọn xếp mục mang tính biên tập của tòa soạn.

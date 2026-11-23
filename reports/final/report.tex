@@ -17,14 +17,26 @@
 
 % Cross-references (use \Cref{} instead of \ref{})
 \usepackage[nameinlink]{cleveref}
+\crefname{figure}{Hình}{Các hình}
+\Crefname{figure}{Hình}{Các hình}
+\crefname{table}{Bảng}{Các bảng}
+\Crefname{table}{Bảng}{Các bảng}
+\crefname{section}{Chương}{Các chương}
+\Crefname{section}{Chương}{Các chương}
+\crefname{subsection}{Mục}{Các mục}
+\Crefname{subsection}{Mục}{Các mục}
+\crefname{equation}{Công thức}{Các công thức}
+\Crefname{equation}{Công thức}{Các công thức}
+
+\setlength{\emergencystretch}{3em}
 
 % Graphics search paths
 \graphicspath{{graphics/}{figures/}}
 
 % --- Metadata ---
-\coursename{\parbox[c]{0.85\linewidth}{\centering CO5177 -- Nền tảng lập trình cho phân tích và trực quan dữ liệu}}
-\reporttype{Báo cáo Bài tập lớn (Group6)}
-\title{Phân tích, Trực quan hóa và Mô hình hóa Dữ liệu Đa dạng thức (Tabular, Text, Image)}
+\coursename{\parbox[c]{0.85\linewidth}{\centering Nền tảng lập trình cho phân tích và trực quan dữ liệu}}
+\reporttype{Báo cáo Bài tập lớn}
+\title{Phân tích, Trực quan hóa và Mô hình hóa Dữ liệu Bảng, Văn bản và Ảnh}
 \advisor{& TS. Lê Thành Sách &}
 \stuname{%
   & Lê Đình Đức & 2310774 \\
@@ -36,10 +48,10 @@
 \begin{document}
 \coverpage%
 
-\section*{Thông tin nhóm và Phân công công việc}
+\section*{Thông tin nhóm thực hiện}
 \begin{itemize}[leftmargin=*]
-  \item \textbf{Tên nhóm:} Group6 (CH01 -- Học kỳ 261, Năm học 2026--2027)
-  \item \textbf{Kho mã nguồn:} \href{https://github.com/dducsw/co5177-data-analytics-and-visualization-project}{\texttt{github.com/dducsw/co5177-data-analytics-and-visualization-project}}
+  \item \textbf{Nhóm thực hiện:} Group6 (Lớp CH01 -- Học kỳ 261, Năm học 2026--2027)
+  \item \textbf{Kho mã nguồn:} \href{https://github.com/dducsw/co5177-data-analytics-and-visualization-project}{\small\texttt{github.com/dducsw/co5177-data-analytics-and-visualization-project}}
 \end{itemize}
 
 \newcounter{memberrowno}
@@ -47,10 +59,10 @@
 \begin{center}
   \begin{tabularx}{\linewidth}{>{\stepcounter{memberrowno}\thememberrowno}c l c X c}
     \toprule
-    \multicolumn{1}{c}{\textbf{STT}} & \textbf{Họ và tên} & \textbf{MSSV} & \textbf{Vai trò \& Đóng góp chính} & \textbf{Tỷ lệ} \\
+    \multicolumn{1}{c}{\textbf{STT}} & \textbf{Họ và tên} & \textbf{MSSV} & \textbf{Phạm vi đóng góp} & \textbf{Tỷ lệ} \\
     \midrule
-    & Lê Đình Đức & 2310774 & Thu thập dữ liệu, EDA, xây dựng pipeline mô hình, trực quan hóa kết quả và hoàn thiện báo cáo & 100\% \\
-    & Nguyễn Văn Công Thành & 2313133 & Thiết kế thực nghiệm đối chứng, kiểm chứng giả thuyết, phân tích lỗi và hoàn thiện báo cáo & 100\% \\
+    & Lê Đình Đức & 2310774 & Thu thập dữ liệu, khám phá dữ liệu, xây dựng quy trình tiền xử lý -- huấn luyện mô hình và biên soạn báo cáo & 100\% \\
+    & Nguyễn Văn Công Thành & 2313133 & Thiết kế thực nghiệm đối chứng, kiểm định thống kê, phân tích sai số mô hình và biên soạn báo cáo & 100\% \\
     \bottomrule
   \end{tabularx}
 \end{center}
