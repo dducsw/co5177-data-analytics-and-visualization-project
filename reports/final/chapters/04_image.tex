@@ -2,9 +2,9 @@
 \label{sec:image}
 
 \subsection{Kiểm tra toàn vẹn và khám phá đặc trưng thị giác}
-Bài toán phân loại ảnh được thực hiện trên tập \textit{Intel Image Classification} \cite{bansal2019intel} gồm \textbf{17.034 ảnh màu} chia thành 6 lớp cảnh quan: \textit{buildings, forest, glacier, mountain, sea} và \textit{street} (14.034 ảnh huấn luyện trong \texttt{seg\_train} và 3.000 ảnh kiểm thử độc lập trong \texttt{seg\_test}). Kiểm tra toàn vẹn bằng \texttt{PIL.Image.verify()} xác nhận không có tệp ảnh hỏng và 100\% ảnh ở định dạng 3 kênh màu RGB.
+Bài toán phân loại ảnh được thực hiện trên tập \textit{Intel Image Classification} \cite{bansal2019intel} gồm 17.034 ảnh màu chia thành 6 lớp cảnh quan: \textit{buildings, forest, glacier, mountain, sea} và \textit{street} (14.034 ảnh huấn luyện trong \texttt{seg\_train} và 3.000 ảnh kiểm thử độc lập trong \texttt{seg\_test}). Kiểm tra toàn vẹn bằng \texttt{PIL.Image.verify()} xác nhận không có tệp ảnh hỏng và 100\% ảnh ở định dạng 3 kênh màu RGB.
 
-Phân bố nhãn tương đối cân bằng giữa các lớp (\Cref{fig:img_eda_basic}, trên): trong tập Train, lớp nhiều nhất (\textit{mountain}, 2.512 ảnh, 17,90\%) chỉ gấp 1,15 lần lớp ít nhất (\textit{buildings}, 2.191 ảnh, 15,61\%); tỷ lệ Train/Test ổn định quanh mức 4,35--5,01 lần (xấp xỉ 82\%/18\%). Do đó, bài toán không đòi hỏi kỹ thuật xử lý mất cân bằng lớp và có thể đánh giá trực tiếp bằng \textit{Top-1 Accuracy} kết hợp \textit{Macro F1-Score}. Tuy nhiên, kiểm tra kích thước không gian (\Cref{fig:img_eda_basic}, dưới) phát hiện dù đa số ảnh có chuẩn $150 \times 150$ pixel, vẫn tồn tại \textbf{48 ảnh Train (0,34\%)} và \textbf{7 ảnh Test (0,23\%)} có chiều cao nhỏ hơn (từ 72 đến 149 pixel). Điều này đòi hỏi bước chuẩn hóa kích thước bắt buộc trước khi gom ảnh vào mini-batch. Khảo sát dung lượng JPEG cũng cho thấy ảnh lớp \textit{forest} thường có dung lượng lớn hơn nhờ mật độ chi tiết tán lá dày, còn \textit{sea} và \textit{mountain} nhẹ hơn do có nhiều mảng bề mặt đồng nhất.
+Phân bố nhãn tương đối cân bằng giữa các lớp (\Cref{fig:img_eda_basic}, trên): trong tập Train, lớp nhiều nhất (\textit{mountain}, 2.512 ảnh, 17,90\%) chỉ gấp 1,15 lần lớp ít nhất (\textit{buildings}, 2.191 ảnh, 15,61\%); tỷ lệ Train/Test ổn định quanh mức 4,35--5,01 lần (xấp xỉ 82\%/18\%). Do đó, bài toán không đòi hỏi kỹ thuật xử lý mất cân bằng lớp và có thể đánh giá trực tiếp bằng \textit{Top-1 Accuracy} kết hợp \textit{Macro F1-Score}. Tuy nhiên, kiểm tra kích thước không gian (\Cref{fig:img_eda_basic}, dưới) phát hiện dù đa số ảnh có chuẩn $150 \times 150$ pixel, vẫn tồn tại 48 ảnh Train (0,34\%) và 7 ảnh Test (0,23\%) có chiều cao nhỏ hơn (từ 72 đến 149 pixel). Điều này đòi hỏi bước chuẩn hóa kích thước bắt buộc trước khi gom ảnh vào mini-batch. Khảo sát dung lượng JPEG cũng cho thấy ảnh lớp \textit{forest} thường có dung lượng lớn hơn nhờ mật độ chi tiết tán lá dày, còn \textit{sea} và \textit{mountain} nhẹ hơn do có nhiều mảng bề mặt đồng nhất.
 
 \begin{figure}[H]
   \centering
@@ -14,7 +14,7 @@ Phân bố nhãn tương đối cân bằng giữa các lớp (\Cref{fig:img_eda
   \label{fig:img_eda_basic}
 \end{figure}
 
-Quan sát trực quan bộ ảnh đại diện (\Cref{fig:img_gallery}) cho thấy mỗi lớp có đặc trưng bối cảnh riêng — chẳng hạn cấu trúc thẳng đứng của công trình (\textit{buildings}), tán cây xanh (\textit{forest}), đường chân trời phẳng (\textit{sea}) hay góc nhìn phối cảnh theo lòng đường (\textit{street}). Thống kê cường độ pixel trên 2.500 ảnh lấy mẫu ngẫu nhiên trong tập Train (\Cref{fig:img_color_tsne}, trên) cho giá trị trung bình của kênh Green ($\mu_G = 0,4569;\; \sigma_G = 0,2688$) và Blue ($\mu_B = 0,4530;\; \sigma_B = 0,2990$) cao hơn kênh Red ($\mu_R = 0,4309;\; \sigma_R = 0,2694$), phù hợp với sắc xanh của thực vật, mặt nước, bầu trời và băng tuyết trong ảnh phong cảnh tự nhiên.
+Quan sát trực quan bộ ảnh đại diện (\Cref{fig:img_gallery}) cho thấy mỗi lớp có đặc trưng bối cảnh riêng — chẳng hạn cấu trúc thẳng đứng của công trình (buildings), tán cây xanh (forest), đường chân trời phẳng (sea) hay góc nhìn phối cảnh theo lòng đường (street). Thống kê cường độ pixel trên 2.500 ảnh lấy mẫu ngẫu nhiên trong tập Train (\Cref{fig:img_color_tsne}, trên) cho giá trị trung bình của kênh Green ($\mu_G = 0,4569;\; \sigma_G = 0,2688$) và Blue ($\mu_B = 0,4530;\; \sigma_B = 0,2990$) cao hơn kênh Red ($\mu_R = 0,4309;\; \sigma_R = 0,2694$), phù hợp với sắc xanh của thực vật, mặt nước, bầu trời và băng tuyết trong ảnh phong cảnh tự nhiên.
 
 \begin{figure}[H]
   \centering
@@ -41,7 +41,7 @@ Quan sát trực quan bộ ảnh đại diện (\Cref{fig:img_gallery}) cho th�
 \end{figure}
 
 \subsection{Phân chia dữ liệu, tăng cường ảnh và thiết kế 4 trục thực nghiệm}
-Tập \texttt{seg\_train} (14.034 ảnh) được tách theo phương pháp phân tầng (\textit{Stratified Split}) thành \textbf{11.928 ảnh Train (85\%)} và \textbf{2.106 ảnh Validation (15\%)} để chọn checkpoint tốt nhất, giữ nguyên \textbf{3.000 ảnh Test} hoàn toàn tách biệt cho đánh giá cuối. Nhằm so sánh công bằng giữa các họ mô hình, hai pipeline chuẩn hóa đầu vào được thiết kế riêng biệt: pipeline \texttt{150x150} chuẩn hóa theo mean/std đo từ tập Train dành cho mô hình huấn luyện từ đầu, và pipeline \texttt{224x224} chuẩn hóa theo thống kê ImageNet dành cho các mô hình pretrained (thực nghiệm trước đó cho thấy nếu đưa ảnh \texttt{150x150} chuẩn hóa riêng vào \texttt{ResNet-18} đóng băng, độ chính xác chỉ đạt 86,97\%, thấp hơn gần 3 điểm phần trăm so với khi khớp đúng chuẩn ImageNet \texttt{224x224}).
+Tập \texttt{seg\_train} (14.034 ảnh) được tách theo phương pháp phân tầng (Stratified Split) thành 11.928 ảnh Train (85\%) và 2.106 ảnh Validation (15\%) để chọn checkpoint tốt nhất, giữ nguyên 3.000 ảnh Test hoàn toàn tách biệt cho đánh giá cuối. Nhằm so sánh công bằng giữa các họ mô hình, hai pipeline chuẩn hóa đầu vào được thiết kế riêng biệt: pipeline \texttt{150x150} chuẩn hóa theo mean/std đo từ tập Train dành cho mô hình huấn luyện từ đầu, và pipeline \texttt{224x224} chuẩn hóa theo thống kê ImageNet dành cho các mô hình pretrained (thực nghiệm trước đó cho thấy nếu đưa ảnh \texttt{150x150} chuẩn hóa riêng vào \texttt{ResNet-18} đóng băng, độ chính xác chỉ đạt 86,97\%, thấp hơn gần 3 điểm phần trăm so với khi khớp đúng chuẩn ImageNet \texttt{224x224}).
 
 Trên tập huấn luyện, các phép biến đổi \textit{Data Augmentation} (\Cref{fig:img_aug}) gồm \texttt{RandomResizedCrop}, \texttt{RandomHorizontalFlip}, \texttt{ColorJitter} và \texttt{RandomRotation} nhẹ được áp dụng với \texttt{batch\_size = 64}; phép lật dọc không được sử dụng để giữ nguyên tính tự nhiên của đường chân trời và bầu trời.
 
@@ -52,15 +52,32 @@ Trên tập huấn luyện, các phép biến đổi \textit{Data Augmentation} 
   \label{fig:img_aug}
 \end{figure}
 
-Toàn bộ thực nghiệm được chạy trên GPU Tesla T4 (15,64 GB VRAM) và tổ chức thành \textbf{7 cấu hình thuộc 4 trục đối chiếu}:
+Toàn bộ thực nghiệm được chạy trên GPU Tesla T4 (15,64 GB VRAM) và tổ chức thành 7 cấu hình thuộc 4 trục đối chiếu:
 \begin{enumerate}[leftmargin=*]
-  \item \textbf{Huấn luyện từ đầu (\textit{From Scratch}):} \texttt{SimpleBaselineCNN} 4 khối tích chập không có kết nối tắt (0,42M tham số, 10 epochs) đối chiếu với \texttt{ResNet-18} \cite{he2016deep} (11,18M tham số, 12 epochs) trên ảnh \texttt{150x150}.
+  \item \textbf{Huấn luyện từ đầu (From Scratch):} \texttt{SimpleBaselineCNN} 4 khối tích chập không có kết nối tắt (0,42M tham số, 10 epochs) đối chiếu với \texttt{ResNet-18} \cite{he2016deep} (11,18M tham số, 12 epochs) trên ảnh \texttt{150x150}.
   \item \textbf{Học chuyển giao trên cùng kiến trúc \texttt{ResNet-18}:} \textit{Linear Probe} (đóng băng toàn bộ backbone ImageNet, chỉ huấn luyện lớp \texttt{fc} gồm 3.078 tham số trong 5 epochs) so với \textit{Fine-tuning} (mở khóa \texttt{layer4 + fc}, 8,40M tham số, 6 epochs).
   \item \textbf{Mạng tích chập so với Vision Transformer:} \texttt{ResNet-18 (Fine-tune)} đối chiếu với \texttt{ViT-B/16} \cite{dosovitskiy2021image} (85,80M tổng tham số; mở khóa 2 khối Encoder cuối và đầu phân loại gồm 14,18M tham số, 6 epochs).
   \item \textbf{Học có giám sát so với Zero-shot Vision--Language:} \texttt{CLIP ViT-B/32} \cite{radford2021learning} (151,28M tham số, 0 epoch huấn luyện) phân loại trực tiếp qua độ tương đồng cosine giữa vector ảnh và câu nhắc văn bản theo hai cấu hình: \textit{Basic Prompt} (\texttt{"a photo of a \{class\}"}) và \textit{Prompt Ensemble} (trung bình 5 mẫu câu mô tả cảnh quan).
 \end{enumerate}
 
-Các mô hình có giám sát dùng chung hàm mất mát \texttt{CrossEntropyLoss} (với \texttt{label\_smoothing = 0,05}) để hạn chế dự đoán quá tự tin ở các cặp lớp giao thoa, tối ưu bằng \texttt{AdamW} kết hợp \texttt{CosineAnnealingLR}. Khi tinh chỉnh mô hình pretrained, tốc độ học phân tầng (\textit{Differential LR}) được áp dụng: \texttt{1e-4} cho \texttt{ResNet-18 layer4}, \texttt{5e-5} cho 2 khối cuối \texttt{ViT-B/16}, và \texttt{1e-3} cho tầng phân loại mới.
+Các mô hình có giám sát dùng chung hàm mất mát \texttt{CrossEntropyLoss} kèm làm mịn nhãn (\texttt{label\_smoothing = 0,05}):
+\begin{equation}
+  \mathcal{L}_{\text{CE}}(\mathbf{y}, \mathbf{p}) = -\sum_{c=1}^{K} q_c \log p_c, \quad \text{với } q_c = (1 - \epsilon) y_c + \frac{\epsilon}{K} \quad (\epsilon = 0,05,\; K = 6)
+  \label{eq:label_smoothing}
+\end{equation}
+trong đó $p_c = \frac{e^{z_c}}{\sum_{k=1}^K e^{z_k}}$ là xác suất softmax đầu ra từ logits $z_c$. Kỹ thuật làm mịn này hạn chế việc mô hình đưa ra dự đoán quá tự tin ở các cặp lớp dễ giao thoa biên như \textit{glacier -- mountain}. Toàn bộ mạng được tối ưu bằng \texttt{AdamW} kết hợp suy giảm tốc độ học theo hàm cosine (\texttt{CosineAnnealingLR}):
+\begin{equation}
+  \eta_t = \eta_{\min} + \frac{1}{2}(\eta_{\max} - \eta_{\min})\left(1 + \cos\left(\frac{t}{T_{\max}}\pi\right)\right)
+  \label{eq:cosine_lr}
+\end{equation}
+Khi tinh chỉnh mô hình pretrained, tốc độ học phân tầng (Differential LR) được áp dụng: \texttt{1e-4} cho \texttt{ResNet-18 layer4}, \texttt{5e-5} cho 2 khối cuối \texttt{ViT-B/16}, và \texttt{1e-3} cho tầng phân loại mới.
+
+Đối với mô hình Zero-shot CLIP, xác suất dự đoán được tính toán trực tiếp không qua huấn luyện thông qua độ tương đồng Cosine chuẩn hóa nhiệt độ giữa embedding ảnh $\mathbf{f}_I$ và embedding câu nhắc văn bản $\mathbf{w}_c$:
+\begin{equation}
+  p(y = c \mid I) = \frac{\exp\left(\tau \cdot \frac{\mathbf{f}_I \cdot \mathbf{w}_c}{\|\mathbf{f}_I\|_2 \|\mathbf{w}_c\|_2}\right)}{\sum_{k=1}^K \exp\left(\tau \cdot \frac{\mathbf{f}_I \cdot \mathbf{w}_k}{\|\mathbf{f}_I\|_2 \|\mathbf{w}_k\|_2}\right)}
+  \label{eq:clip_zeroshot}
+\end{equation}
+với $\tau$ là tham số nhiệt độ học được từ CLIP.
 
 \subsection{Động học quá trình huấn luyện}
 Theo dõi đường cong mất mát và độ chính xác theo từng epoch cho thấy sự khác biệt rõ rệt về tốc độ hội tụ giữa hai nhóm mô hình. Ở nhóm huấn luyện từ đầu (\Cref{fig:img_train_scratch}), \texttt{SimpleBaselineCNN} tăng đều độ chính xác Validation từ 73,55\% (epoch 1) lên 86,18\% (epoch 10) với tốc độ nhanh (~45 giây/epoch), nhưng chạm trần khả năng biểu diễn do thiếu kết nối tắt. \texttt{ResNet-18 (From Scratch)} khởi đầu chậm hơn ở epoch 1 (Val Accuracy 66,19\% do số lượng tham số gấp 26 lần), dao động nhẹ ở các epoch giữa trước khi hội tụ mượt về 89,93\% ở epoch 12 (Train Accuracy 91,40\%, chưa có dấu hiệu quá khớp nặng).
@@ -117,7 +134,7 @@ Ngược lại, các mô hình tận dụng trọng số ImageNet (\Cref{fig:img
   \label{fig:img_benchmark}
 \end{figure}
 
-Bốn trục đối chiếu cho thấy những quy luật rõ ràng. Thứ nhất, trên cùng kiến trúc \texttt{ResNet-18}, mở khóa tinh chỉnh \texttt{layer4} nâng độ chính xác từ 89,40\% (\textit{Scratch}) và 89,87\% (\textit{Linear Probe}) lên \textbf{93,90\%}, đồng thời giảm thời gian huấn luyện so với tự học từ đầu (439,2 giây so với 577,9 giây). Thứ hai, \texttt{ViT-B/16 (Fine-tune)} đạt đỉnh hiệu năng ở mức \textbf{94,87\%} (Macro-F1 94,98\%) nhờ cơ chế \textit{Self-Attention} nắm bắt tốt bố cục toàn ảnh, nhưng phải đánh đổi bằng độ trễ suy luận gấp 3,27 lần (11,20 so với 3,42 ms/ảnh) và bộ nhớ VRAM gấp 3,02 lần so với \texttt{ResNet-18 (Fine-tune)}. Thứ ba, không cần bất kỳ mẫu huấn luyện có nhãn nào, \texttt{CLIP ViT-B/32} đạt 93,00\% với câu nhắc đơn và tăng lên \textbf{93,43\%} khi dùng \textit{Prompt Ensemble} — vượt hơn 3,5 điểm phần trăm so với \texttt{ResNet-18 Linear Probe}.
+Bốn trục đối chiếu cho thấy những quy luật rõ ràng. Thứ nhất, trên cùng kiến trúc \texttt{ResNet-18}, mở khóa tinh chỉnh \texttt{layer4} nâng độ chính xác từ 89,40\% (Scratch) và 89,87\% (Linear Probe) lên 93,90\%, đồng thời giảm thời gian huấn luyện so với tự học từ đầu (439,2 giây so với 577,9 giây). Thứ hai, \texttt{ViT-B/16 (Fine-tune)} đạt đỉnh hiệu năng ở mức 94,87\% (Macro-F1 94,98\%) nhờ cơ chế \textit{Self-Attention} nắm bắt tốt bố cục toàn ảnh, nhưng phải đánh đổi bằng độ trễ suy luận gấp 3,27 lần (11,20 so với 3,42 ms/ảnh) và bộ nhớ VRAM gấp 3,02 lần so với \texttt{ResNet-18 (Fine-tune)}. Thứ ba, không cần bất kỳ mẫu huấn luyện có nhãn nào, \texttt{CLIP ViT-B/32} đạt 93,00\% với câu nhắc đơn và tăng lên 93,43\% khi dùng \textit{Prompt Ensemble} — vượt hơn 3,5 điểm phần trăm so với \texttt{ResNet-18 Linear Probe}.
 
 \subsubsection{Phân tích F1 theo lớp, ma trận nhầm lẫn và sai số bổ trợ}
 \Cref{tab:img_f1_perclass} và \Cref{fig:img_cm} cho thấy các họ kiến trúc khác nhau có thế mạnh bổ trợ rõ rệt theo từng loại cảnh quan. \texttt{ViT-B/16 (Fine-tune)} dẫn đầu ở bốn lớp \textit{forest} (99,68\%), \textit{buildings} (94,87\%), \textit{mountain} (91,22\%) và \textit{glacier} (90,93\%), trong khi \texttt{CLIP (Zero-shot Ensemble)} lại đạt F1 cao nhất toàn bảng ở hai lớp \textit{sea} (98,63\%) và \textit{street} (95,25\%), nhưng yếu hơn đáng kể ở cặp \textit{mountain} (86,87\%) -- \textit{glacier} (88,24\%) do thiếu điều chỉnh theo ranh giới định nghĩa nhãn riêng của tập dữ liệu.
@@ -149,7 +166,7 @@ Bốn trục đối chiếu cho thấy những quy luật rõ ràng. Thứ nhấ
   \label{fig:img_cm}
 \end{figure}
 
-Kiểm tra lỗi của \texttt{ResNet-18 (Fine-tune)} (183 ca sai trên 3.000 ảnh) khớp hoàn toàn với dự báo từ bước EDA: năm cặp nhầm lẫn lớn nhất gồm \textit{mountain $\rightarrow$ glacier} (45 ảnh, 8,57\%), \textit{glacier $\rightarrow$ mountain} (39 ảnh, 7,05\%), \textit{street $\rightarrow$ buildings} (31 ảnh, 6,19\%), \textit{buildings $\rightarrow$ street} (24 ảnh, 5,49\%) và \textit{glacier $\rightarrow$ sea} (14 ảnh, 2,53\%). Đáng chú ý, phân tích chéo trên 183 ca đoán sai này cho thấy \texttt{ViT-B/16 (Fine-tune)} dự đoán đúng lại tới \textbf{80/183 ca (43,7\%)} và \texttt{CLIP (Ensemble)} dự đoán đúng lại \textbf{93/183 ca (50,8\%)}, gợi mở tiềm năng kết hợp dự đoán đa kiến trúc (\textit{ensembling}) để khắc phục sai số riêng lẻ. Khảo sát các mẫu đoán sai với độ tự tin cao nhất (\Cref{fig:img_errors}) cũng cho thấy nhiều ảnh thực tế chứa đồng thời cả hai đối tượng (núi phủ tuyết dày hoặc góc phố chụp cận mặt tiền công trình), gây nhập nhằng ngay cả với người quan sát.
+Kiểm tra lỗi của \texttt{ResNet-18 (Fine-tune)} (183 ca sai trên 3.000 ảnh) khớp hoàn toàn với dự báo từ bước EDA: năm cặp nhầm lẫn lớn nhất gồm \textit{mountain $\rightarrow$ glacier} (45 ảnh, 8,57\%), \textit{glacier $\rightarrow$ mountain} (39 ảnh, 7,05\%), \textit{street $\rightarrow$ buildings} (31 ảnh, 6,19\%), \textit{buildings $\rightarrow$ street} (24 ảnh, 5,49\%) và \textit{glacier $\rightarrow$ sea} (14 ảnh, 2,53\%). Đáng chú ý, phân tích chéo trên 183 ca đoán sai này cho thấy \texttt{ViT-B/16 (Fine-tune)} dự đoán đúng lại tới 80/183 ca (43,7\%) và \texttt{CLIP (Ensemble)} dự đoán đúng lại 93/183 ca (50,8\%), gợi mở tiềm năng kết hợp dự đoán đa kiến trúc (ensembling) để khắc phục sai số riêng lẻ. Khảo sát các mẫu đoán sai với độ tự tin cao nhất (\Cref{fig:img_errors}) cũng cho thấy nhiều ảnh thực tế chứa đồng thời cả hai đối tượng (núi phủ tuyết dày hoặc góc phố chụp cận mặt tiền công trình), gây nhập nhằng ngay cả với người quan sát.
 
 \begin{figure}[H]
   \centering

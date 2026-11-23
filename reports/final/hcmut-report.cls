@@ -64,6 +64,17 @@
 \raggedbottom
 \renewcommand{\arraystretch}{1.2}
 
+\setlength{\parindent}{1.27cm}
+\setlength{\parskip}{3pt plus 1pt minus 1pt}
+
+% Format paragraph as display heading (level 4, with line break and bold)
+\renewcommand{\paragraph}{%
+  \@startsection{paragraph}{4}{\z@}%
+  {1.5ex \@plus 0.5ex \@minus 0.2ex}%
+  {0.5ex \@plus 0.2ex}%
+  {\normalfont\normalsize\bfseries}%
+}
+
 % Set depth of numbering for sections and table of contents
 \setcounter{secnumdepth}{3}
 \setcounter{tocdepth}{3}
@@ -94,45 +105,18 @@
 % unless a unit is given
 %\setlength{\unitlength}{1pt}
 
-\if@twoside
-  \fancyhead[EL]{
-    \bfseries
-    \begin{tabular}{rl}
-      \begin{picture}(25pt,15pt)
-        \put(0,-8pt){\includegraphics[width=20pt]{graphics/hcmut.png}}
-      \end{picture}
-      \begin{tabular}{l}
-        \ttfamily\@uniname \\
-        \ttfamily\@deptname \\
-      \end{tabular}
+\fancyhead[L]{
+  \bfseries
+  \begin{tabular}{rl}
+    \begin{picture}(25pt,15pt)
+      \put(0,-8pt){\includegraphics[width=20pt]{graphics/hcmut.png}}
+    \end{picture}
+    \begin{tabular}{l}
+      \ttfamily\@uniname \\
+      \ttfamily\@deptname \\
     \end{tabular}
-  }
-  \fancyhead[OR]{
-    \bfseries
-    \begin{tabular}{rl}
-      \begin{tabular}{r}
-        \ttfamily\@uniname \\
-        \ttfamily\@deptname \\
-      \end{tabular}
-      \begin{picture}(25pt,15pt)
-        \put(0,-8pt){\includegraphics[width=20pt]{graphics/hcmut.png}}
-      \end{picture}
-    \end{tabular}
-  }
-\else
-  \fancyhead[R]{
-    \bfseries
-    \begin{tabular}{rl}
-      \begin{tabular}{r}
-        \ttfamily\@uniname \\
-        \ttfamily\@deptname \\
-      \end{tabular}
-      \begin{picture}(25pt,15pt)
-        \put(0,-8pt){\includegraphics[width=20pt]{graphics/hcmut.png}}
-      \end{picture}
-    \end{tabular}
-  }
-\fi
+  \end{tabular}
+}
 
 \fancyfoot[C]{\thepage}
 
@@ -152,9 +136,7 @@
     \vfill
     \bfseries
     \begin{tabular}{c}
-      \Large\@coursename                                 \\
-      {}                                                 \\
-      \midrule                                           \\
+      \toprule
       {}                                                 \\
       \Large\@reporttype                                 \\
       {}                                                 \\
