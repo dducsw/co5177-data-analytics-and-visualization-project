@@ -8,7 +8,7 @@
 
     <meta
         name="description"
-        content="Bài tập lớn thị giác máy tính: Intel Image Classification (Kaggle ~25.000 ảnh) - Group 6."
+        content="Phân loại ảnh cảnh quan Intel Image Classification: đối chiếu SimpleCNN, ResNet-18, ViT-B/16, CLIP và Grad-CAM - Group 6."
     >
 
     <link rel="stylesheet" href="../../css/base.css">
@@ -66,41 +66,50 @@
                 <h1>Intel Image Classification</h1>
 
                 <p class="page-hero-desc">
-                    Thị giác máy tính (Computer Vision) và học sâu (Deep Learning) nhận diện và phân loại ảnh phong cảnh tự nhiên đa lớp trên tập dữ liệu ~25.000 hình ảnh từ Intel &amp; Kaggle.
+                    Đối chiếu có kiểm soát 7 cấu hình phân loại ảnh cảnh quan qua 4 trục: Huấn luyện từ đầu, Linear Probe, Fine-tuning (ResNet-18, ViT-B/16), Zero-shot CLIP và giải thích vùng chú ý bằng Grad-CAM.
                 </p>
 
                 <div class="meta-pills">
                     <div class="pill">
-                        <strong>Lĩnh vực:</strong> Computer Vision / Deep Learning
+                        <strong>Tập dữ liệu:</strong> Intel Image (Kaggle)
                     </div>
                     <div class="pill">
-                        <strong>Dạng bài toán:</strong> Multi-class Scene Classification
+                        <strong>Quy mô:</strong> 17.034 ảnh RGB (14.034 Train / 3.000 Test)
                     </div>
                     <div class="pill">
-                        <strong>Quy mô:</strong> ~25.000 hình ảnh (150×150 px)
+                        <strong>Phần cứng:</strong> Tesla T4 GPU
                     </div>
                     <div class="pill pill-highlight">
-                        <strong>Số lượng lớp:</strong> 6 Lớp cảnh quan tự nhiên
+                        <strong>ViT-B/16 Test:</strong> 94,87% Acc · ResNet-18 FT: 93,90% (3,42 ms/ảnh)
                     </div>
                 </div>
 
                 <div class="page-actions">
                     <a
-                        href="https://www.kaggle.com/datasets/puneet6060/intel-image-classification"
+                        href="https://github.com/dducsw/co5177-data-analytics-and-visualization-project/blob/main/images/intel-image-classification.ipynb"
                         class="btn btn-primary"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        Tập dữ liệu trên Kaggle ↗
+                        Notebook (.ipynb) ↗
                     </a>
 
                     <a
-                        href="https://drive.google.com/drive/u/1/folders/1tvKO5ngr-TreH7GLJ77_DFR3ilTZoxUP"
+                        href="../../assets/Group6-report.pdf"
                         class="btn btn-outline"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        Google Drive dữ liệu ↗
+                        Báo cáo PDF ↗
+                    </a>
+
+                    <a
+                        href="https://www.kaggle.com/datasets/puneet6060/intel-image-classification"
+                        class="btn btn-outline"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Dataset Kaggle ↗
                     </a>
 
                     <a
@@ -109,10 +118,7 @@
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="margin-right: 7px;">
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
-                        </svg>
-                        Thư mục mã nguồn /images ↗
+                        Mã nguồn /images ↗
                     </a>
                 </div>
             </div>
@@ -122,147 +128,262 @@
         <section class="section">
             <div class="container">
                 <div class="detail-layout">
-                    <!-- CARD 1: OVERVIEW -->
-                        <div class="detail-card">
-                            <div class="detail-card-title">
-                                <h3>01. Tổng quan bài toán</h3>
-                                <span class="card-badge">Computer Vision</span>
-                            </div>
-                            <p>
-                                Phân loại cảnh quan tự nhiên (Natural Scene Classification) là một trong những bài toán nền tảng trong lĩnh vực Thị giác máy tính. Nhiệm vụ đặt ra là huấn luyện mô hình mạng nơ-ron tích chập (Convolutional Neural Networks - CNN) có khả năng phân biệt chính xác các quang cảnh tự nhiên và nhân tạo với góc chụp, ánh sáng và điều kiện thời tiết đa dạng.
-                            </p>
-                            <p>
-                                Bài tập lớn này giải quyết bài toán phân loại đa lớp (<strong>Multi-class Classification</strong>) trên 6 nhãn cảnh quan, từ thiết lập đường ống xử lý dữ liệu ảnh, áp dụng tăng cường dữ liệu (Data Augmentation) cho đến triển khai mô hình CNN tùy biến và Transfer Learning với các kiến trúc tiền huấn luyện tân tiến.
-                            </p>
 
-                            <div class="highlight-box">
-                                <strong>Thách thức thị giác:</strong> Một số lớp cảnh quan có tính tương đồng trực quan rất cao trong tự nhiên (ví dụ giữa <code>glacier</code> và <code>mountain</code> khi núi phủ tuyết trắng, hoặc <code>street</code> và <code>buildings</code> khi góc chụp hẹp). Đòi hỏi mô hình phải học được các đặc trưng biểu diễn mức cao (high-level feature representations).
+                    <!-- CARD 1: OVERVIEW & KPI -->
+                    <div class="detail-card">
+                        <div class="detail-card-title">
+                            <h3>01. Tổng quan bài toán &amp; Chỉ số chính</h3>
+                            <span class="card-badge">Computer Vision</span>
+                        </div>
+                        <p>
+                            Thực nghiệm giải quyết bài toán phân loại 6 lớp cảnh quan trên <strong>17.034 ảnh màu RGB</strong> (tách Stratified Split từ <code>seg_train</code> thành 11.928 ảnh Train / 2.106 ảnh Validation, giữ nguyên 3.000 ảnh <code>seg_test</code> độc lập). Toàn bộ mô hình có giám sát dùng <code>CrossEntropyLoss(label_smoothing=0.05)</code>, tối ưu bằng <code>AdamW + CosineAnnealingLR</code> và được đánh giá đồng thời cả độ chính xác lẫn chi phí triển khai (VRAM, độ trễ suy luận ms/ảnh).
+                        </p>
+
+                        <div class="kpi-grid">
+                            <div class="kpi-card kpi-accent">
+                                <span class="kpi-label">ViT-B/16 (Fine-tune)</span>
+                                <span class="kpi-value">94,87%</span>
+                                <span class="kpi-sub">Macro-F1 94,98% · Latency 11,20 ms/ảnh</span>
+                            </div>
+                            <div class="kpi-card">
+                                <span class="kpi-label">ResNet-18 (Fine-tune)</span>
+                                <span class="kpi-value">93,90%</span>
+                                <span class="kpi-sub">Cân bằng tối ưu: chỉ 3,42 ms/ảnh · 753 MB VRAM</span>
+                            </div>
+                            <div class="kpi-card">
+                                <span class="kpi-label">CLIP ViT-B/32 (Zero-shot)</span>
+                                <span class="kpi-value">93,43%</span>
+                                <span class="kpi-sub">0 mẫu train · Sửa đúng 93/183 ca sai của ResNet-18</span>
+                            </div>
+                            <div class="kpi-card">
+                                <span class="kpi-label">SimpleBaselineCNN</span>
+                                <span class="kpi-value">85,80%</span>
+                                <span class="kpi-sub">0,42M tham số · Nhanh nhất (1,76 ms/ảnh)</span>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- CARD 2: DATASET -->
-                        <div class="detail-card">
-                            <div class="detail-card-title">
-                                <h3>02. Tập dữ liệu Intel Image</h3>
-                                <span class="card-badge">Dataset</span>
-                            </div>
-                            <p>
-                                Bộ dữ liệu ban đầu được tổ chức bởi Intel cho cuộc thi phân loại hình ảnh và được cộng đồng Kaggle chia sẻ rộng rãi:
-                            </p>
-                            <div class="resource-list" style="margin-bottom: 14px;">
-                                <a
-                                    href="https://www.kaggle.com/datasets/puneet6060/intel-image-classification"
-                                    class="resource-item"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    <span><strong>Intel Image Classification</strong> · Kaggle (~25k Images)</span>
-                                    <span class="res-arrow">→</span>
-                                </a>
-                                <a
-                                    href="https://drive.google.com/drive/u/1/folders/1tvKO5ngr-TreH7GLJ77_DFR3ilTZoxUP"
-                                    class="resource-item"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    <span><strong>Thư mục Google Drive Dataset</strong> · Google Drive</span>
-                                    <span class="res-arrow">→</span>
-                                </a>
-                            </div>
-                            <p>
-                                Cấu trúc phân chia tập dữ liệu chuẩn:
-                            </p>
-                            <ul style="padding-left: 20px; color: #4a5c73; font-size: 13px; line-height: 1.8;">
-                                <li><strong>Tập huấn luyện (seg_train):</strong> ~14.034 hình ảnh phân bổ đều qua 6 thư mục nhãn.</li>
-                                <li><strong>Tập kiểm thử (seg_test):</strong> ~3.000 hình ảnh sử dụng đánh giá hiệu năng mô hình.</li>
-                                <li><strong>Tập dự đoán thực tế (seg_pred):</strong> ~7.301 hình ảnh chưa gán nhãn mô phỏng dữ liệu ngoài đời.</li>
-                                <li><strong>Độ phân giải chuẩn:</strong> 150 × 150 pixels, định dạng ảnh màu 3 kênh RGB.</li>
-                            </ul>
+                    <!-- CARD 2: TARGET CLASSES -->
+                    <div class="detail-card">
+                        <div class="detail-card-title">
+                            <h3>02. Tập dữ liệu &amp; 6 Lớp cảnh quan</h3>
+                            <span class="card-badge">14.034 Train / 3.000 Test</span>
                         </div>
-
-                        <!-- CARD 3: TARGET CLASSES -->
-                        <div class="detail-card">
-                            <div class="detail-card-title">
-                                <h3>03. 6 Lớp mục tiêu (Target Classes)</h3>
-                                <span class="card-badge">6 Classes</span>
+                        <p>
+                            Kiểm tra toàn vẹn ghi nhận 0 tệp lỗi, 100% ảnh ở hệ 3 kênh RGB, với 48 ảnh Train (0,34%) và 7 ảnh Test (0,23%) có chiều cao khác chuẩn 150×150 px được chuẩn hóa khi vào pipeline (<code>150×150</code> cho mô hình Scratch; <code>224×224</code> chuẩn ImageNet cho mô hình Pretrained).
+                        </p>
+                        <div class="class-grid" style="grid-template-columns: repeat(3, 1fr);">
+                            <div class="class-item">
+                                <span class="class-item-num">2.191 Train · 437 Test</span>
+                                <span class="class-item-name">buildings</span>
+                                <span class="class-item-desc">Tòa nhà, công trình kiến trúc đô thị (ViT F1: 94,87%).</span>
                             </div>
-                            <p>
-                                6 danh mục quang cảnh tự nhiên và công trình cần nhận diện:
-                            </p>
-                            <div class="class-grid" style="grid-template-columns: repeat(3, 1fr);">
-                                <div class="class-item">
-                                    <span class="class-item-num">Lớp 01</span>
-                                    <span class="class-item-name">buildings</span>
-                                    <span class="class-item-desc">Nhà cao tầng, công trình kiến trúc, khu đô thị.</span>
-                                </div>
-                                <div class="class-item">
-                                    <span class="class-item-num">Lớp 02</span>
-                                    <span class="class-item-name">forest</span>
-                                    <span class="class-item-desc">Rừng cây, thảm thực vật cây cối rậm rạp xanh tươi.</span>
-                                </div>
-                                <div class="class-item">
-                                    <span class="class-item-num">Lớp 03</span>
-                                    <span class="class-item-name">glacier</span>
-                                    <span class="class-item-desc">Sông băng, tảng băng trôi, đồng tuyết vùng cực.</span>
-                                </div>
-                                <div class="class-item">
-                                    <span class="class-item-num">Lớp 04</span>
-                                    <span class="class-item-name">mountain</span>
-                                    <span class="class-item-desc">Núi non hiểm trở, vách đá, rặng núi cao nguyên.</span>
-                                </div>
-                                <div class="class-item">
-                                    <span class="class-item-num">Lớp 05</span>
-                                    <span class="class-item-name">sea</span>
-                                    <span class="class-item-desc">Biển, đại dương, bờ biển, làn sóng và mặt nước.</span>
-                                </div>
-                                <div class="class-item">
-                                    <span class="class-item-num">Lớp 06</span>
-                                    <span class="class-item-name">street</span>
-                                    <span class="class-item-desc">Đường phố đô thị, phương tiện giao thông, làn đường.</span>
-                                </div>
+                            <div class="class-item">
+                                <span class="class-item-num">2.271 Train · 474 Test</span>
+                                <span class="class-item-name">forest</span>
+                                <span class="class-item-desc">Rừng cây, tán lá xanh rậm (ViT F1: 99,68%).</span>
+                            </div>
+                            <div class="class-item">
+                                <span class="class-item-num">2.404 Train · 553 Test</span>
+                                <span class="class-item-name">glacier</span>
+                                <span class="class-item-desc">Sông băng, đồng tuyết (ViT F1: 90,93%).</span>
+                            </div>
+                            <div class="class-item">
+                                <span class="class-item-num">2.512 Train · 525 Test</span>
+                                <span class="class-item-name">mountain</span>
+                                <span class="class-item-desc">Núi đá, sườn dốc cao nguyên (ViT F1: 91,22%).</span>
+                            </div>
+                            <div class="class-item">
+                                <span class="class-item-num">2.274 Train · 510 Test</span>
+                                <span class="class-item-name">sea</span>
+                                <span class="class-item-desc">Mặt biển, đường chân trời (CLIP F1: 98,63%).</span>
+                            </div>
+                            <div class="class-item">
+                                <span class="class-item-num">2.382 Train · 501 Test</span>
+                                <span class="class-item-name">street</span>
+                                <span class="class-item-desc">Đường phố, công trình hai bên (CLIP F1: 95,25%).</span>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- CARD 4: PIPELINE -->
-                        <div class="detail-card">
-                            <div class="detail-card-title">
-                                <h3>04. Cấu trúc nội dung thực hiện</h3>
-                                <span class="card-badge">Google Colab .ipynb</span>
+                    <!-- CARD 3: PIPELINE -->
+                    <div class="detail-card">
+                        <div class="detail-card-title">
+                            <h3>03. 4 Trục đối chiếu thực nghiệm</h3>
+                            <span class="card-badge">PyTorch · Tesla T4</span>
+                        </div>
+                        <div class="pipeline-list">
+                            <div class="pipeline-step">
+                                <div class="pipeline-step-idx">1</div>
+                                <div class="pipeline-step-content">
+                                    <h4>From Scratch (150×150, chuẩn hóa theo Train)</h4>
+                                    <p><code>SimpleBaselineCNN</code> (0,42M tham số, 10 epochs) đối chiếu với <code>ResNet-18</code> (11,18M tham số, 12 epochs) học hoàn toàn từ đầu.</p>
+                                </div>
                             </div>
-                            <p style="font-size: 13px; color: #5d7088; margin-bottom: 14px;">
-                                Quy trình chuẩn 4 bước bắt buộc theo đặc tả yêu cầu của đề tài (kết hợp yêu cầu dữ liệu ảnh tại Mục 4.4):
-                            </p>
-                            <div class="pipeline-list">
-                                <div class="pipeline-step">
-                                    <div class="pipeline-step-idx">1</div>
-                                    <div class="pipeline-step-content">
-                                        <h4>Mô tả tập dữ liệu</h4>
-                                        <p>Sử dụng Markdown để mô tả thông tin tổng quan. Dùng Plotly, Matplotlib hoặc Seaborn để trực quan dữ liệu ảnh mẫu và phân phối các lớp.</p>
-                                    </div>
+                            <div class="pipeline-step">
+                                <div class="pipeline-step-idx">2</div>
+                                <div class="pipeline-step-content">
+                                    <h4>Linear Probe vs Partial Fine-tuning (ResNet-18, 224×224)</h4>
+                                    <p>Đóng băng backbone chỉ train tầng <code>fc</code> (3.078 tham số, 5 epochs) so với mở khóa <code>layer4+fc</code> bằng Differential LR (<code>1e-4</code> / <code>1e-3</code>, 6 epochs).</p>
                                 </div>
-                                <div class="pipeline-step">
-                                    <div class="pipeline-step-idx">2</div>
-                                    <div class="pipeline-step-content">
-                                        <h4>Chuẩn bị dữ liệu</h4>
-                                        <p>Tiền xử lý bằng NumPy/Pandas/OpenCV; áp dụng Data Augmentation (horizontal flip, random crop/resize, color jitter, normalization...); chia dữ liệu thành train, validation và test (tránh data leakage).</p>
-                                    </div>
+                            </div>
+                            <div class="pipeline-step">
+                                <div class="pipeline-step-idx">3</div>
+                                <div class="pipeline-step-content">
+                                    <h4>CNN vs Vision Transformer (ViT-B/16)</h4>
+                                    <p>Mở khóa 2 khối Encoder cuối và đầu phân loại của <code>ViT-B/16</code> (14,18M tham số cập nhật / 85,80M tổng, 6 epochs) để đánh giá cơ chế Self-Attention.</p>
                                 </div>
-                                <div class="pipeline-step">
-                                    <div class="pipeline-step-idx">3</div>
-                                    <div class="pipeline-step-content">
-                                        <h4>Phân tích và mô hình hóa</h4>
-                                        <p>Huấn luyện mô hình Scikit-learn và mô hình Pretrained (ResNet, MobileNet) theo dạng Feature Extractor hoặc Fine-tuning nhẹ; so sánh kết quả giữa các mô hình hoặc tham số khác nhau.</p>
-                                    </div>
-                                </div>
-                                <div class="pipeline-step">
-                                    <div class="pipeline-step-idx">4</div>
-                                    <div class="pipeline-step-content">
-                                        <h4>Tổng kết và mở rộng</h4>
-                                        <p>Đánh giá kết quả qua độ chính xác, biểu đồ, confusion matrix, ...; phân tích mẫu dự đoán sai; trình bày nhận xét, hạn chế và đề xuất hướng mở rộng.</p>
-                                    </div>
+                            </div>
+                            <div class="pipeline-step">
+                                <div class="pipeline-step-idx">4</div>
+                                <div class="pipeline-step-content">
+                                    <h4>Zero-shot CLIP (ViT-B/32) &amp; Grad-CAM XAI</h4>
+                                    <p>Thử nghiệm phân loại không huấn luyện qua Basic Prompt vs Prompt Ensemble (5 mẫu câu) và trực quan hóa vùng chú ý trên <code>layer4[-1]</code> bằng Grad-CAM.</p>
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- CARD 4: EDA & TRAINING CURVES -->
+                    <div class="detail-card">
+                        <div class="detail-card-title">
+                            <h3>04. Khám phá đặc trưng &amp; Động học huấn luyện</h3>
+                            <span class="card-badge">EDA &amp; Curves</span>
+                        </div>
+                        <p>
+                            Phép chiếu t-SNE trên đặc trưng màu RGB cho thấy <em>forest</em> tách biệt rõ, trong khi <em>mountain–glacier</em> và <em>buildings–street</em> chồng lấn nặng. Trên đường cong huấn luyện, các mô hình pretrained hội tụ ngay từ epoch đầu tiên (ResNet-18 FT đạt 94,06% Val Acc ở epoch 6; ViT-B/16 đạt đỉnh 94,59% ở epoch 5).
+                        </p>
+                        <div class="figure-grid">
+                            <figure class="figure-card">
+                                <img src="../../assets/figures/image/c11_f0.png" alt="Phân phối số lượng ảnh theo 6 lớp" loading="lazy">
+                                <figcaption><strong>Phân bố 6 lớp:</strong> Số lượng mẫu đồng đều giữa các lớp (Train 2.191–2.512 ảnh; Test 437–553 ảnh).</figcaption>
+                            </figure>
+                            <figure class="figure-card">
+                                <img src="../../assets/figures/image/c25_f0.png" alt="Trực quan hóa t-SNE đặc trưng màu RGB" loading="lazy">
+                                <figcaption><strong>t-SNE màu sắc (1.200 mẫu):</strong> Màu sắc phân tách tốt <em>forest</em> nhưng không đủ tách <em>mountain–glacier</em> và <em>buildings–street</em>.</figcaption>
+                            </figure>
+                            <figure class="figure-card">
+                                <img src="../../assets/figures/image/c48_f1.png" alt="Đường cong huấn luyện ResNet-18 Fine-tune" loading="lazy">
+                                <figcaption><strong>ResNet-18 Fine-tune (6 epochs):</strong> Đạt 91,26% Val Acc ở epoch 1 và 94,06% ở epoch 6 (~73 giây/epoch).</figcaption>
+                            </figure>
+                            <figure class="figure-card">
+                                <img src="../../assets/figures/image/c48_f2.png" alt="Đường cong huấn luyện ViT-B/16 Fine-tune" loading="lazy">
+                                <figcaption><strong>ViT-B/16 Fine-tune (6 epochs):</strong> Đạt đỉnh 94,59% Val Acc ở epoch 5 nhưng tốn ~210 giây/epoch.</figcaption>
+                            </figure>
+                        </div>
+                    </div>
+
+                    <!-- CARD 5: BENCHMARK & XAI -->
+                    <div class="detail-card">
+                        <div class="detail-card-title">
+                            <h3>05. Bảng Benchmark 7 mô hình, Phân tích lỗi &amp; Grad-CAM</h3>
+                            <span class="card-badge">Test 3.000 ảnh</span>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>Mô hình</th>
+                                        <th>Hệ quy chiếu</th>
+                                        <th class="num">Trainable</th>
+                                        <th class="num">Train (s)</th>
+                                        <th class="num">VRAM (MB)</th>
+                                        <th class="num">Latency (ms)</th>
+                                        <th class="num">Test Acc (%)</th>
+                                        <th class="num">Macro-F1 (%)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="row-best">
+                                        <td>ViT-B/16 (Fine-tune)</td>
+                                        <td>Vision Transformer</td>
+                                        <td class="num">14,18M</td>
+                                        <td class="num">1.262,8</td>
+                                        <td class="num">2.276,6</td>
+                                        <td class="num">11,20</td>
+                                        <td class="num">94,87</td>
+                                        <td class="num">94,98</td>
+                                    </tr>
+                                    <tr>
+                                        <td>ResNet-18 (Fine-tune)</td>
+                                        <td>Partial Fine-tune</td>
+                                        <td class="num">8,40M</td>
+                                        <td class="num">439,2</td>
+                                        <td class="num">753,4</td>
+                                        <td class="num">3,42</td>
+                                        <td class="num">93,90</td>
+                                        <td class="num">93,99</td>
+                                    </tr>
+                                    <tr>
+                                        <td>CLIP ViT-B/32 (Ensemble)</td>
+                                        <td>Zero-shot VLM</td>
+                                        <td class="num">0</td>
+                                        <td class="num">0,0</td>
+                                        <td class="num">1.441,4</td>
+                                        <td class="num">5,17</td>
+                                        <td class="num">93,43</td>
+                                        <td class="num">93,58</td>
+                                    </tr>
+                                    <tr>
+                                        <td>CLIP ViT-B/32 (Basic)</td>
+                                        <td>Zero-shot VLM</td>
+                                        <td class="num">0</td>
+                                        <td class="num">0,0</td>
+                                        <td class="num">1.441,4</td>
+                                        <td class="num">5,08</td>
+                                        <td class="num">93,00</td>
+                                        <td class="num">93,10</td>
+                                    </tr>
+                                    <tr>
+                                        <td>ResNet-18 (Linear Probe)</td>
+                                        <td>Frozen Backbone</td>
+                                        <td class="num">3.078</td>
+                                        <td class="num">391,7</td>
+                                        <td class="num">606,9</td>
+                                        <td class="num">3,00</td>
+                                        <td class="num">89,87</td>
+                                        <td class="num">90,02</td>
+                                    </tr>
+                                    <tr>
+                                        <td>ResNet-18 (Scratch)</td>
+                                        <td>From Scratch</td>
+                                        <td class="num">11,18M</td>
+                                        <td class="num">577,9</td>
+                                        <td class="num">909,3</td>
+                                        <td class="num">2,02</td>
+                                        <td class="num">89,40</td>
+                                        <td class="num">89,50</td>
+                                    </tr>
+                                    <tr>
+                                        <td>SimpleBaselineCNN</td>
+                                        <td>From Scratch</td>
+                                        <td class="num">0,42M</td>
+                                        <td class="num">458,3</td>
+                                        <td class="num">1.048,2</td>
+                                        <td class="num">1,76</td>
+                                        <td class="num">85,80</td>
+                                        <td class="num">85,87</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="figure-grid">
+                            <figure class="figure-card figure-wide">
+                                <img src="../../assets/figures/image/c53_f0.png" alt="Benchmark Accuracy và Inference Latency của 7 mô hình" loading="lazy">
+                                <figcaption><strong>Đánh đổi hiệu năng – tốc độ:</strong> ViT-B/16 đạt đỉnh 94,87% nhưng chậm gấp 3,27× và tốn VRAM gấp 3,02× so với ResNet-18 Fine-tune (93,90%).</figcaption>
+                            </figure>
+                            <figure class="figure-card figure-wide">
+                                <img src="../../assets/figures/image/c55_f0.png" alt="Ma trận nhầm lẫn chuẩn hóa của ResNet-18, ViT-B/16 và CLIP" loading="lazy">
+                                <figcaption><strong>Ma trận nhầm lẫn:</strong> Sai số tập trung ở <em>mountain ↔ glacier</em> (8,57% / 7,05%) và <em>street ↔ buildings</em> (6,19% / 5,49%); CLIP đoán đúng lại 93/183 ca sai của ResNet-18.</figcaption>
+                            </figure>
+                            <figure class="figure-card figure-wide">
+                                <img src="../../assets/figures/image/c60_f0.png" alt="Bản đồ nhiệt Grad-CAM trên 6 lớp" loading="lazy">
+                                <figcaption><strong>Grad-CAM (XAI):</strong> Mô hình định vị chính xác tán cây (<em>forest</em>), mặt biển (<em>sea</em>), mặt tiền công trình (<em>buildings</em>) và trục đường (<em>street</em>).</figcaption>
+                            </figure>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- OTHER ASSIGNMENTS NAVIGATION -->
@@ -274,7 +395,7 @@
                             <div class="assignment-content">
                                 <span class="assignment-type">TABULAR DATA</span>
                                 <h3>Bank Account Fraud Detection</h3>
-                                <p>Phân loại đơn mở tài khoản ngân hàng gian lận (NeurIPS 2022).</p>
+                                <p>1.000.000 hồ sơ (NeurIPS 2022) · LightGBM đạt TPR@5%FPR 0,5798 và ROC-AUC 0,8986.</p>
                                 <span class="view-project">Xem chi tiết bài →</span>
                             </div>
                         </a>
@@ -284,7 +405,7 @@
                             <div class="assignment-content">
                                 <span class="assignment-type">TEXT DATA</span>
                                 <h3>Vietnamese Financial News</h3>
-                                <p>Phân loại chủ đề tin tức tài chính VnEconomy với 5 nhãn mục tiêu.</p>
+                                <p>5.000 bài báo VnEconomy (5 lớp) · LinearSVC đạt Test Macro-F1 0,9668.</p>
                                 <span class="view-project">Xem chi tiết bài →</span>
                             </div>
                         </a>
@@ -301,5 +422,6 @@
         </div>
     </footer>
 
+    <script src="../../js/lightbox.js"></script>
 </body>
 </html>

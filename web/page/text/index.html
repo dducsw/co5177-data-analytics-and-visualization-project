@@ -8,7 +8,7 @@
 
     <meta
         name="description"
-        content="Bài tập lớn phân tích dữ liệu văn bản: Vietnamese Financial News Classification (VnEconomy.vn) - Group 6."
+        content="Phân loại tin tức kinh tế tài chính tiếng Việt VnEconomy.vn (5.000 bài, 5 chuyên mục) - Group 6."
     >
 
     <link rel="stylesheet" href="../../css/base.css">
@@ -66,62 +66,59 @@
                 <h1>Vietnamese Financial News Classification</h1>
 
                 <p class="page-hero-desc">
-                    Xử lý ngôn ngữ tự nhiên (NLP) và xây dựng mô hình phân loại chủ đề tin tức kinh tế – tài chính tiếng Việt tự động thu thập từ báo điện tử VnEconomy.vn.
+                    Thu thập tự động 5.000 bài báo kinh tế – tài chính từ VnEconomy.vn, chuẩn hóa tiếng Việt, kiểm soát rò rỉ cụm bài gần trùng và đối chiếu các mô hình phân loại đa lớp.
                 </p>
 
                 <div class="meta-pills">
                     <div class="pill">
-                        <strong>Lĩnh vực:</strong> Xử lý ngôn ngữ tự nhiên (NLP)
+                        <strong>Ngữ liệu:</strong> VnEconomy.vn (Tự thu thập)
                     </div>
                     <div class="pill">
-                        <strong>Dạng bài toán:</strong> Multi-class Topic Classification
+                        <strong>Quy mô:</strong> 5.000 bài · 5 lớp cân bằng
                     </div>
                     <div class="pill">
-                        <strong>Nguồn dữ liệu:</strong> VnEconomy.vn (Tự cào qua crawler riêng)
+                        <strong>Phân chia:</strong> StratifiedGroupKFold (dup_group)
                     </div>
                     <div class="pill pill-highlight">
-                        <strong>Số lượng nhãn:</strong> 5 Chuyên mục kinh tế
+                        <strong>LinearSVC Test:</strong> Macro-F1 0,9668 · Acc 96,63%
                     </div>
                 </div>
 
                 <div class="page-actions">
                     <a
-                        href="https://vneconomy.vn/"
+                        href="https://github.com/dducsw/co5177-data-analytics-and-visualization-project/blob/main/text/text-classification.ipynb"
                         class="btn btn-primary"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        Nguồn báo VnEconomy.vn ↗
+                        Notebook (.ipynb) ↗
                     </a>
 
                     <a
-                        href="https://drive.google.com/drive/u/1/folders/1VIsnqQbnRzNnxftWnVQEZjgnp9mq5f9N"
+                        href="../../assets/Group6-report.pdf"
                         class="btn btn-outline"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        Google Drive dữ liệu ↗
+                        Báo cáo PDF ↗
                     </a>
 
                     <a
                         href="https://github.com/dducsw/co5177-data-analytics-and-visualization-project/tree/main/text/crawler"
-                        class="btn btn-dark"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="margin-right: 7px;">
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
-                        </svg>
-                        Module Crawler (GitHub) ↗
-                    </a>
-
-                    <a
-                        href="https://github.com/dducsw/co5177-data-analytics-and-visualization-project/tree/main/text"
                         class="btn btn-outline"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        Thư mục mã nguồn /text ↗
+                        Module Crawler ↗
+                    </a>
+
+                    <a
+                        href="https://github.com/dducsw/co5177-data-analytics-and-visualization-project/tree/main/text"
+                        class="btn btn-dark"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Mã nguồn /text ↗
                     </a>
                 </div>
             </div>
@@ -131,143 +128,204 @@
         <section class="section">
             <div class="container">
                 <div class="detail-layout">
-                    <!-- CARD 1: OVERVIEW -->
-                        <div class="detail-card">
-                            <div class="detail-card-title">
-                                <h3>01. Tổng quan bài toán</h3>
-                                <span class="card-badge">NLP</span>
-                            </div>
-                            <p>
-                                Tin tức tài chính đóng vai trò cốt lõi trong việc điều hướng thị trường chứng khoán, đầu tư và chính sách kinh tế. Tuy nhiên, lượng tin bài xuất bản hàng ngày là vô cùng lớn, đòi hỏi hệ thống tự động lọc, trích xuất và phân loại vào các nhóm nội dung thích hợp.
-                            </p>
-                            <p>
-                                Dự án tập trung giải quyết bài toán <strong>phân loại văn bản đa lớp (Multi-class Text Classification)</strong> cho bản tin tài chính tiếng Việt, từ khâu tự động thu thập (crawling) dữ liệu thực tế đến tiền xử lý ngôn ngữ học đặc thù của tiếng Việt và áp dụng các mô hình học máy / học sâu.
-                            </p>
 
-                            <div class="highlight-box">
-                                <strong>Đặc thù tiếng Việt trong NLP:</strong> Tiếng Việt là ngôn ngữ đơn lập, ranh giới từ không tương ứng với dấu khoảng trắng (ví dụ: "thị trường", "bất động sản", "chứng khoán" là các từ ghép mang ý nghĩa độc lập). Cần tiến hành tách từ (Word Segmentation) và chuẩn hóa bảng mã Unicode để mô hình đạt độ chuẩn xác cao nhất.
+                    <!-- CARD 1: OVERVIEW & KPI -->
+                    <div class="detail-card">
+                        <div class="detail-card-title">
+                            <h3>01. Tổng quan bài toán &amp; Chỉ số chính</h3>
+                            <span class="card-badge">Multi-class NLP</span>
+                        </div>
+                        <p>
+                            Ngữ liệu gồm <strong>5.000 bài báo</strong> (11/2025 – 11/2026) thu thập qua <code>sitemap.xml</code> của VnEconomy.vn, chia đều 1.000 bài cho mỗi chuyên mục theo chuẩn phân loại kinh tế JEL. Để tránh ảo giác hiệu năng từ các bản tin lặp định kỳ (giá vàng, blog chứng khoán) và văn phong phóng viên chuyên trách, dữ liệu được cô lập bằng <code>StratifiedGroupKFold</code> theo mã nhóm gần trùng (3.933 bài Train/Val, 1.067 bài Test độc lập).
+                        </p>
+
+                        <div class="kpi-grid">
+                            <div class="kpi-card kpi-accent">
+                                <span class="kpi-label">LinearSVC (Test Macro-F1)</span>
+                                <span class="kpi-value">0,9668</span>
+                                <span class="kpi-sub">Accuracy 96,63% · CI 95% [0,956; 0,977]</span>
+                            </div>
+                            <div class="kpi-card">
+                                <span class="kpi-label">Test đã khử trùng</span>
+                                <span class="kpi-value">0,9611</span>
+                                <span class="kpi-sub">Giữ vững hiệu năng trên 939 bài độc lập</span>
+                            </div>
+                            <div class="kpi-card">
+                                <span class="kpi-label">Cụm bài gần trùng</span>
+                                <span class="kpi-value">18 nhóm (248 bài)</span>
+                                <span class="kpi-sub">Chiếm 5,0% tập dữ liệu (Cosine ≥ 0,90)</span>
+                            </div>
+                            <div class="kpi-card">
+                                <span class="kpi-label">Cô lập theo tác giả</span>
+                                <span class="kpi-value">0,8519 ± 0,103</span>
+                                <span class="kpi-sub">222 tác giả (10 người đầu viết 46,5% số bài)</span>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- CARD 2: DATASET & CRAWLER -->
-                        <div class="detail-card">
-                            <div class="detail-card-title">
-                                <h3>02. Tập dữ liệu &amp; Module Crawler</h3>
-                                <span class="card-badge">Data Collection</span>
-                            </div>
-                            <p>
-                                Bộ dữ liệu được nhóm tự xây dựng độc lập thông qua module crawler chuyên biệt đặt tại <a href="https://github.com/dducsw/co5177-data-analytics-and-visualization-project/tree/main/text/crawler" target="_blank" rel="noopener noreferrer" style="color: #1463d8; font-weight: 600;">text/crawler/</a>, thu thập trực tiếp từ trang tin tức kinh tế hàng đầu Việt Nam: <strong>VnEconomy.vn</strong>.
-                            </p>
-                            <div class="resource-list" style="margin-bottom: 14px;">
-                                <a
-                                    href="https://vneconomy.vn/"
-                                    class="resource-item"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    <span><strong>VnEconomy.vn</strong> · Tạp chí điện tử Kinh tế Việt Nam</span>
-                                    <span class="res-arrow">→</span>
-                                </a>
-                                <a
-                                    href="https://drive.google.com/drive/u/1/folders/1VIsnqQbnRzNnxftWnVQEZjgnp9mq5f9N"
-                                    class="resource-item"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    <span><strong>Thư mục Google Drive Dataset</strong> · Google Drive</span>
-                                    <span class="res-arrow">→</span>
-                                </a>
-                            </div>
-                            <p>
-                                Các trường dữ liệu chính được trích xuất từ mỗi bài báo bao gồm:
-                            </p>
-                            <ul style="padding-left: 20px; color: #4a5c73; font-size: 13px; line-height: 1.8;">
-                                <li><strong>Tiêu đề (Title):</strong> Tóm tắt ngắn gọn nội dung trọng tâm của bản tin.</li>
-                                <li><strong>Mô tả ngắn (Sapo):</strong> Đoạn tóm tắt mở đầu bài báo mang nhiều từ khóa phân loại.</li>
-                                <li><strong>Nội dung đầy đủ (Content):</strong> Thân bài báo đã được bóc tách thẻ HTML và làm sạch.</li>
-                                <li><strong>Thời gian xuất bản (Datetime):</strong> Ngày giờ phát hành bản tin.</li>
-                                <li><strong>Chuyên mục gốc (Label / Category):</strong> Nhãn thực tế dùng làm ground truth cho bài toán học có giám sát.</li>
-                            </ul>
+                    <!-- CARD 2: TARGET LABELS -->
+                    <div class="detail-card">
+                        <div class="detail-card-title">
+                            <h3>02. 5 Chuyên mục mục tiêu &amp; Độ giao thoa</h3>
+                            <span class="card-badge">1.000 bài / lớp</span>
                         </div>
-
-                        <!-- CARD 3: TARGET LABELS -->
-                        <div class="detail-card">
-                            <div class="detail-card-title">
-                                <h3>03. 5 Nhãn mục tiêu (Target Labels)</h3>
-                                <span class="card-badge">5 Classes</span>
+                        <p>
+                            Ngữ liệu được làm sạch tuyệt đối (0 giá trị thiếu, 0 trùng ID/URL) và ánh xạ về 5 lớp kinh tế – tài chính:
+                        </p>
+                        <div class="class-grid">
+                            <div class="class-item">
+                                <span class="class-item-num">Nhãn 01 · Test F1 0,957</span>
+                                <span class="class-item-name">Bất động sản</span>
+                                <span class="class-item-desc">Quy hoạch đô thị, dự án nhà ở, pháp lý đất đai (đô_thị, dự_án).</span>
                             </div>
-                            <p>
-                                Bài toán phân loại văn bản chia thành 5 nhóm chủ đề kinh tế tài chính chính yếu:
-                            </p>
-                            <div class="class-grid">
-                                <div class="class-item">
-                                    <span class="class-item-num">Nhãn 01</span>
-                                    <span class="class-item-name">Chứng khoán</span>
-                                    <span class="class-item-desc">Stock Market: VN-Index, giao dịch cổ phiếu, trái phiếu, thanh khoản thị trường, doanh nghiệp niêm yết.</span>
-                                </div>
-                                <div class="class-item">
-                                    <span class="class-item-num">Nhãn 02</span>
-                                    <span class="class-item-name">Tài chính</span>
-                                    <span class="class-item-desc">Finance &amp; Banking: Ngân hàng thương mại, lãi suất điều hành, tỷ giá ngoại tệ, chính sách tiền tệ.</span>
-                                </div>
-                                <div class="class-item">
-                                    <span class="class-item-num">Nhãn 03</span>
-                                    <span class="class-item-name">Bất động sản</span>
-                                    <span class="class-item-desc">Real Estate: Thị trường nhà đất, quy hoạch đô thị, phân khúc căn hộ, nguồn cung và pháp lý dự án.</span>
-                                </div>
-                                <div class="class-item">
-                                    <span class="class-item-num">Nhãn 04</span>
-                                    <span class="class-item-name">Thế giới</span>
-                                    <span class="class-item-desc">World Economy: Kinh tế quốc tế, chính sách Fed/ECB, thương mại toàn cầu, giá dầu và xung đột kinh tế.</span>
-                                </div>
-                                <div class="class-item">
-                                    <span class="class-item-num">Nhãn 05</span>
-                                    <span class="class-item-name">Thị trường</span>
-                                    <span class="class-item-desc">Domestic Market: Hàng hóa tiêu dùng, xuất nhập khẩu nông sản, chuỗi cung ứng công nghiệp và bán lẻ.</span>
-                                </div>
+                            <div class="class-item">
+                                <span class="class-item-num">Nhãn 02 · Test F1 0,965</span>
+                                <span class="class-item-name">Chứng khoán</span>
+                                <span class="class-item-desc">VN-Index, cổ phiếu, thanh khoản (92,3% bài chứa mã 3 chữ hoa).</span>
+                            </div>
+                            <div class="class-item">
+                                <span class="class-item-num">Nhãn 03 · Test F1 0,995</span>
+                                <span class="class-item-name">Thế giới</span>
+                                <span class="class-item-desc">Kinh tế quốc tế, Fed/ECB, tỷ giá và thương mại toàn cầu.</span>
+                            </div>
+                            <div class="class-item">
+                                <span class="class-item-num">Nhãn 04 · Test F1 0,956</span>
+                                <span class="class-item-name">Thị trường</span>
+                                <span class="class-item-desc">Hàng hóa nội địa, xuất nhập khẩu, chuỗi cung ứng sản xuất.</span>
+                            </div>
+                            <div class="class-item">
+                                <span class="class-item-num">Nhãn 05 · Test F1 0,962</span>
+                                <span class="class-item-name">Tài chính</span>
+                                <span class="class-item-desc">Ngân hàng thương mại, tín dụng, lãi suất, thuế và trái phiếu.</span>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- CARD 4: PIPELINE -->
-                        <div class="detail-card">
-                            <div class="detail-card-title">
-                                <h3>04. Cấu trúc nội dung thực hiện</h3>
-                                <span class="card-badge">Google Colab .ipynb</span>
+                    <!-- CARD 3: PIPELINE -->
+                    <div class="detail-card">
+                        <div class="detail-card-title">
+                            <h3>03. Quy trình xử lý &amp; Thực nghiệm</h3>
+                            <span class="card-badge">underthesea + TF-IDF</span>
+                        </div>
+                        <div class="pipeline-list">
+                            <div class="pipeline-step">
+                                <div class="pipeline-step-idx">1</div>
+                                <div class="pipeline-step-content">
+                                    <h4>Chuẩn hóa Unicode NFC &amp; Dấu thanh tiếng Việt</h4>
+                                    <p>Đưa 193 bài chưa dựng sẵn về NFC và thống nhất 94.955 từ đặt dấu kiểu cũ (<em>hoà, thuỷ</em>) về kiểu mới (<em>hòa, thủy</em>).</p>
+                                </div>
                             </div>
-                            <p style="font-size: 13px; color: #5d7088; margin-bottom: 14px;">
-                                Quy trình chuẩn 4 bước bắt buộc theo đặc tả yêu cầu của đề tài:
-                            </p>
-                            <div class="pipeline-list">
-                                <div class="pipeline-step">
-                                    <div class="pipeline-step-idx">1</div>
-                                    <div class="pipeline-step-content">
-                                        <h4>Mô tả tập dữ liệu</h4>
-                                        <p>Sử dụng Markdown để mô tả thông tin tổng quan. Dùng Plotly, Matplotlib hoặc Seaborn để trực quan dữ liệu.</p>
-                                    </div>
+                            <div class="pipeline-step">
+                                <div class="pipeline-step-idx">2</div>
+                                <div class="pipeline-step-content">
+                                    <h4>Tách từ ghép &amp; Phát hiện Near-duplicate</h4>
+                                    <p>Phân đoạn bằng <code>underthesea</code> (rút gọn 1.075 âm tiết xuống 737 token/bài) và gom 18 cụm gần trùng bằng TF-IDF n-gram ký tự (Cosine ≥ 0,90).</p>
                                 </div>
-                                <div class="pipeline-step">
-                                    <div class="pipeline-step-idx">2</div>
-                                    <div class="pipeline-step-content">
-                                        <h4>Chuẩn bị dữ liệu</h4>
-                                        <p>Tiền xử lý bằng NumPy hoặc Pandas; xử lý missing values, outliers, ...; encoding dữ liệu dạng categorical; scaling dữ liệu dạng numerical; chia dữ liệu thành train, validation và test.</p>
-                                    </div>
+                            </div>
+                            <div class="pipeline-step">
+                                <div class="pipeline-step-idx">3</div>
+                                <div class="pipeline-step-content">
+                                    <h4>Tối ưu lưới GridSearchCV (5-Fold Group CV)</h4>
+                                    <p>Khảo sát n-gram (1,1) vs (1,2), tùy chọn lọc stopwords và tham số điều hòa cho LinearSVC, Logistic Regression và MultinomialNB.</p>
                                 </div>
-                                <div class="pipeline-step">
-                                    <div class="pipeline-step-idx">3</div>
-                                    <div class="pipeline-step-content">
-                                        <h4>Phân tích và mô hình hóa</h4>
-                                        <p>Huấn luyện mô hình bằng Scikit-learn; so sánh kết quả giữa các mô hình hoặc tham số khác nhau.</p>
-                                    </div>
-                                </div>
-                                <div class="pipeline-step">
-                                    <div class="pipeline-step-idx">4</div>
-                                    <div class="pipeline-step-content">
-                                        <h4>Tổng kết và mở rộng</h4>
-                                        <p>Đánh giá kết quả qua độ chính xác, biểu đồ, confusion matrix, ...; trình bày nhận xét, hạn chế và đề xuất hướng mở rộng.</p>
-                                    </div>
+                            </div>
+                            <div class="pipeline-step">
+                                <div class="pipeline-step-idx">4</div>
+                                <div class="pipeline-step-content">
+                                    <h4>Kiểm chứng độ ổn định &amp; Phân tích biên quyết định</h4>
+                                    <p>Chạy kiểm định McNemar, kiểm thử trên Test khử trùng, so sánh bóc tách số (<code>text_seg</code> vs <code>text_num</code>) và cô lập tác giả.</p>
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- CARD 4: EDA CHARTS -->
+                    <div class="detail-card">
+                        <div class="detail-card-title">
+                            <h3>04. Khám phá ngữ liệu &amp; Từ khóa đặc trưng</h3>
+                            <span class="card-badge">5.000 bài báo</span>
+                        </div>
+                        <p>
+                            Phương pháp <em>Log-odds Z-score</em> bóc tách rõ nét từ khóa chuyên ngành, đồng thời ma trận tương đồng Cosine lý giải nguyên nhân nhầm lẫn tập trung ở cặp <em>Thị trường – Tài chính</em> (0,775) và <em>Bất động sản – Thị trường</em> (0,759).
+                        </p>
+                        <div class="figure-grid">
+                            <figure class="figure-card">
+                                <img src="../../assets/figures/text/c14_f0.png" alt="Phân bố độ tương đồng Cosine giữa các cặp bài viết" loading="lazy">
+                                <figcaption><strong>Phát hiện bài gần trùng:</strong> Cosine trung bình chỉ 0,137 (p99 = 0,385), giúp tách lọc chính xác 248 bài thuộc 18 nhóm bản tin lặp.</figcaption>
+                            </figure>
+                            <figure class="figure-card">
+                                <img src="../../assets/figures/text/c30_f0.png" alt="Ma trận tương đồng giữa 5 chuyên mục và Top Bigram" loading="lazy">
+                                <figcaption><strong>Tương đồng chuyên mục:</strong> <em>Thị trường – Tài chính</em> (0,775) giao thoa mạnh nhất; <em>Bất động sản – Thế giới</em> (0,531) tách biệt rõ nhất.</figcaption>
+                            </figure>
+                            <figure class="figure-card figure-wide">
+                                <img src="../../assets/figures/text/c25_f0.png" alt="Từ khóa đặc trưng theo Log-odds Z-score" loading="lazy">
+                                <figcaption><strong>Từ khóa đặc trưng (Log-odds Z-score):</strong> Mỗi chuyên mục sở hữu cụm từ vựng chuyên ngành riêng biệt, dù chuỗi tin giá vàng đẩy từ <em>vàng, mua, bán</em> lên cao ở mục Tài chính.</figcaption>
+                            </figure>
+                        </div>
+                    </div>
+
+                    <!-- CARD 5: RESULTS & ERROR ANALYSIS -->
+                    <div class="detail-card">
+                        <div class="detail-card-title">
+                            <h3>05. Kết quả phân loại &amp; Phân tích lỗi</h3>
+                            <span class="card-badge">Test 1.067 bài</span>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>Mô hình</th>
+                                        <th>Cấu hình tối ưu</th>
+                                        <th class="num">CV Macro-F1</th>
+                                        <th class="num">Test Acc</th>
+                                        <th class="num">Test Macro-F1</th>
+                                        <th class="num">CI 95% Bootstrap</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>MultinomialNB</td>
+                                        <td>α = 0,003 · (1,2) · bỏ SW</td>
+                                        <td class="num">0,9205 ± 0,0037</td>
+                                        <td class="num">0,9203</td>
+                                        <td class="num">0,9207</td>
+                                        <td class="num">[0,904; 0,936]</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Logistic Regression</td>
+                                        <td>C = 30 · (1,1) · giữ SW</td>
+                                        <td class="num">0,9523 ± 0,0046</td>
+                                        <td class="num">0,9597</td>
+                                        <td class="num">0,9603</td>
+                                        <td class="num">[0,949; 0,971]</td>
+                                    </tr>
+                                    <tr class="row-best">
+                                        <td>LinearSVC</td>
+                                        <td>C = 100 · (1,2) · bỏ SW</td>
+                                        <td class="num">0,9582 ± 0,0033</td>
+                                        <td class="num">0,9663</td>
+                                        <td class="num">0,9668</td>
+                                        <td class="num">[0,956; 0,977]</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p style="font-size: 13px; color: #5d7088;">
+                            Kiểm định McNemar giữa <code>LinearSVC</code> (1.031/1.067 bài đúng) và <code>LogisticRegression</code> (1.024/1.067) cho <em>p = 0,118</em> (tương đương thống kê ở mức 5%). Trong 36 ca dự đoán sai trên tập Test, <strong>23 ca (63,9%)</strong> nằm ở vùng biên mờ (&lt; 0,5) do tin tức mang tính liên ngành.
+                        </p>
+
+                        <div class="figure-grid">
+                            <figure class="figure-card">
+                                <img src="../../assets/figures/text/c46_f0.png" alt="So sánh Macro-F1 trên tập Test" loading="lazy">
+                                <figcaption><strong>Đối chiếu Test Set:</strong> Hai mô hình tuyến tính vượt trội MultinomialNB (+4,0 đến +4,6 điểm % Macro-F1).</figcaption>
+                            </figure>
+                            <figure class="figure-card figure-wide">
+                                <img src="../../assets/figures/text/c47_f0.png" alt="Ma trận nhầm lẫn của 3 mô hình trên tập Test" loading="lazy">
+                                <figcaption><strong>Ma trận nhầm lẫn (1.067 bài):</strong> Chuyên mục <em>Thế giới</em> đạt F1 = 0,995 (Recall 1,000); phần lớn nhầm lẫn xảy ra giữa <em>Chứng khoán → Tài chính</em> (10 bài) và <em>Thị trường → Bất động sản</em> (7 bài).</figcaption>
+                            </figure>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- OTHER ASSIGNMENTS NAVIGATION -->
@@ -279,7 +337,7 @@
                             <div class="assignment-content">
                                 <span class="assignment-type">TABULAR DATA</span>
                                 <h3>Bank Account Fraud Detection</h3>
-                                <p>Phân loại đơn mở tài khoản ngân hàng gian lận (NeurIPS 2022).</p>
+                                <p>1.000.000 hồ sơ (NeurIPS 2022) · LightGBM đạt TPR@5%FPR 0,5798 và ROC-AUC 0,8986.</p>
                                 <span class="view-project">Xem chi tiết bài →</span>
                             </div>
                         </a>
@@ -289,7 +347,7 @@
                             <div class="assignment-content">
                                 <span class="assignment-type">IMAGE DATA</span>
                                 <h3>Intel Image Classification</h3>
-                                <p>Phân loại ảnh phong cảnh tự nhiên với 6 nhãn (~25.000 ảnh từ Kaggle).</p>
+                                <p>17.034 ảnh (6 lớp) · Đối chiếu 7 cấu hình từ SimpleCNN đến ViT-B/16 (94,87%) &amp; CLIP.</p>
                                 <span class="view-project">Xem chi tiết bài →</span>
                             </div>
                         </a>
@@ -306,5 +364,6 @@
         </div>
     </footer>
 
+    <script src="../../js/lightbox.js"></script>
 </body>
 </html>

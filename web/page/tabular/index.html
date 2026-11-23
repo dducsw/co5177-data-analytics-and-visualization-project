@@ -8,7 +8,7 @@
 
     <meta
         name="description"
-        content="Bài tập lớn phân tích dữ liệu dạng bảng: Bank Account Fraud Detection (NeurIPS 2022) - Group 6."
+        content="Phân tích và mô hình hóa dữ liệu dạng bảng: Bank Account Fraud Detection (NeurIPS 2022) - Group 6."
     >
 
     <link rel="stylesheet" href="../../css/base.css">
@@ -66,41 +66,50 @@
                 <h1>Bank Account Fraud Detection</h1>
 
                 <p class="page-hero-desc">
-                    Phân tích, xử lý và xây dựng mô hình học máy trên dữ liệu dạng bảng nhằm nhận diện các đơn mở tài khoản ngân hàng có hành vi gian lận danh tính.
+                    Phân tích khám phá, kiểm định dữ liệu khuyết ẩn, đánh giá công bằng nhân khẩu học và mô hình hóa phát hiện gian lận mở tài khoản ngân hàng trên 1.000.000 hồ sơ.
                 </p>
 
                 <div class="meta-pills">
                     <div class="pill">
-                        <strong>Lĩnh vực:</strong> Tài chính &amp; Ngân hàng
+                        <strong>Tập dữ liệu:</strong> Base.csv (NeurIPS 2022)
                     </div>
                     <div class="pill">
-                        <strong>Dạng bài toán:</strong> Binary Classification
+                        <strong>Quy mô:</strong> 1.000.000 dòng · 32 cột
                     </div>
                     <div class="pill">
-                        <strong>Tập dữ liệu:</strong> NeurIPS 2022 Suite (Kaggle)
+                        <strong>Phân chia:</strong> Temporal Split (Tháng 0–5 / 6 / 7)
                     </div>
                     <div class="pill pill-highlight">
-                        <strong>Thách thức chính:</strong> Mất cân bằng dữ liệu cực lớn
+                        <strong>LightGBM Test:</strong> TPR@5%FPR 57,98% · ROC-AUC 0,8986
                     </div>
                 </div>
 
                 <div class="page-actions">
                     <a
-                        href="https://www.kaggle.com/datasets/sgpjesus/bank-account-fraud-dataset-neurips-2022"
+                        href="https://github.com/dducsw/co5177-data-analytics-and-visualization-project/blob/main/tabular/bank-account-fraud.ipynb"
                         class="btn btn-primary"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        Tập dữ liệu trên Kaggle ↗
+                        Notebook (.ipynb) ↗
                     </a>
 
                     <a
-                        href="https://drive.google.com/drive/u/1/folders/1K2QvYLPYUZopffRul9bbRBrDjiedY0zH"
+                        href="../../assets/Group6-report.pdf"
                         class="btn btn-outline"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        Google Drive dữ liệu ↗
+                        Báo cáo PDF ↗
+                    </a>
+
+                    <a
+                        href="https://www.kaggle.com/datasets/sgpjesus/bank-account-fraud-dataset-neurips-2022"
+                        class="btn btn-outline"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Dataset Kaggle ↗
                     </a>
 
                     <a
@@ -109,10 +118,7 @@
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="margin-right: 7px;">
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
-                        </svg>
-                        Thư mục mã nguồn GitHub ↗
+                        Mã nguồn /tabular ↗
                     </a>
                 </div>
             </div>
@@ -122,127 +128,222 @@
         <section class="section">
             <div class="container">
                 <div class="detail-layout">
-                    <!-- CARD 1: OVERVIEW -->
-                        <div class="detail-card">
-                            <div class="detail-card-title">
-                                <h3>01. Tổng quan bài toán</h3>
-                                <span class="card-badge">Mô tả</span>
-                            </div>
-                            <p>
-                                Gian lận mở tài khoản ngân hàng (Bank Account Opening Fraud) là hành vi các đối tượng tội phạm sử dụng thông tin danh tính giả mạo hoặc danh tính tổng hợp (synthetic identity) nhằm mở tài khoản ngân hàng bất hợp pháp để rửa tiền hoặc vay tín chấp.
-                            </p>
-                            <p>
-                                Mục tiêu của bài tập lớn là ứng dụng các kỹ thuật phân tích và trực quan hóa dữ liệu dạng bảng, kết hợp mô hình hóa học máy phân loại nhị phân (<strong>Binary Classification: Fraud vs. Legitimate</strong>) để tự động phát hiện các yêu cầu mở tài khoản đáng ngờ với độ tin cậy cao.
-                            </p>
 
-                            <div class="highlight-box">
-                                <strong>Thách thức cốt lõi:</strong> Dữ liệu gian lận ngân hàng thường có tỷ lệ cực kỳ hiếm (dưới 2%), dẫn đến hiện tượng mất cân bằng mẫu nghiêm trọng. Đòi hỏi chiến lược tiền xử lý chuẩn mực, kỹ thuật re-sampling (SMOTE, class weighting) và các thước đo phù hợp như PR-AUC, F1-Score thay vì chỉ dựa vào Accuracy.
+                    <!-- CARD 1: OVERVIEW & KPIs -->
+                    <div class="detail-card">
+                        <div class="detail-card-title">
+                            <h3>01. Tổng quan bài toán &amp; Chỉ số chính</h3>
+                            <span class="card-badge">Binary Classification</span>
+                        </div>
+                        <p>
+                            Phát hiện các đơn đăng ký mở tài khoản ngân hàng gian lận trên tập <strong>Bank Account Fraud (<code>Base.csv</code>)</strong> gồm 1.000.000 hồ sơ trải dài qua 8 tháng (tỷ lệ gian lận chỉ <strong>1,10%</strong>, xấp xỉ 1 ca trên 89 hồ sơ hợp pháp). Do mất cân bằng lớp cực hạn và hiện tượng dịch chuyển phân phối theo thời gian (<em>temporal shift</em>), bài toán dùng <strong>TPR@5%FPR</strong> làm thước đo chính thay cho Accuracy, đồng thời áp dụng <em>Temporal Split</em> (Train: tháng 0–5; Validation: tháng 6; Test: tháng 7).
+                        </p>
+
+                        <div class="kpi-grid">
+                            <div class="kpi-card kpi-accent">
+                                <span class="kpi-label">LightGBM (TPR@5%FPR)</span>
+                                <span class="kpi-value">0,5798</span>
+                                <span class="kpi-sub">Vượt Logistic Regression (+0,050; Bootstrap 95% CI)</span>
+                            </div>
+                            <div class="kpi-card">
+                                <span class="kpi-label">ROC-AUC / PR-AUC</span>
+                                <span class="kpi-value">0,8986 / 0,2173</span>
+                                <span class="kpi-sub">Brier Score đạt 0,01283 (hiệu chỉnh tốt)</span>
+                            </div>
+                            <div class="kpi-card">
+                                <span class="kpi-label">Ngưỡng khóa từ T6</span>
+                                <span class="kpi-value">55,53% TPR</span>
+                                <span class="kpi-sub">FPR thực tế 4,22% (793/1.428 ca trên Test T7)</span>
+                            </div>
+                            <div class="kpi-card">
+                                <span class="kpi-label">Fairness (Tuổi ≥ 50)</span>
+                                <span class="kpi-value">FPR ratio 0,331</span>
+                                <span class="kpi-sub">Cân bằng về 1,014 khi dùng ngưỡng theo nhóm</span>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- CARD 2: DATASET -->
-                        <div class="detail-card">
-                            <div class="detail-card-title">
-                                <h3>02. Tập dữ liệu &amp; Đặc trưng</h3>
-                                <span class="card-badge">Dataset</span>
-                            </div>
-                            <p>
-                                Dự án sử dụng bộ dữ liệu học thuật tiêu chuẩn được công bố tại hội nghị <strong>NeurIPS 2022</strong>:
-                            </p>
-                            <div class="resource-list" style="margin-bottom: 14px;">
-                                <a
-                                    href="https://www.kaggle.com/datasets/sgpjesus/bank-account-fraud-dataset-neurips-2022"
-                                    class="resource-item"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    <span><strong>Bank Account Fraud Dataset Suite (NeurIPS 2022)</strong> · Kaggle</span>
-                                    <span class="res-arrow">→</span>
-                                </a>
-                                <a
-                                    href="https://drive.google.com/drive/u/1/folders/1K2QvYLPYUZopffRul9bbRBrDjiedY0zH"
-                                    class="resource-item"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    <span><strong>Thư mục Google Drive Dataset</strong> · Google Drive</span>
-                                    <span class="res-arrow">→</span>
-                                </a>
-                            </div>
-                            <p>
-                                Bộ dữ liệu gồm 6 biến thể (Base, Variant 1 đến 5) phản ánh tính dịch chuyển dữ liệu (data drift) theo thời gian và các điều kiện rủi ro khác nhau. Dữ liệu chứa hơn 30 thuộc tính bao gồm:
-                            </p>
-                            <ul style="padding-left: 20px; color: #4a5c73; font-size: 13px; line-height: 1.8;">
-                                <li><strong>Nhân khẩu học ứng viên:</strong> Độ tuổi, thu nhập, tình trạng việc làm, thông tin cư trú.</li>
-                                <li><strong>Hành vi phiên nộp đơn:</strong> Thời gian nộp, loại thiết bị, vận tốc thao tác trên hệ thống.</li>
-                                <li><strong>Thông tin tín dụng &amp; tài chính:</strong> Điểm tín dụng rủi ro, số tài khoản ngân hàng liên kết.</li>
-                                <li><strong>Cờ kiểm tra hệ thống:</strong> Khớp địa chỉ email, số điện thoại, cảnh báo nghi vấn.</li>
-                            </ul>
+                    <!-- CARD 2: DATASET & TARGET -->
+                    <div class="detail-card">
+                        <div class="detail-card-title">
+                            <h3>02. Tập dữ liệu, Nhãn mục tiêu &amp; Làm sạch</h3>
+                            <span class="card-badge">1.000.000 × 32</span>
                         </div>
-
-                        <!-- CARD 3: TARGET CLASSES -->
-                        <div class="detail-card">
-                            <div class="detail-card-title">
-                                <h3>03. Nhãn mục tiêu (Target Labels)</h3>
-                                <span class="card-badge">2 Classes</span>
+                        <p>
+                            Kiểm tra toàn vẹn phát hiện 0 dòng trùng lặp và 0 giá trị <code>NaN</code> mặc định, nhưng cột hằng số <code>device_fraud_count</code> (chỉ chứa 0) bị loại bỏ và 6 thuộc tính thực chất mã hóa dữ liệu khuyết bằng số âm (<code>-1</code> hoặc <code>&lt; 0</code> ở <code>intended_balcon_amount</code> với 74,25% dòng). Toàn bộ giá trị khuyết ẩn được chuẩn hóa về <code>NaN</code> kèm 6 cờ nhị phân <code>_flag</code> để bảo lưu tín hiệu hành vi.
+                        </p>
+                        <div class="class-grid" style="grid-template-columns: repeat(2, 1fr);">
+                            <div class="class-item">
+                                <span class="class-item-num">Nhãn 0 · 988.971 hồ sơ (98,90%)</span>
+                                <span class="class-item-name">Legitimate (Hợp pháp)</span>
+                                <span class="class-item-desc">Đơn mở tài khoản hợp lệ; ngân sách báo động nhầm giới hạn tối đa ở mức FPR ≤ 5%.</span>
                             </div>
-                            <p>
-                                Bài toán phân loại nhị phân tập trung vào biến mục tiêu nhị phân đại diện cho trạng thái của đơn đăng ký:
-                            </p>
-                            <div class="class-grid" style="grid-template-columns: repeat(2, 1fr);">
-                                <div class="class-item">
-                                    <span class="class-item-num">Nhãn 0</span>
-                                    <span class="class-item-name">Legitimate (Hợp lệ)</span>
-                                    <span class="class-item-desc">Đơn mở tài khoản minh bạch, người dùng thực tế tuân thủ quy định ngân hàng.</span>
-                                </div>
-                                <div class="class-item" style="border-color: #d1e4fa; background: #f7faff;">
-                                    <span class="class-item-num" style="color: #d9383a;">Nhãn 1 (Target)</span>
-                                    <span class="class-item-name" style="color: #b31d28;">Fraud (Gian lận)</span>
-                                    <span class="class-item-desc">Đơn mở tài khoản có dấu hiệu gian lận danh tính, mạo danh hoặc thông tin phi pháp.</span>
-                                </div>
+                            <div class="class-item" style="border-color: #d1e4fa; background: #f7faff;">
+                                <span class="class-item-num" style="color: #d9383a;">Nhãn 1 · 11.029 hồ sơ (1,10%)</span>
+                                <span class="class-item-name" style="color: #b31d28;">Fraud (Gian lận)</span>
+                                <span class="class-item-desc">Tỷ lệ gian lận tăng từ 0,88% (T2) lên 1,34% (T6) và 1,48% (T7).</span>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- CARD 4: PIPELINE -->
-                        <div class="detail-card">
-                            <div class="detail-card-title">
-                                <h3>04. Cấu trúc nội dung thực hiện</h3>
-                                <span class="card-badge">Google Colab .ipynb</span>
+                    <!-- CARD 3: PIPELINE -->
+                    <div class="detail-card">
+                        <div class="detail-card-title">
+                            <h3>03. Quy trình thực hiện</h3>
+                            <span class="card-badge">42 đặc trưng</span>
+                        </div>
+                        <div class="pipeline-list">
+                            <div class="pipeline-step">
+                                <div class="pipeline-step-idx">1</div>
+                                <div class="pipeline-step-content">
+                                    <h4>Kiểm toán dữ liệu &amp; Temporal Split</h4>
+                                    <p>Loại bỏ cột hằng số, chuyển 6 cột khuyết ẩn sang <code>NaN</code> + tạo 6 cờ <code>_flag</code>; tách Train (T0–5: 794.989), Validation (T6: 108.168) và Test (T7: 96.843).</p>
+                                </div>
                             </div>
-                            <p style="font-size: 13px; color: #5d7088; margin-bottom: 14px;">
-                                Quy trình chuẩn 4 bước bắt buộc theo đặc tả yêu cầu của đề tài:
-                            </p>
-                            <div class="pipeline-list">
-                                <div class="pipeline-step">
-                                    <div class="pipeline-step-idx">1</div>
-                                    <div class="pipeline-step-content">
-                                        <h4>Mô tả tập dữ liệu</h4>
-                                        <p>Sử dụng Markdown để mô tả thông tin tổng quan. Dùng Plotly, Matplotlib hoặc Seaborn để trực quan dữ liệu.</p>
-                                    </div>
+                            <div class="pipeline-step">
+                                <div class="pipeline-step-idx">2</div>
+                                <div class="pipeline-step-content">
+                                    <h4>EDA trên tập Train &amp; Kỹ thuật đặc trưng</h4>
+                                    <p>Phát hiện cơ chế thiếu MNAR, giữ nguyên ngoại lai vận tốc, đo PSI/Mutual Information và bổ sung 6 đặc trưng tỷ lệ (<code>limit_per_income</code>, <code>addr_per_age</code>, <code>vel_6h_24h</code>...).</p>
                                 </div>
-                                <div class="pipeline-step">
-                                    <div class="pipeline-step-idx">2</div>
-                                    <div class="pipeline-step-content">
-                                        <h4>Chuẩn bị dữ liệu</h4>
-                                        <p>Tiền xử lý bằng NumPy hoặc Pandas; xử lý missing values, outliers, ...; encoding dữ liệu dạng categorical; scaling dữ liệu dạng numerical; chia dữ liệu thành train, validation và test.</p>
-                                    </div>
+                            </div>
+                            <div class="pipeline-step">
+                                <div class="pipeline-step-idx">3</div>
+                                <div class="pipeline-step-content">
+                                    <h4>Mô hình hóa &amp; Khóa ngưỡng Validation</h4>
+                                    <p>Đối chiếu Logistic Regression (<code>SimpleImputer(median)</code> + <code>RobustScaler</code> + One-Hot trong Pipeline) với LightGBM (trung bình 3 seed, giữ <code>NaN</code>); chọn ngưỡng tại FPR ≤ 5% trên tháng 6.</p>
                                 </div>
-                                <div class="pipeline-step">
-                                    <div class="pipeline-step-idx">3</div>
-                                    <div class="pipeline-step-content">
-                                        <h4>Phân tích và mô hình hóa</h4>
-                                        <p>Huấn luyện mô hình bằng Scikit-learn; so sánh kết quả giữa các mô hình hoặc tham số khác nhau.</p>
-                                    </div>
-                                </div>
-                                <div class="pipeline-step">
-                                    <div class="pipeline-step-idx">4</div>
-                                    <div class="pipeline-step-content">
-                                        <h4>Tổng kết và mở rộng</h4>
-                                        <p>Đánh giá kết quả qua độ chính xác, biểu đồ, confusion matrix, ...; trình bày nhận xét, hạn chế và đề xuất hướng mở rộng.</p>
-                                    </div>
+                            </div>
+                            <div class="pipeline-step">
+                                <div class="pipeline-step-idx">4</div>
+                                <div class="pipeline-step-content">
+                                    <h4>Kiểm định Bootstrap, Fairness &amp; Ablation</h4>
+                                    <p>Đánh giá Bootstrap 1.000 mẫu trên Test tháng 7, kiểm tra chênh lệch FPR theo nhóm tuổi (&lt; 50 vs ≥ 50) và chạy 2 thực nghiệm kiểm chứng giả thuyết EDA.</p>
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- CARD 4: EDA CHARTS -->
+                    <div class="detail-card">
+                        <div class="detail-card-title">
+                            <h3>04. Khám phá dữ liệu &amp; Phát hiện chính (EDA)</h3>
+                            <span class="card-badge">df_train · T0–5</span>
+                        </div>
+                        <p>
+                            Dữ liệu khuyết mang tín hiệu rủi ro rõ rệt (rủi ro tăng 4,73× khi thiếu <code>prev_address_months_count</code> và 2,58× khi thiếu <code>intended_balcon_amount</code>), đồng thời các cặp biến như <code>credit_risk_score &gt; 300</code> × hạn mức <code>(1500, 2100]</code> tạo cụm rủi ro phi tuyến lên tới <strong>19,62%</strong>.
+                        </p>
+                        <div class="figure-grid">
+                            <figure class="figure-card">
+                                <img src="../../assets/figures/tabular/c25_f0.png" alt="Biến động tỷ lệ gian lận theo tháng" loading="lazy">
+                                <figcaption><strong>Temporal Shift (T0–T7):</strong> Tỷ lệ gian lận tăng từ 0,88% (T2) lên 1,48% (T7), là căn cứ bắt buộc phải chia dữ liệu theo thời gian.</figcaption>
+                            </figure>
+                            <figure class="figure-card">
+                                <img src="../../assets/figures/tabular/c31_f0.png" alt="Risk ratio khi dữ liệu bị thiếu" loading="lazy">
+                                <figcaption><strong>Cơ chế thiếu MNAR:</strong> Nhóm khuyết dữ liệu có tỷ lệ gian lận cao hơn 1,8× đến 4,7× ở ba cột thiếu nhiều nhất.</figcaption>
+                            </figure>
+                            <figure class="figure-card figure-wide">
+                                <img src="../../assets/figures/tabular/c52_f0.png" alt="Heatmap điểm rủi ro và hạn mức đề xuất" loading="lazy">
+                                <figcaption><strong>Tương tác phi tuyến:</strong> Tổ hợp điểm rủi ro &gt; 300 và hạn mức đề xuất cao (1.500–2.100) ghi nhận tỷ lệ gian lận 19,62% (82/418 hồ sơ).</figcaption>
+                            </figure>
+                        </div>
+                    </div>
+
+                    <!-- CARD 5: RESULTS & ABLATION -->
+                    <div class="detail-card">
+                        <div class="detail-card-title">
+                            <h3>05. Kết quả thực nghiệm &amp; Kiểm chứng</h3>
+                            <span class="card-badge">Test Tháng 7 (96.843 hồ sơ)</span>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tập / Nguồn</th>
+                                        <th>Mô hình</th>
+                                        <th class="num">TPR@FPR5%</th>
+                                        <th class="num">TPR@ngưỡng</th>
+                                        <th class="num">FPR</th>
+                                        <th class="num">Precision</th>
+                                        <th class="num">ROC-AUC</th>
+                                        <th class="num">PR-AUC</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Val (Tháng 6)</td>
+                                        <td>Logistic Regression</td>
+                                        <td class="num">0,5069</td>
+                                        <td class="num">0,5069</td>
+                                        <td class="num">0,0495</td>
+                                        <td class="num">0,1221</td>
+                                        <td class="num">0,8829</td>
+                                        <td class="num">0,1565</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Val (Tháng 6)</td>
+                                        <td>LightGBM</td>
+                                        <td class="num">0,5310</td>
+                                        <td class="num">0,5310</td>
+                                        <td class="num">0,0496</td>
+                                        <td class="num">0,1270</td>
+                                        <td class="num">0,8948</td>
+                                        <td class="num">0,1822</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Test (Tháng 7)</td>
+                                        <td>Logistic Regression</td>
+                                        <td class="num">0,5301</td>
+                                        <td class="num">0,4510</td>
+                                        <td class="num">0,0348</td>
+                                        <td class="num">0,1624</td>
+                                        <td class="num">0,8868</td>
+                                        <td class="num">0,1849</td>
+                                    </tr>
+                                    <tr class="row-best">
+                                        <td>Test (Tháng 7)</td>
+                                        <td>LightGBM (3 seeds)</td>
+                                        <td class="num">0,5798</td>
+                                        <td class="num">0,5553</td>
+                                        <td class="num">0,0422</td>
+                                        <td class="num">0,1647</td>
+                                        <td class="num">0,8986</td>
+                                        <td class="num">0,2173</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Paper NeurIPS 2022</td>
+                                        <td>LightGBM (tham chiếu)</td>
+                                        <td class="num">0,5600</td>
+                                        <td class="num">—</td>
+                                        <td class="num">0,0500</td>
+                                        <td class="num">—</td>
+                                        <td class="num">—</td>
+                                        <td class="num">—</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="figure-grid">
+                            <figure class="figure-card">
+                                <img src="../../assets/figures/tabular/c84_f0.png" alt="ROC PR và Confusion Matrix trên tập Test" loading="lazy">
+                                <figcaption><strong>ROC, PR &amp; Confusion Matrix (Test T7):</strong> LightGBM phát hiện 793 ca gian lận (giảm 19% số ca bỏ lọt so với 644 ca của Logistic Regression).</figcaption>
+                            </figure>
+                            <figure class="figure-card">
+                                <img src="../../assets/figures/tabular/c87_f0.png" alt="Top 15 Feature Importance của LightGBM" loading="lazy">
+                                <figcaption><strong>Feature Importance (Gain):</strong> Các đặc trưng tỷ lệ và cờ <code>_flag</code> thiết kế từ EDA nằm trong nhóm đóng góp lớn nhất.</figcaption>
+                            </figure>
+                            <figure class="figure-card">
+                                <img src="../../assets/figures/tabular/c90_f0.png" alt="Công bằng theo nhóm tuổi" loading="lazy">
+                                <figcaption><strong>Fairness theo tuổi:</strong> Ngưỡng chung khiến nhóm ≥ 50 tuổi bị FPR 10,12% (ratio 0,331); ngưỡng riêng đưa ratio về 1,014 (FPR 4,63% vs 4,56%).</figcaption>
+                            </figure>
+                            <figure class="figure-card">
+                                <img src="../../assets/figures/tabular/c99_f0.png" alt="So sánh Temporal Split và Stratified Random Split" loading="lazy">
+                                <figcaption><strong>Kiểm chứng phép chia:</strong> Chia ngẫu nhiên làm rò rỉ tương lai, khiến FPR trên lát cắt tháng 7 trượt lên 6,34% (vượt mức 5% cho phép).</figcaption>
+                            </figure>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- OTHER ASSIGNMENTS NAVIGATION -->
@@ -254,7 +355,7 @@
                             <div class="assignment-content">
                                 <span class="assignment-type">TEXT DATA</span>
                                 <h3>Vietnamese Financial News</h3>
-                                <p>Phân loại chủ đề tin tức tài chính VnEconomy với 5 nhãn mục tiêu.</p>
+                                <p>5.000 bài báo VnEconomy (5 lớp) · LinearSVC đạt Test Macro-F1 0,9668.</p>
                                 <span class="view-project">Xem chi tiết bài →</span>
                             </div>
                         </a>
@@ -264,7 +365,7 @@
                             <div class="assignment-content">
                                 <span class="assignment-type">IMAGE DATA</span>
                                 <h3>Intel Image Classification</h3>
-                                <p>Phân loại ảnh phong cảnh tự nhiên với 6 nhãn (~25.000 ảnh từ Kaggle).</p>
+                                <p>17.034 ảnh (6 lớp) · Đối chiếu 7 cấu hình từ SimpleCNN đến ViT-B/16 (94,87%) &amp; CLIP.</p>
                                 <span class="view-project">Xem chi tiết bài →</span>
                             </div>
                         </a>
@@ -281,5 +382,6 @@
         </div>
     </footer>
 
+    <script src="../../js/lightbox.js"></script>
 </body>
 </html>
