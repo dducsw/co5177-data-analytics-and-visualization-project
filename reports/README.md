@@ -1,6 +1,6 @@
 # Reports (`reports/`)
 
-Thư mục lưu mã nguồn LaTeX và các báo cáo PDF theo quy định của [assignment-vne-v4.pdf](file:///home/thanh/CO5177/docs/assignment-vne-v4.pdf):
+Thư mục lưu mã nguồn LaTeX và các báo cáo PDF theo quy định của [assignment-vne-v4.md](../requirements/assignment-vne-v4.md):
 
 - Báo cáo PDF cho từng bài tập lớn con (`tabular`, `text`, `image`).
 - Báo cáo PDF tổng hợp nộp LMS: `<groupname>-report.pdf`.
@@ -57,5 +57,5 @@ Từ thư mục `reports/`:
 - **Bảng và hình:**
   - Dùng `booktabs` (`\toprule`, `\midrule`, `\bottomrule`), tránh kẻ dọc `|`.
   - Đặt hình xuất ra từ notebook vào `figures/` trong thư mục báo cáo tương ứng và chèn bằng `\includegraphics[width=\linewidth]{figures/...}` (hoặc `max width=\linewidth` với `adjustbox`).
-  - Mọi caption hình/bảng cần nêu rõ **kết luận** và **số liệu đối chiếu** khớp với kết quả thực tế trong `notebooks/` (theo rubric trong `docs/assignment-vne-v4.pdf`).
+  - Mọi caption hình/bảng cần nêu rõ **kết luận** và **số liệu đối chiếu** khớp với kết quả thực tế trong `notebooks/` (theo rubric trong `requirements/assignment-vne-v4.md`).
 - **Không tự bịa số liệu:** Mọi metric, bảng so sánh, số lượng mẫu trong báo cáo phải trích trực tiếp từ output của notebook tương ứng.

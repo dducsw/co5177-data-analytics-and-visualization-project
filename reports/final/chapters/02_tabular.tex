@@ -1,0 +1,97 @@
+\section{Dữ liệu bảng: Dự đoán gian lận mở tài khoản ngân hàng}
+\label{sec:tabular}
+
+\subsection{Mô tả bài toán và kiểm tra toàn vẹn dữ liệu}
+Bài toán sử dụng tập \textit{Bank Account Fraud (Base.csv)} \cite{jesus2022turning} gồm \textbf{1.000.000 hồ sơ} và \textbf{32 cột} (không có dòng trùng lặp). Biến mục tiêu nhị phân \texttt{fraud\_bool} có độ mất cân bằng rất cao: 988.971 hồ sơ hợp pháp (98,90\%) và 11.029 hồ sơ gian lận (1,10\%, tỷ lệ $\approx 1:89$).
+
+Quá trình \textit{Data Sanity Check} phát hiện ba vấn đề quan trọng:
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Cột hằng số:} \texttt{device\_fraud\_count} chỉ chứa duy nhất giá trị \texttt{0} nên được loại bỏ.
+  \item \textbf{Missing value ẩn:} Pandas báo 0 giá trị \texttt{NaN}, nhưng thực tế 5 cột dùng giá trị \texttt{-1} để mã hóa dữ liệu khuyết (nhiều nhất là \texttt{prev\_address\_months\_count} với 712.920 dòng và \texttt{bank\_months\_count} với 253.635 dòng) và \texttt{intended\_balcon\_amount} dùng giá trị âm ($< 0$ ở 742.523 dòng, chiếm 74,25\%). Nhóm chuẩn hóa toàn bộ về \texttt{NaN} và tạo thêm 6 cột cờ chỉ báo thiếu (\texttt{\_flag}).
+  \item \textbf{Temporal Shift:} Tỷ lệ gian lận biến động mạnh qua 8 tháng (từ 0,875\% ở tháng 2 lên 1,475\% ở tháng 7), như minh họa ở \Cref{fig:tab_temporal}.
+\end{enumerate}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\linewidth]{tabular/c25_f0.png}
+  \caption{Biến động số lượng hồ sơ và tỷ lệ gian lận qua 8 tháng: tỷ lệ gian lận tăng dần từ 0,875\% (tháng 2) lên 1,475\% (tháng 7), cho thấy sự tồn tại của \textit{temporal shift} và yêu cầu bắt buộc phải chia tập theo thời gian.}
+  \label{fig:tab_temporal}
+\end{figure}
+
+\subsection{Khám phá dữ liệu (EDA) và Phân tích công bằng (Fairness)}
+Để tránh rò rỉ tương lai, dữ liệu được chia theo thời gian (\textit{Temporal Split}): \textbf{Train} gồm tháng 0--5 (794.989 dòng, 1,03\% gian lận), \textbf{Validation} là tháng 6 (108.168 dòng, 1,34\% gian lận), và \textbf{Test} là tháng 7 (96.843 dòng, 1,47\% gian lận). Mọi phân tích EDA chỉ thực hiện trên tập Train:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Tín hiệu từ dữ liệu khuyết:} Việc thiếu thông tin không xảy ra ngẫu nhiên mà mang tín hiệu rủi ro rõ rệt (tỷ lệ gian lận khác biệt giữa nhóm có và không có cờ \texttt{\_flag}). Nếu điền khuyết bằng \textit{median} mà không giữ cờ \texttt{\_flag}, thông tin này sẽ bị xóa nhòa.
+  \item \textbf{Biến vận tốc và ngoại lai:} Trên biến \texttt{velocity\_6h}, ngưỡng ngoại lai trên đạt 14.326,7 đơn/giờ (6.498 mẫu, 0,82\%), tỷ lệ gian lận nhóm ngoại lai là 0,65\% so với 1,03\% ở nhóm bình thường. Các biến \texttt{velocity\_4w} ($PSI = 4,1643$) và \texttt{velocity\_24h} ($PSI = 0,6191$) có độ trôi dạt phân phối lớn nhất giữa nửa đầu (T0--2) và nửa sau (T3--5) của tập Train.
+  \item \textbf{Chênh lệch nhân khẩu học (\textit{Fairness \& Bias}):} \Cref{fig:tab_fairness} cho thấy nhóm khách hàng $\ge 50$ tuổi (chiếm 18,77\% hồ sơ) có tỷ lệ gian lận \textbf{2,21\%}, cao gấp \textbf{2,94 lần} nhóm $< 50$ tuổi (0,75\%). Nhóm nghề nghiệp \texttt{CC} có tỷ lệ gian lận 2,34\%, gấp 12,45 lần nhóm \texttt{CF} (0,19\%).
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\linewidth]{tabular/c64_f0.png}
+  \caption{So sánh tỷ lệ hồ sơ và tỷ lệ gian lận giữa hai nhóm tuổi: nhóm $\ge 50$ tuổi có tỷ lệ gian lận 2,21\%, cao gấp 2,94 lần nhóm $< 50$ tuổi (0,75\%), đặt ra bài toán cân bằng độ chính xác và công bằng mô hình.}
+  \label{fig:tab_fairness}
+\end{figure}
+
+\subsection{Pipeline tiền xử lý và Mô hình hóa}
+Từ kết quả khảo sát chuẩn hóa (\Cref{fig:tab_scaling}), \texttt{RobustScaler} ổn định hơn \texttt{StandardScaler} trước các phân phối lệch và nhiều ngoại lai (đưa trung vị về 0, IQR về 1). Pipeline sử dụng \textbf{42 đặc trưng} đầu vào (36 biến số + cờ \texttt{\_flag}, 5 biến phân loại dùng One-Hot Encoding).
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\linewidth]{tabular/c68_f0.png}
+  \caption{So sánh phân phối trước và sau chuẩn hóa trên \texttt{velocity\_6h} và \texttt{intended\_balcon\_amount}: \texttt{RobustScaler} giữ nguyên hình dạng phân phối và giảm ảnh hưởng của giá trị ngoại lai so với \texttt{StandardScaler}.}
+  \label{fig:tab_scaling}
+\end{figure}
+
+Nhóm đối chiếu mô hình tuyến tính \textbf{Logistic Regression} (\texttt{class\_weight='balanced'}) với \textbf{LightGBM} (trung bình 3 seeds, số cây tốt nhất lần lượt là 438, 637, 531). Ngưỡng quyết định được cố định tại mức $\text{FPR} \le 5\%$ trên tập Validation (ngưỡng $0,7781$ cho Logistic Regression và $0,0478$ cho LightGBM) rồi áp dụng nguyên vẹn lên tập Test tháng 7.
+
+\subsection{Kết quả thực nghiệm và Kiểm chứng giả thuyết}
+
+\Cref{tab:tab_results} và \Cref{fig:tab_bootstrap} trình bày kết quả đối chiếu trên tập Test tháng 7 (96.843 hồ sơ, 1.428 ca gian lận) kèm khoảng tin cậy Bootstrap 95\% (1.000 lần lấy mẫu). LightGBM vượt trội có ý nghĩa thống kê trên mọi chỉ số: $\text{TPR@ngưỡng}$ đạt \textbf{0,555} (cao hơn +0,104 so với 0,451 của Logistic Regression), $\text{ROC-AUC}$ đạt \textbf{0,899} (so với 0,887), và độ hiệu chỉnh xác suất (\textit{Brier Score}) tốt hơn hẳn ($0,01283$ so với $0,09944$).
+
+\begin{table}[H]
+  \centering
+  \caption{So sánh hiệu năng Logistic Regression và LightGBM trên tập Validation (tháng 6) và Test (tháng 7).}
+  \label{tab:tab_results}
+  \resizebox{\linewidth}{!}{%
+  \begin{tabular}{l l c c c c c}
+    \toprule
+    \textbf{Tập} & \textbf{Mô hình} & \textbf{TPR@FPR5\%} & \textbf{TPR@ngưỡng} & \textbf{FPR} & \textbf{ROC-AUC} & \textbf{PR-AUC} \\
+    \midrule
+    Val (T6) & Logistic Regression & 0,5069 & 0,5069 & 0,0495 & 0,8829 & 0,1565 \\
+    Val (T6) & LightGBM & 0,5310 & 0,5310 & 0,0496 & 0,8948 & 0,1822 \\
+    \midrule
+    Test (T7) & Logistic Regression & 0,5301 & 0,4510 & 0,0348 & 0,8868 & 0,1849 \\
+    Test (T7) & LightGBM & \textbf{0,5798} & \textbf{0,5553} & 0,0422 & \textbf{0,8986} & \textbf{0,2173} \\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\linewidth]{tabular/c84_f0.png}
+  \caption{Khoảng tin cậy Bootstrap 95\% trên tập Test (96.843 hồ sơ): LightGBM vượt Logistic Regression +0,050 ở TPR@FPR5\%, +0,104 ở TPR@ngưỡng và +0,012 ở ROC-AUC (tất cả đều có ý nghĩa thống kê).}
+  \label{fig:tab_bootstrap}
+\end{figure}
+
+\paragraph{Kiểm chứng độ tin cậy của EDA và Fairness:}
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Tác động của missing và cờ \texttt{\_flag} (\Cref{fig:tab_exp_missing}):} Khi loại bỏ cả 6 cột missing và 6 cờ \texttt{\_flag} (còn 27 đặc trưng), ROC-AUC của LightGBM giảm từ $0,8986$ xuống $0,8837$ và TPR@FPR5\% giảm từ $0,5798$ xuống $0,5448$. Điều này khẳng định dữ liệu khuyết mang tín hiệu dự đoán quan trọng.
+  \item \textbf{Temporal Split vs Random Split (\Cref{fig:tab_exp_split}):} Nếu chia ngẫu nhiên (trộn lẫn tháng 0--7), LightGBM trên tập con tháng 7 cho FPR bị trượt lên $0,0634$ (vượt ngưỡng cho phép 5\%) và PR-AUC giảm từ $0,2173$ xuống $0,2060$, chứng minh chia ngẫu nhiên gây đánh giá sai lệch khi triển khai thực tế.
+  \item \textbf{Công bằng theo nhóm tuổi:} Với ngưỡng chung, nhóm $\ge 50$ tuổi bị báo động nhầm (FPR) tới \textbf{10,12\%}, gấp 3 lần nhóm $< 50$ tuổi (3,35\%, $\text{FPR ratio} = 0,331$). Việc bỏ biến \texttt{customer\_age} không giải quyết triệt để vấn đề vì các biến khác vẫn làm rò rỉ thông tin tuổi (\textit{proxy leakage}, $\text{AUC} = 0,835$), khiến FPR nhóm $\ge 50$ vẫn là $8,68\%$. Khi áp dụng ngưỡng riêng theo nhóm, FPR ratio cân bằng về mức \textbf{1,014} ($4,63\%$ vs $4,56\%$).
+\end{enumerate}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.86\linewidth]{tabular/c96_f0.png}
+  \caption{Thực nghiệm kiểm chứng tác động của dữ liệu khuyết: bỏ 6 cột missing và 6 cờ \texttt{\_flag} làm TPR@FPR5\% của LightGBM giảm từ 0,5798 xuống 0,5448 và ROC-AUC giảm từ 0,8986 xuống 0,8837.}
+  \label{fig:tab_exp_missing}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.86\linewidth]{tabular/c99_f0.png}
+  \caption{Đối chiếu Temporal Split và Stratified Random Split: chia ngẫu nhiên làm LightGBM mất kiểm soát ngưỡng FPR trên tháng 7 (tăng từ 0,0422 lên 0,0634) và giảm PR-AUC từ 0,2173 xuống 0,2060.}
+  \label{fig:tab_exp_split}
+\end{figure}

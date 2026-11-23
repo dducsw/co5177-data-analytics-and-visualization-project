@@ -1,0 +1,28 @@
+\section{Giới thiệu chung}
+\label{sec:intro}
+
+Bài tập lớn học phần \textbf{Nền tảng lập trình cho phân tích và trực quan dữ liệu (CO5177)} đặt mục tiêu vận dụng quy trình khoa học dữ liệu hoàn chỉnh — từ thu thập, kiểm tra toàn vẹn (\textit{data sanity check}), khám phá dữ liệu (\textit{EDA}), tiền xử lý chống rò rỉ thông tin (\textit{data leakage}), đến huấn luyện, đối chiếu mô hình và phân tích lỗi (\textit{error analysis}).
+
+Theo yêu cầu của phiên bản đặc tả v4.0 dành cho nhóm 2 thành viên, \textbf{Group6} thực hiện đầy đủ 3 loại dữ liệu gồm: hai bài bắt buộc (\textbf{Tabular} và \textbf{Text}) và một bài tự chọn (\textbf{Image}). Mỗi bài toán được triển khai trong một Jupyter Notebook độc lập, chạy hoàn chỉnh từ đầu đến cuối (\textit{Run all}) trên Google Colab.
+
+\subsection{Tổng quan ba tập dữ liệu và mức độ đáp ứng yêu cầu}
+
+\Cref{tab:overview_datasets} tóm tắt quy mô, đặc trưng và cách tiếp cận chính của cả 3 tập dữ liệu nhóm lựa chọn. Tất cả các tập đều vượt ngưỡng quy mô tối thiểu và giải quyết các thách thức thực tế như mất cân bằng nhãn (\textit{class imbalance}), trôi dạt phân phối theo thời gian (\textit{temporal shift}), bài viết gần trùng (\textit{near-duplicate}) hay nhiễu thị giác giữa các lớp cảnh quan tương đồng.
+
+\begin{table}[H]
+  \centering
+  \caption{Tổng hợp 3 tập dữ liệu và kết quả đối chiếu đáp ứng quy định Assignment v4.}
+  \label{tab:overview_datasets}
+  \begin{tabularx}{\linewidth}{l p{3.2cm} p{3.2cm} X}
+    \toprule
+    \textbf{Loại dữ liệu} & \textbf{Tập dữ liệu} & \textbf{Quy mô} & \textbf{Thách thức \& Hướng tiếp cận chính} \\
+    \midrule
+    Tabular & Bank Account Fraud (\textit{Base.csv}) \cite{jesus2022turning} & 1.000.000 dòng, 32 cột & Gian lận chỉ chiếm 1,10\%, có missing ẩn (\texttt{-1}) và \textit{temporal shift}. Dùng \textit{Temporal Split}, Logistic Regression vs LightGBM, kiểm định Bootstrap \& Fairness. \\
+    Text & VnEconomy Financial News (tự \textit{crawl}) & 5.000 bài, 5 lớp (1.000 bài/lớp) & Văn bản tiếng Việt tự thu thập, có \textit{near-duplicate} (5,0\%) và rò rỉ tên tác giả. Dùng \textit{StratifiedGroupKFold}, TF-IDF, so sánh Naive Bayes, Logistic Regression và LinearSVC. \\
+    Image & Intel Image Classification \cite{bansal2019intel} & 17.034 ảnh (14.034 Train, 3.000 Test), 6 lớp & Độ phân giải $\sim 150\times 150$ px. Đối chiếu 4 hệ quy chiếu: \textit{From Scratch} (SimpleCNN, ResNet-18), \textit{Linear Probe}, \textit{Fine-tuning} (ResNet-18, ViT-B/16), \textit{Zero-shot CLIP} và Grad-CAM. \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\subsection{Cấu trúc báo cáo}
+Báo cáo được tổ chức thành 5 chương: \Cref{sec:intro} giới thiệu tổng quan; \Cref{sec:tabular}, \Cref{sec:text}, và \Cref{sec:image} lần lượt trình bày chi tiết quy trình EDA, thiết kế pipeline chống rò rỉ, kết quả thực nghiệm đối chiếu và phân tích lỗi cho từng loại dữ liệu; cuối cùng \Cref{sec:conclusion} tổng kết các bài học kỹ thuật rút ra từ toàn bộ dự án.

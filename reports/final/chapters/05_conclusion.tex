@@ -1,0 +1,11 @@
+\section{Tổng kết chung}
+\label{sec:conclusion}
+
+Qua quá trình thực hiện bài tập lớn trên cả ba dạng dữ liệu (\textbf{Tabular}, \textbf{Text}, và \textbf{Image}), nhóm rút ra bốn bài học kỹ thuật trọng tâm:
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Kiểm tra toàn vẹn và chống rò rỉ dữ liệu quyết định tính tin cậy của mô hình:} Việc phát hiện missing ẩn (\texttt{-1}) và \textit{temporal shift} ở bài Tabular, cụm bài \textit{near-duplicate} và rò rỉ tên tác giả ở bài Text, hay tách tập phân tầng độc lập ở bài Image giúp tránh đánh giá lạc quan giả tạo (\textit{data leakage}).
+  \item \textbf{EDA định lượng là kim chỉ nam cho tiền xử lý:} Mỗi bước tiền xử lý đều có thực nghiệm kiểm chứng — từ việc giữ cờ \texttt{\_flag} giúp giữ nguyên ROC-AUC $0,8986$ trên LightGBM, chuẩn hóa Unicode/bỏ dấu tiếng Việt và \texttt{StratifiedGroupKFold} cho LinearSVC đạt Macro-F1 $0,9668$, đến việc dùng Grad-CAM giải thích sai số trên cặp \textit{mountain}--\textit{glacier}.
+  \item \textbf{Đối chiếu đa mô hình gắn với bài toán triển khai:} Không có mô hình tốt nhất tuyệt đối cho mọi ngữ cảnh. Ở bài toán ảnh, \textit{ViT-B/16 (Fine-tune)} đạt Accuracy cao nhất (94,87\%) nhưng \textit{ResNet-18 (Fine-tune)} lại tối ưu hơn cho hệ thống thời gian thực (93,90\% với độ trễ chỉ 3,42 ms/ảnh), còn \textit{CLIP Zero-shot} (93,43\%) chứng minh hiệu quả vượt trội khi thiếu dữ liệu gán nhãn.
+  \item \textbf{Tính công bằng và giới hạn thực tế:} Trong bài toán tài chính nhạy cảm (\textit{Bank Account Fraud}), tối ưu hóa một ngưỡng duy nhất có thể gây bất công cho nhóm khách hàng $\ge 50$ tuổi ($\text{FPR} = 10,12\%$ vs $3,35\%$). Việc thiết lập ngưỡng theo nhóm giúp đưa tỷ lệ báo động nhầm về mức cân bằng ($\text{FPR ratio} = 1,014$), đồng thời chỉ ra sự cần thiết của kiểm định công bằng (\textit{Fairness auditing}) trước khi đưa mô hình vào vận hành.
+\end{enumerate}
