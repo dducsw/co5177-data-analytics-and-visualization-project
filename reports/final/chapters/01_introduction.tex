@@ -15,7 +15,7 @@ Báo cáo này trình bày kết quả nghiên cứu, trực quan hóa và thự
     \midrule
     Bảng (\textit{Tabular}) & Bank Account Fraud (\texttt{Base.csv}) \cite{jesus2022turning} & 1.000.000 hồ sơ, 32 thuộc tính, 2 lớp & Tỷ lệ gian lận 1,10\%, dữ liệu khuyết mã hóa bằng số âm và dịch chuyển phân phối theo thời gian. Dùng \textit{Temporal Split}, đối chiếu Logistic Regression với LightGBM, đánh giá Bootstrap và công bằng theo nhóm tuổi. \\
     Văn bản (\textit{Text}) & Tin tức tài chính VnEconomy (tự thu thập) & 5.000 bài báo, 11 trường, 5 chuyên mục & Chuẩn hóa Unicode/dấu thanh tiếng Việt, cụm bài gần trùng (5,0\%) và rò rỉ theo tác giả. Dùng \textit{StratifiedGroupKFold}, TF-IDF, đối chiếu MultinomialNB, Logistic Regression và LinearSVC. \\
-    Ảnh (\textit{Image}) & Intel Image Classification \cite{bansal2019intel} & 17.034 ảnh RGB (14.034 Train, 3.000 Test), 6 lớp & Giao thoa thị giác giữa các cặp cảnh quan gần giống nhau. Đối chiếu 7 cấu hình thuộc 4 hướng: \textit{From Scratch}, \textit{Linear Probe}, \textit{Fine-tuning} (ResNet-18, ViT-B/16), \textit{Zero-shot CLIP} và Grad-CAM. \\
+    Ảnh (\textit{Image}) & Intel Image Classification \cite{bansal2019intel} & 17.034 ảnh RGB (14.034 Train, 3.000 Test), 6 lớp & Giao thoa thị giác giữa các cặp cảnh quan gần giống nhau. Đối chiếu 7 cấu hình học sâu/VLM (\textit{From Scratch}, \textit{Linear Probe}, \textit{Fine-tuning} ResNet-18 \& ViT-B/16, \textit{Zero-shot CLIP}) cùng học máy truyền thống \texttt{Scikit-learn} trên vector trích xuất và Grad-CAM. \\
     \bottomrule
   \end{tabularx}
 \end{table}
