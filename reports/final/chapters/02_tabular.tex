@@ -93,7 +93,7 @@ Theo tài liệu đặc tả (Datasheet) kèm theo bài báo NeurIPS 2022, toàn
 Khảo sát dữ liệu làm nổi bật hai tầng mất cân bằng cấu trúc sâu sắc được bài báo NeurIPS 2022 \cite{jesus2022turning} nhấn mạnh:
 
 \paragraph{a) Mất cân bằng nhãn mục tiêu cực đoan (Target Class Imbalance):}
-Biến mục tiêu \texttt{fraud\_bool} (\Cref{fig:tab_imbalance}) chỉ ghi nhận 11.029 hồ sơ gian lận (tỷ lệ 1,10\%), so với 988.971 hồ sơ hợp pháp (tỷ lệ 98,90\%). Mức độ mất cân bằng xấp xỉ 1:89 này dẫn đến nghịch lý độ chính xác (Accuracy Paradox): một bộ phân loại luôn đoán nhãn hợp pháp sẽ đạt ngay accuracy = 98,90\%, nhưng hoàn toàn vô giá trị trong thực tiễn vì bỏ lọt 100\% tội phạm. Do đó, thước đo cốt lõi được áp dụng xuyên suốt là TPR@5\%FPR, đi kèm ROC-AUC và PR-AUC.
+Biến mục tiêu \texttt{fraud\_bool} (\Cref{fig:tab_imbalance}) chỉ ghi nhận 11.029 hồ sơ gian lận (tỷ lệ 1,10\%), so với 988.971 hồ sơ hợp pháp (tỷ lệ 98,90\%). Mức độ mất cân bằng xấp xỉ 1:89 này dẫn đến nghịch lý độ chính xác (Accuracy Paradox): một bộ phân loại luôn đoán nhãn hợp pháp sẽ đạt ngay Accuracy = 98,90\%, nhưng hoàn toàn vô giá trị trong thực tiễn vì bỏ lọt 100\% tội phạm. Do đó, thước đo cốt lõi được áp dụng xuyên suốt là TPR@FPR5\%, đi kèm ROC-AUC và PR-AUC.
 
 \begin{figure}[H]
   \centering
@@ -207,13 +207,13 @@ Ba cờ còn lại (current\_address\_months\_count, session\_length\_in\_minute
 \begin{figure}[H]
   \centering
   \includegraphics[width=1.0\linewidth]{tabular/c33_f0.png}
-  \caption{Biến dạng phân phối của bank\_months\_count khi bị điền trung vị nhân tạo 15 tháng trên tập huấn luyện.}
+  \caption{Biến dạng phân phối của bank\_months\_count khi bị điền trung vị nhân tạo 15 tháng trên tập huấn luyện (biểu đồ chồng cột phân tách dữ liệu gốc và phần điền khuyết).}
   \label{fig:tab_missing_median}
 \end{figure}
 
 Thử nghiệm điền trung vị (15,0 tháng) cho biến bank\_months\_count (\Cref{fig:tab_missing_median}) tạo ra một cột nhọn đột biến nhân tạo chiếm tới 25,10\% mẫu. Phép gán này phá vỡ phân phối thực tế, đồng thời xóa sạch dấu vết hành vi né tránh che giấu thông tin của kẻ gian.
 
-Do đó, đối với mô hình cây (LightGBM), giải pháp tối ưu là giữ nguyên giá trị khuyết để thuật toán tự học hướng rẽ tối ưu kết hợp cùng 6 cờ chỉ báo khuyết; việc điền trung vị chỉ áp dụng cục bộ trong pipeline của Logistic Regression.
+Do đó, đối với mô hình cây (LightGBM), giải pháp tối ưu là giữ nguyên giá trị khuyết để thuật toán tự học hướng rẽ tối ưu kết hợp cùng 6 cờ chỉ báo khuyết; việc điền trung vị chỉ áp dụng cục bộ trong quy trình của Logistic Regression.
 
 \subsubsection{Khám phá đặc trưng phân loại, định danh và hành vi phiên}
 Quá trình phân tích chuyên sâu các nhóm biến phân loại, định danh và hành vi phiên trên tập huấn luyện được tiến hành xen kẽ theo từng cụm đặc trưng so với mức tỷ lệ gian lận nền 1,03\%.
@@ -465,7 +465,7 @@ Ngược lại, Robust Scaler sử dụng trung vị và khoảng tứ phân v�
 \begin{equation}
   x_{\text{scaled}} = \frac{x - \text{median}(x)}{\text{IQR}(x)}
 \end{equation}
-Nhờ đó, phân phối gốc được giữ nguyên hình dạng và hoàn toàn không bị ảnh hưởng tiêu cực bởi các giá trị cực đại. Robust Scaler do đó được chọn làm kỹ thuật chuẩn hóa chính trong pipeline tuyến tính, trong khi mô hình cây LightGBM không bị phụ thuộc vào độ lớn của biến nên không cần thực hiện chuẩn hóa.
+Nhờ đó, phân phối gốc được giữ nguyên hình dạng và hoàn toàn không bị ảnh hưởng tiêu cực bởi các giá trị cực đại. Robust Scaler do đó được chọn làm kỹ thuật chuẩn hóa chính trong quy trình tuyến tính, trong khi mô hình cây LightGBM không bị phụ thuộc vào độ lớn của biến nên không cần thực hiện chuẩn hóa.
 
 \subsubsection{Kỹ thuật đặc trưng (Feature Engineering)}
 Dựa trên những phát hiện và giả thuyết định lượng từ bước EDA, nhóm xây dựng thêm 6 đặc trưng tỷ lệ mang ý nghĩa kinh tế -- hành vi rõ ràng:
@@ -477,7 +477,7 @@ Dựa trên những phát hiện và giả thuyết định lượng từ bướ
 
 Kết hợp 31 biến gốc còn lại (đã loại bỏ \texttt{device\_fraud\_count}), 6 cờ chỉ báo khuyết \texttt{\_flag}, 6 đặc trưng tỷ lệ mới tạo và biến chỉ số tháng \texttt{month}, tập dữ liệu đầu vào hoàn chỉnh bao gồm 42 thuộc tính.
 
-\subsubsection{Thiết lập quy trình tiền xử lý và pipeline mô hình}
+\subsubsection{Thiết lập quy trình tiền xử lý và mô hình}
 Để ngăn chặn hoàn toàn nguy cơ rò rỉ thông tin từ Validation và Test vào tập huấn luyện, quy trình tiền xử lý được thiết kế chuyên biệt cho từng họ mô hình:
 
 \paragraph{a) Logistic Regression (Mô hình cơ sở):}
@@ -674,7 +674,7 @@ Phép chia ngẫu nhiên 80/10/10 trộn lẫn cả 8 tháng tạo ra sự lạc
 
 Nguy hại hơn, ngưỡng xác suất chọn từ tập Validation ngẫu nhiên không hề phản ánh sự gia tăng tỷ lệ gian lận của tháng 7, dẫn đến việc khi triển khai thực tế trên tháng 7, tỷ lệ báo động nhầm của LightGBM tăng vọt lên 6,34\%, phá vỡ hoàn toàn ngân sách rủi ro $\le 5\%$ của ngân hàng.
 
-\Cref{tab:tab_temporal_vs_random} trình bày bảng dữ liệu đối chứng chi tiết từ notebook phân tích (cell 99), thể hiện rõ ràng mức độ vọt trần của chỉ số FPR (0,0634 tương ứng 6,34\%) cùng các thước đo liên quan:
+\Cref{tab:tab_temporal_vs_random} trình bày bảng dữ liệu đối chứng chi tiết từ notebook phân tích, thể hiện rõ ràng mức độ vọt trần của chỉ số FPR (0,0634 tương ứng 6,34\%) cùng các thước đo liên quan:
 
 \begin{table}[H]
   \centering
