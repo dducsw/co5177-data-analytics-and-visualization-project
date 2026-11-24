@@ -11,6 +11,7 @@ Khảo sát của \cite{jesus2022turning} chỉ ra rằng các tập dữ liệu
 
 Để giải quyết khoảng trống này, nhóm tác giả Feedzai và Đại học Porto đã công bố bộ dữ liệu chuẩn \textit{Bank Account Fraud (BAF)} tại Hội nghị NeurIPS 2022 \cite{jesus2022turning}. Trong xã hội hiện đại, mở tài khoản ngân hàng là dịch vụ tài chính thiết yếu; việc bị kiểm soát cửa sai lệch (gate-keeping) hoặc từ chối oan uổng sẽ tước đoạt cơ hội tiếp cận nền kinh tế số của công dân. Ngược lại, nếu lỏng lẻo trong khâu tiếp nhận (Digital Onboarding / eKYC), ngân hàng sẽ trở thành nạn nhân của tội phạm đánh cắp danh tính (Identity Theft) hoặc danh tính giả mạo (Synthetic Identity) nhằm chiếm đoạt hạn mức thấu chi và rửa tiền.
 
+\clearpage
 Bài báo gốc giải quyết triệt để hai thách thức cốt tử của dữ liệu ngân hàng thực tế thông qua hai cơ chế thiết kế nền tảng:
 \begin{itemize}[leftmargin=*]
   \item \textbf{Khắc phục thiên lệch dán nhãn chọn lọc (Selective Labelling Bias):} Trong vận hành thông thường, ngân hàng chỉ biết được nhãn thực tế (gian lận hay hợp pháp) của những hồ sơ được phê duyệt; những đơn bị hệ thống quy tắc chặn trước sẽ không bao giờ có nhãn thật. Trong BAF, quy trình tiền sàng lọc (pre-screening) được tối giản hóa tối đa, chỉ giữ lại các điều kiện bắt buộc theo luật gồm chống rửa tiền (AML) và độ tuổi cư dân $\ge 18$, nhờ đó bảo toàn được phổ mẫu ứng viên rộng nhất và tự nhiên nhất.
@@ -108,7 +109,7 @@ Về quy mô đại diện nhóm (Group Representation Imbalance), nhóm khách 
 
 Về chênh lệch tỷ lệ rủi ro nền (Prevalence Disparity), tỷ lệ gian lận nền ở nhóm người lớn tuổi cao gấp 2 đến 3 lần so với nhóm trẻ ($\sim 1,8\%$--$2,2\%$ so với $\sim 0,75\%$--$0,90\%$). Kẻ lừa đảo đánh cắp thông tin cá nhân có xu hướng tập trung mạo danh người cao tuổi vì nhóm này tích lũy điểm uy tín tín dụng tốt hơn và ít khả năng giám sát tài khoản ngân hàng số tức thời.
 
-Chính sự mất cân bằng nhân khẩu học này biến bài toán phát hiện gian lận mở tài khoản thành một bài kiểm tra khắc nghiệt (stress-test) đối với các thuật toán học máy công bằng (Fair ML). Trong thực tế ngân hàng, năng lực thẩm định thủ công của chuyên viên rủi ro là có giới hạn; hệ thống kiểm soát chỉ có thể điều tra tối đa 5\% tổng lượng hồ sơ nộp vào. Do đó, tỷ lệ báo động nhầm (false positive rate - fpr) bắt buộc phải khống chế ở mức $\text{FPR} \le 5\%$, định hình nên thước đo chuẩn TPR@5\%FPR.
+Chính sự mất cân bằng nhân khẩu học này biến bài toán phát hiện gian lận mở tài khoản thành một bài kiểm tra khắc nghiệt (stress-test) đối với các thuật toán học máy công bằng (Fair ML). Trong thực tế ngân hàng, năng lực thẩm định thủ công của chuyên viên rủi ro là có giới hạn; hệ thống kiểm soát chỉ có thể điều tra tối đa 5\% tổng lượng hồ sơ nộp vào. Do đó, tỷ lệ báo động nhầm (False Positive Rate - FPR) bắt buộc phải khống chế ở mức $\text{FPR} \le 5\%$, định hình nên thước đo chuẩn TPR@FPR5\%.
 
 Khi tỷ lệ rủi ro nền giữa hai nhóm tuổi chênh lệch tới 3 lần, một mô hình tối ưu theo ngưỡng xác suất chung sẽ tất yếu gây ra sự chênh lệch lớn về tỷ lệ báo động nhầm, khiến người cao tuổi hợp pháp bị nghi ngờ và chặn nhầm nhiều hơn gấp nhiều lần so với người trẻ. Thách thức cốt lõi là làm sao vừa tối đa hóa tỷ lệ bắt gian lận (TPR), vừa đảm bảo tính công bằng giữa các nhóm nhân khẩu học.
 
@@ -229,9 +230,9 @@ Khảo sát phân bố rủi ro theo các lựa chọn phân loại nền tảng
 
 Về hệ điều hành thiết bị (device\_os), nhóm windows (chiếm 26,8\% lượng đơn) có tỷ lệ gian lận cao đột biến 2,30\% (gấp 2,23 lần mức nền), theo sau là macintosh (1,26\%), trong khi linux và other rất an toàn ($\sim 0,5\%$). Điều này phản ánh rõ nét việc tội phạm công nghệ cao thường ưu tiên triển khai máy ảo (virtual machine), công cụ tự động hóa hoặc script chạy trên nền tảng Windows để nộp hồ sơ hàng loạt.
 
-Về phương thức thanh toán (payment\_type), nhóm AC ghi nhận rủi ro cao nhất (1,58\%), tiếp đến là AB (1,04\%) và AD (0,98\%), trong khi AA (0,56\%) và AE (0,48\%) an toàn hơn rõ rệt. Kẻ gian thường lựa chọn các phương thức thanh toán có quy trình đối soát lỏng lẻo hơn hoặc khó truy đòi bồi hoàn.
+Về phương thức thanh toán (payment\_type), nhóm AC ghi nhận rủi ro cao nhất (1,58\%), tiếp đến là AB (1,04\%) và AD (0,98\%), trong khi AA (0,56\%) và AE (0,48\%) an toàn hơn rõ rệt.
 
-Đáng chú ý nhất, tình trạng nơi ở (housing\_status) thể hiện sự cách biệt cực lớn: nhóm mã hóa BA ghi nhận tỷ lệ gian lận áp đảo lên tới 3,52\% (gấp 3,4 lần mức nền), hoàn toàn vượt trội so với các nhóm cư trú ổn định khác (BB 0,67\%, BC 0,59\%, BD 0,58\% và BE 0,32\%). Các đối tượng đi thuê trọ ngắn hạn hoặc sử dụng địa chỉ không có thực thường tập trung ở nhóm này, tạo nên sự phân hóa rủi ro sâu sắc nhất trong các biến phân loại.
+Đáng chú ý nhất, tình trạng nơi ở (housing\_status) thể hiện sự cách biệt cực lớn: nhóm mã hóa BA ghi nhận tỷ lệ gian lận áp đảo lên tới 3,52\% (gấp 3,4 lần mức nền), hoàn toàn vượt trội so với các nhóm cư trú khác (BB 0,67\%, BC 0,59\%, BD 0,58\% và BE 0,32\%), biến đây thành thuộc tính phân hóa rủi ro mạnh nhất trong số các biến phân loại.
 
 \paragraph{b) Kênh giao dịch và các cờ định danh xác thực:}
 \begin{figure}[H]
@@ -261,7 +262,7 @@ Về xác thực điện thoại di động (phone\_mobile\_valid), hồ sơ kh�
 
 Đánh giá sự phân hóa xã hội học và dấu vết thao tác phiên trên tập huấn luyện (\Cref{fig:tab_emp_session}) tiếp tục củng cố các giả thuyết về hành vi:
 
-Tình trạng nghề nghiệp (employment\_status) ghi nhận mức phân hóa rủi ro kỷ lục hơn 12 lần giữa các nhóm: từ đỉnh 2,34\% ở nhóm CC, 1,26\% ở CG và 1,13\% ở CA, giảm mạnh xuống 0,40\% ở CD, 0,21\% ở CE và chỉ 0,19\% ở nhóm an toàn nhất CF. Kẻ gian thường lựa chọn khai báo các nhóm ngành nghề tự do hoặc tạm thời để dễ hợp thức hóa thu nhập mà ít bị yêu cầu chứng minh hợp đồng lao động hay bảng lương chính thức.
+Tình trạng nghề nghiệp (employment\_status) ghi nhận mức phân hóa rủi ro kỷ lục hơn 12 lần giữa các nhóm: từ đỉnh 2,34\% ở nhóm CC, 1,26\% ở CG và 1,13\% ở CA, giảm mạnh xuống 0,40\% ở CD, 0,21\% ở CE và chỉ 0,19\% ở nhóm thấp nhất CF.
 
 Về duy trì phiên đăng nhập (keep\_alive\_session), hồ sơ không kích hoạt duy trì phiên có tỷ lệ gian lận vọt lên 1,58\%, cao gấp 2,6 lần so với nhóm có duy trì phiên (0,60\%). Khách hàng chân chính thường có xu hướng lưu lại phiên đăng nhập để tiện sử dụng lâu dài, trong khi tội phạm thao tác có kịch bản định sẵn, hoàn thành nộp đơn là ngắt kết nối ngay lập tức nhằm tránh bị hệ thống giám sát theo dõi dấu vết phiên làm việc.
 
@@ -286,7 +287,14 @@ Một giả thuyết kinh điển trong quản trị rủi ro ngân hàng là: t
 
 Hiện tượng này phản ánh thực tế rằng các đợt bùng nổ hồ sơ thường là các chiến dịch tiếp thị số chính thống của ngân hàng thu hút lượng lớn khách hàng thông thường nộp đơn cùng lúc. Ngược lại, tội phạm chuyên nghiệp thường nộp đơn rải rác, chậm rãi hoặc có chủ đích thăm dò để tránh kích hoạt các cảnh báo lưu lượng của hệ thống phòng vệ. Vì ngoại lai không đại diện cho lỗi đo lường hay hành vi gian lận tập trung, việc cắt tỉa ngoại lai sẽ làm mất tín hiệu phân lớp và gây sai lệch mô hình. Do đó, toàn bộ các giá trị cực trị (bao gồm cả 20 hồ sơ có vận tốc âm) đều được giữ lại nguyên vẹn trong dữ liệu.
 
-Đồng thời, ba khung vận tốc (velocity\_6h, velocity\_24h, velocity\_4w) có mức tương quan vừa phải (hệ số $r$ dao động từ 0,30 đến 0,40), bổ trợ thông tin cho nhau qua các thang thời gian ngắn hạn, trung hạn và dài hạn mà không gây hiện tượng đa cộng tuyến nghiêm trọng.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1.0\linewidth]{tabular/c44_f0.png}
+  \caption{Ma trận tương quan giữa ba khung vận tốc (velocity\_6h, velocity\_24h, velocity\_4w), phân bố tỷ lệ gian lận theo ngũ phân vị mật độ bưu chính (zip\_count\_4w) và độ trễ nộp đơn (days\_since\_request) trên tập huấn luyện.}
+  \label{fig:tab_velocity_corr}
+\end{figure}
+
+Đồng thời, ba khung vận tốc (velocity\_6h, velocity\_24h, velocity\_4w) có mức tương quan vừa phải (hệ số $r$ dao động từ 0,30 đến 0,40), bổ trợ thông tin cho nhau qua các thang thời gian ngắn hạn, trung hạn và dài hạn mà không gây hiện tượng đa cộng tuyến nghiêm trọng (\Cref{fig:tab_velocity_corr}). Bên cạnh đó, biến mật độ nộp đơn theo mã bưu chính (zip\_count\_4w) khi tăng lên chỉ làm rủi ro nhích nhẹ từ 0,92\% lên 1,15\%, cho thấy tín hiệu phân loại đơn lẻ khá yếu; trong khi độ trễ nộp đơn (days\_since\_request) ghi nhận rủi ro gia tăng đột biến ở nhóm 1--5 ngày (1,99\%).
 
 \paragraph{a) Lưu lượng chi nhánh và thời lượng phiên thao tác:}
 \begin{figure}[H]
@@ -300,33 +308,40 @@ Lưu lượng chi nhánh (bank\_branch\_count\_8w, \Cref{fig:tab_branch_session}
 
 Đồng thời, thời lượng phiên thao tác (session\_length\_in\_minutes) cho thấy phần lớn khách hàng hợp pháp hoàn thành quy trình trong 2--15 phút với tỷ lệ gian lận ổn định quanh mức nền (0,98\%--1,05\%). Ngược lại, các phiên thao tác kéo dài bất thường trên 30 phút ghi nhận tỷ lệ gian lận tăng vọt lên 1,80\%. Đây là dấu hiệu của đối tượng gặp khó khăn khi cung cấp thông tin, đối tượng phải dò tìm dữ liệu giả mạo từ các tập hồ sơ mua bán thông tin cá nhân, hoặc cố tình treo phiên để xử lý thủ công qua nhiều bước trung gian.
 
-\paragraph{b) Mạng lưới thiết bị dùng chung và độ trễ nộp đơn:}
+\paragraph{b) Mạng lưới thiết bị dùng chung và trùng lặp danh tính:}
 \begin{figure}[H]
   \centering
   \includegraphics[width=1.0\linewidth]{tabular/c48_f0.png}
-  \caption{Tỷ lệ gian lận theo số lượng email dùng chung trên cùng thiết bị (device\_distinct\_emails\_8w) và khoảng cách ngày nộp đơn (days\_since\_request) trên tập huấn luyện.}
+  \caption{Tỷ lệ gian lận theo số lượng email dùng chung trên cùng thiết bị (device\_distinct\_emails\_8w) và phân vị email trùng ngày sinh (date\_of\_birth\_distinct\_emails\_4w) trên tập huấn luyện.}
   \label{fig:tab_device_emails}
 \end{figure}
 
-Khảo sát mạng lưới dùng chung thiết bị và độ trễ nộp đơn (\Cref{fig:tab_device_emails}) cho thấy tín hiệu cảnh báo mạnh mẽ:
+Khảo sát mạng lưới dùng chung thiết bị và độ trễ nộp đơn (\Cref{fig:tab_device_emails,fig:tab_velocity_corr}) cho thấy tín hiệu cảnh báo mạnh mẽ:
 
 Khi một thiết bị ghi nhận từ 2 email khác nhau nộp đơn trong vòng 8 tuần (device\_distinct\_emails\_8w, gồm 22.583 hồ sơ), tỷ lệ gian lận nhảy vọt lên 3,88\%, gấp gần 4 lần mức nền. Đây là dấu hiệu điển hình của việc một nhóm tội phạm sử dụng chung thiết bị vật lý hoặc máy ảo để nộp hàng loạt tài khoản giả mạo nhằm chiếm dụng hạn mức.
 
-Về độ trễ nộp đơn (days\_since\_request): Đa số hồ sơ (hơn 91\%) được hoàn tất gần như ngay lập tức trong ngày đầu tiên với tỷ lệ gian lận ở mức chuẩn 1,01\%. Tuy nhiên, nhóm có độ trễ từ 1 đến 5 ngày ghi nhận tỷ lệ gian lận tăng vọt lên 1,99\% (gần gấp đôi mức trung bình). Đây là nhóm hồ sơ thường vướng xác minh bổ sung hoặc kẻ gian quay lại thao tác sau nhiều lần thử gián đoạn.
+Về độ trễ nộp đơn (days\_since\_request, \Cref{fig:tab_velocity_corr}): Đa số hồ sơ (hơn 91\%) được hoàn tất gần như ngay lập tức trong ngày đầu tiên với tỷ lệ gian lận ở mức chuẩn 1,01\%. Tuy nhiên, nhóm có độ trễ từ 1 đến 5 ngày ghi nhận tỷ lệ gian lận tăng vọt lên 1,99\% (gần gấp đôi mức trung bình). Đây là nhóm hồ sơ thường vướng xác minh bổ sung hoặc kẻ gian quay lại thao tác sau nhiều lần thử gián đoạn.
 
 Đáng chú ý, thuộc tính ngày sinh trùng email (date\_of\_birth\_distinct\_emails\_4w) cho thấy nhóm ít email trùng ngày sinh nhất ($\le 5$ email) lại có rủi ro cao nhất (1,81\%), sau đó giảm dần về 0,61\% (hệ số tương quan âm nhẹ $r = -0,043$). Điều này phản ánh thủ đoạn tinh vi của tội phạm: chủ động phân tán ngày sinh ngẫu nhiên khi tạo danh tính giả mạo để tránh bị các bộ lọc trùng lặp đơn giản phát hiện.
 
 \subsubsection{Đặc trưng tài chính và tương tác phi tuyến}
 \begin{figure}[H]
   \centering
+  \includegraphics[width=1.0\linewidth]{tabular/c50_f0.png}
+  \caption{Tỷ lệ gian lận theo phân khúc hạn mức tín dụng đề xuất (proposed\_credit\_limit) và cờ sở hữu thẻ khác cùng ngân hàng (has\_other\_cards) trên tập huấn luyện.}
+  \label{fig:tab_credit_cards}
+\end{figure}
+
+Ở nhóm thuộc tính tài chính (\Cref{fig:tab_credit_cards}), hạn mức đề xuất (proposed\_credit\_limit) tỷ lệ thuận với rủi ro: tăng đều từ 0,68\% (hạn mức $\le 200$) lên 0,96\% (201--500) và chạm 1,90\% khi vượt quá 500 (gần gấp đôi mức nền). Theo tài liệu đặc tả Datasheet \cite{jesus2022turning}, đây là hạn mức do chính người nộp đơn tự đề xuất khi mở tài khoản. Do đó, hạn mức cao thể hiện lòng tham và mục tiêu trục lợi trực tiếp của kẻ gian muốn rút cạn số tiền tối đa từ ngân hàng trước khi vỡ nợ nhân tạo.
+
+Trái lại, việc khách hàng đã sở hữu thẻ tín dụng khác cùng ngân hàng (has\_other\_cards = 1) đóng vai trò là yếu tố bảo vệ uy tín mạnh: tỷ lệ gian lận ở nhóm này chỉ có 0,41\%, thấp hơn gần 3 lần so với nhóm chưa có thẻ (1,20\%) do khách hàng hiện hữu đã trải qua các vòng thẩm định danh tính và lịch sử tín dụng trước đó.
+
+\begin{figure}[H]
+  \centering
   \includegraphics[width=0.72\linewidth]{tabular/c52_f0.png}
   \caption{Bản đồ nhiệt tỷ lệ gian lận theo tương tác hai chiều giữa Điểm rủi ro tín dụng (credit\_risk\_score) và Hạn mức đề xuất (proposed\_credit\_limit) trên tập huấn luyện.}
   \label{fig:tab_interact_credit_limit}
 \end{figure}
-
-Ở nhóm thuộc tính tài chính, hạn mức đề xuất (proposed\_credit\_limit) tỷ lệ thuận với rủi ro: tăng đều từ 0,68\% (hạn mức $\le 200$) lên 0,96\% (201--500) và chạm 1,90\% khi vượt quá 500 (gần gấp đôi mức nền). Theo tài liệu đặc tả Datasheet \cite{jesus2022turning}, đây là hạn mức do chính người nộp đơn tự đề xuất khi mở tài khoản. Do đó, hạn mức cao thể hiện lòng tham và mục tiêu trục lợi trực tiếp của kẻ gian muốn rút cạn số tiền tối đa từ ngân hàng trước khi vỡ nợ nhân tạo.
-
-Trái lại, việc khách hàng đã sở hữu thẻ tín dụng khác cùng ngân hàng (has\_other\_cards = 1) đóng vai trò là yếu tố bảo vệ uy tín mạnh: tỷ lệ gian lận ở nhóm này chỉ có 0,41\%, thấp hơn gần 3 lần so với nhóm chưa có thẻ (1,20\%) do khách hàng hiện hữu đã trải qua các vòng thẩm định danh tính và lịch sử tín dụng trước đó.
 
 Đặc biệt, phân tích tương tác hai chiều phát hiện các cụm phi tuyến có rủi ro cực đoan. Khi kết hợp điểm rủi ro tín dụng cao (credit\_risk\_score > 300) với hạn mức nộp đơn lớn trong khoảng $(1500, 2100]$ (\Cref{fig:tab_interact_credit_limit}), tỷ lệ gian lận vọt lên tới 19,62\% (82/418 hồ sơ, CI 95\% Wilson $[16,09\%; 23,69\%]$), cao gấp 19 lần mức nền. Khi kiểm chứng độc lập trên tập Validation tháng 6, ô tương tác này vẫn duy trì tỷ lệ rủi ro cao 16,05\% với hệ số tương quan hạng Spearman giữa hai tập đạt $\rho = 0,712$. Hiện tượng này vạch trần thủ đoạn của tội phạm có tổ chức: chủ động "nuôi" hồ sơ tín nhiệm tốt và điểm rủi ro đẹp trong giai đoạn đầu nhằm mục đích nộp đơn xin cấp hạn mức tín dụng tối đa để chiếm đoạt tài sản.
 
@@ -399,8 +414,6 @@ Tương tự, bản đồ nhiệt tương tác giữa nơi ở và thiết bị 
   }
 \end{table}
 
-Đánh giá năng lực phân loại phi tuyến của 31 biến qua Thông tin tương hỗ (Mutual Information - MI, ước lượng trên mẫu phân tầng 100.000 hồ sơ từ tập huấn luyện nhằm bảo toàn trọn vẹn số ca gian lận và tối ưu thời gian tính toán) khẳng định housing\_status (0,0367), prev\_address\_months\_count (0,0288) và device\_os (0,0258) là các thuộc tính dẫn đầu. Đồng thời, kiểm tra chỉ số ổn định dân số (Population Stability Index - PSI) trên toàn bộ 794.989 hồ sơ giữa hai giai đoạn đầu (tháng 0--2) và sau (tháng 3--5) của tập huấn luyện cho thấy đại đa số biến ổn định ($\text{PSI} < 0,10$), ngoại trừ các biến vận tốc có trôi dạt mùa vụ (velocity\_4w: 4,1643) cần được bình thường hóa.
-
 \subsubsection{Khảo sát nhân khẩu học và tiền đề đánh giá công bằng (Fairness)}
 \begin{figure}[H]
   \centering
@@ -413,7 +426,14 @@ Khảo sát biến nhân khẩu học nhạy cảm độ tuổi (customer\_age, 
 
 Theo giải thích nghiệp vụ từ bài báo gốc \cite{jesus2022turning}, những kẻ lừa đảo đánh cắp danh tính hoặc mua bán thông tin cá nhân thường nhắm mục tiêu vào người cao tuổi do nhóm này tích lũy điểm uy tín tín dụng cao trong nhiều năm và ít có khả năng theo dõi tài khoản trực tuyến tức thời.
 
-Khi phân tách thành hai nhóm khách hàng tại mốc 50 tuổi: nhóm trẻ ($< 50$) chiếm đại đa số 81,2\% hồ sơ (645.755 đơn) với tỷ lệ gian lận thấp (0,75\%); trái lại nhóm lớn tuổi ($\ge 50$) chỉ chiếm 18,8\% hồ sơ (149.234 đơn) nhưng có tỷ lệ gian lận lên tới 2,21\%, tạo ra chênh lệch rủi ro nền lên tới 2,94 lần.
+Khi phân tách thành hai nhóm khách hàng tại mốc 50 tuổi (\Cref{fig:tab_demo_age_group}): nhóm trẻ ($< 50$) chiếm đại đa số 81,2\% hồ sơ (645.755 đơn) với tỷ lệ gian lận thấp (0,75\%); trái lại nhóm lớn tuổi ($\ge 50$) chỉ chiếm 18,8\% hồ sơ (149.234 đơn) nhưng có tỷ lệ gian lận lên tới 2,21\%, tạo ra chênh lệch rủi ro nền lên tới 2,94 lần.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.65\linewidth]{tabular/c64_f0.png}
+  \caption{Tỷ lệ gian lận theo hai phân nhóm độ tuổi ($< 50$ và $\ge 50$) trên tập huấn luyện.}
+  \label{fig:tab_demo_age_group}
+\end{figure}
 
 \begin{figure}[H]
   \centering
@@ -433,19 +453,19 @@ Sự chênh lệch tỷ lệ gian lận nền cố hữu theo nhân khẩu học
 \begin{figure}[H]
   \centering
   \includegraphics[width=1.0\linewidth]{tabular/c68_f0.png}
-  \caption{Phân phối của velocity\_6h và intended\_balcon\_amount trước và sau khi chuẩn hóa bằng standard scaler và robust scaler trên tập huấn luyện.}
+  \caption{Phân phối của velocity\_6h và intended\_balcon\_amount trước và sau khi chuẩn hóa bằng Standard Scaler và Robust Scaler trên tập huấn luyện.}
   \label{fig:tab_scaling}
 \end{figure}
 
 Đối với các biến số nạp vào mô hình tuyến tính (Logistic Regression), các biến có phân phối lệch nặng và chứa nhiều giá trị ngoại lai (như velocity\_6h và intended\_balcon\_amount) gây khó khăn lớn cho quá trình tối ưu gradient.
 
-\Cref{fig:tab_scaling} minh họa kết quả thử nghiệm hai phương pháp chuẩn hóa dữ liệu trên tập huấn luyện. Phương pháp standard scaler bị các giá trị ngoại lai cực lớn kéo dãn phương sai và độ lệch chuẩn, khiến phần lớn dữ liệu hợp pháp thông thường bị nén chặt vào một khoảng hẹp sát giá trị 0, làm mất độ phân giải đặc trưng.
+\Cref{fig:tab_scaling} minh họa kết quả thử nghiệm hai phương pháp chuẩn hóa dữ liệu trên tập huấn luyện. Phương pháp Standard Scaler bị các giá trị ngoại lai cực lớn kéo dãn phương sai và độ lệch chuẩn, khiến phần lớn dữ liệu hợp pháp thông thường bị nén chặt vào một khoảng hẹp sát giá trị 0, làm mất độ phân giải đặc trưng.
 
-Ngược lại, robust scaler sử dụng trung vị và khoảng tứ phân vị IQR ($\text{IQR} = Q_3 - Q_1$) để chuẩn hóa:
+Ngược lại, Robust Scaler sử dụng trung vị và khoảng tứ phân vị IQR ($\text{IQR} = Q_3 - Q_1$) để chuẩn hóa:
 \begin{equation}
   x_{\text{scaled}} = \frac{x - \text{median}(x)}{\text{IQR}(x)}
 \end{equation}
-Nhờ đó, phân phối gốc được giữ nguyên hình dạng và hoàn toàn không bị ảnh hưởng tiêu cực bởi các giá trị cực đại. robust scaler do đó được chọn làm kỹ thuật chuẩn hóa chính trong pipeline tuyến tính, trong khi mô hình cây LightGBM không bị phụ thuộc vào độ lớn của biến nên không cần thực hiện chuẩn hóa.
+Nhờ đó, phân phối gốc được giữ nguyên hình dạng và hoàn toàn không bị ảnh hưởng tiêu cực bởi các giá trị cực đại. Robust Scaler do đó được chọn làm kỹ thuật chuẩn hóa chính trong pipeline tuyến tính, trong khi mô hình cây LightGBM không bị phụ thuộc vào độ lớn của biến nên không cần thực hiện chuẩn hóa.
 
 \subsubsection{Kỹ thuật đặc trưng (Feature Engineering)}
 Dựa trên những phát hiện và giả thuyết định lượng từ bước EDA, nhóm xây dựng thêm 6 đặc trưng tỷ lệ mang ý nghĩa kinh tế -- hành vi rõ ràng:
@@ -457,13 +477,11 @@ Dựa trên những phát hiện và giả thuyết định lượng từ bướ
 
 Kết hợp 31 biến gốc còn lại (đã loại bỏ \texttt{device\_fraud\_count}), 6 cờ chỉ báo khuyết \texttt{\_flag}, 6 đặc trưng tỷ lệ mới tạo và biến chỉ số tháng \texttt{month}, tập dữ liệu đầu vào hoàn chỉnh bao gồm 42 thuộc tính.
 
-Phân tích loại trừ (Ablation study) đối với biến \texttt{month} qua 3 seed cho thấy việc giữ \texttt{month} làm \texttt{TPR@5\%FPR} thay đổi không đáng kể ($+0,010$, CI 95\% $[-0,015; +0,022]$), nên được duy trì nhằm đảm bảo tính đối chiếu nhất quán giữa các thực nghiệm.
-
 \subsubsection{Thiết lập quy trình tiền xử lý và pipeline mô hình}
 Để ngăn chặn hoàn toàn nguy cơ rò rỉ thông tin từ Validation và Test vào tập huấn luyện, quy trình tiền xử lý được thiết kế chuyên biệt cho từng họ mô hình:
 
-\paragraph{a) pipeline Logistic Regression (Baseline):}
-Toàn bộ các bước được đóng gói trong một \texttt{pipeline} duy nhất của Scikit-learn. 36 biến số được đưa qua bước điền khuyết \texttt{simple imputer} bằng trung vị kết hợp các cờ \texttt{\_flag} và chuẩn hóa bằng \texttt{robust scaler}; 5 biến phân loại được mã hóa One-Hot qua \texttt{one-hot encoder}.
+\paragraph{a) Logistic Regression (Mô hình cơ sở):}
+Toàn bộ các bước được đóng gói trong một quy trình duy nhất của Scikit-learn. 36 biến số được đưa qua bước điền khuyết Simple Imputer bằng trung vị kết hợp các cờ \texttt{\_flag} và chuẩn hóa bằng Robust Scaler; 5 biến phân loại được mã hóa One-Hot qua One-Hot Encoder.
 
 Về mặt lý thuyết, Logistic Regression ước lượng xác suất hậu nghiệm thuộc lớp gian lận ($y = 1$) thông qua hàm sigmoid:
 \begin{equation}
@@ -476,9 +494,9 @@ Về mặt lý thuyết, Logistic Regression ước lượng xác suất hậu n
   \mathcal{L}_{\text{weighted}}(\mathbf{w}, b) = -\sum_{i=1}^{N} \left[ w_1 y_i \log(\hat{y}_i) + w_0 (1 - y_i) \log(1 - \hat{y}_i) \right] + \frac{1}{2C} \|\mathbf{w}\|_2^2
   \label{eq:lr_loss}
 \end{equation}
-trong đó $w_1 = \frac{N}{2 N_1}$, $w_0 = \frac{N}{2 N_0}$ và $\hat{y}_i = P(y_i = 1 \mid \mathbf{x}_i)$. pipeline chỉ gọi phương thức \texttt{fit()} trên tập huấn luyện và gọi \texttt{transform()} trên Validation/Test.
+trong đó $w_1 = \frac{N}{2 N_1}$, $w_0 = \frac{N}{2 N_0}$ và $\hat{y}_i = P(y_i = 1 \mid \mathbf{x}_i)$. Quy trình chỉ gọi phương thức \texttt{fit()} trên tập huấn luyện và gọi \texttt{transform()} trên Validation/Test.
 
-\paragraph{b) pipeline LightGBM (Mô hình chính):}
+\paragraph{b) LightGBM (Mô hình chính):}
 Thuật toán giữ nguyên hoàn toàn các giá trị \texttt{NaN} của 6 cột khuyết ẩn kết hợp 6 cờ \texttt{\_flag}, cho phép cây tự động học đường rẽ nhánh mặc định tối ưu (default split direction) tại từng nút mà không cần chuẩn hóa số học (scaling). 5 biến phân loại được chuyển đổi sang kiểu dữ liệu \texttt{category} của Pandas, sử dụng chung bảng mã nhãn thiết lập từ tập huấn luyện.
 
 Về mặt thuật toán, LightGBM tối ưu hóa chuỗi $M$ cây hồi quy quyết định (Gradient Boosted Decision Trees) theo chiến lược phát triển theo lá (leaf-wise growth):
@@ -522,7 +540,7 @@ Chỉ số xếp hạng (TPR@FPR5\%) được tính toán trực tiếp trên đ
   \resizebox{\linewidth}{!}{%
   \begin{tabular}{l l c c c c c c}
     \toprule
-    \textbf{Tập dữ liệu / Nguồn} & \textbf{Mô hình} & \textbf{TPR@FPR5\%} & \textbf{TPR@ngưỡng} & \textbf{FPR} & \textbf{precision} & \textbf{ROC-AUC} & \textbf{PR-AUC} \\
+    \textbf{Tập dữ liệu / Nguồn} & \textbf{Mô hình} & \textbf{TPR@FPR5\%} & \textbf{TPR@ngưỡng} & \textbf{FPR} & \textbf{Precision} & \textbf{ROC-AUC} & \textbf{PR-AUC} \\
     \midrule
     Validation (Tháng 6) & Logistic Regression & 0,5069 & 0,5069 & 0,0495 & 0,1221 & 0,8829 & 0,1565 \\
     Validation (Tháng 6) & LightGBM & 0,5310 & 0,5310 & 0,0496 & 0,1270 & 0,8948 & 0,1822 \\
@@ -537,13 +555,13 @@ Chỉ số xếp hạng (TPR@FPR5\%) được tính toán trực tiếp trên đ
   }
 \end{table}
 
-Trên tập Test (96.843 hồ sơ, 1.428 ca gian lận), LightGBM đạt TPR@FPR5\% xếp hạng bằng 0,5798, tái lập xuất sắc và vượt nhẹ mốc 0,5600 công bố trong bài báo gốc; đồng thời vượt trội hoàn toàn mô hình cơ sở Logistic Regression (0,5301).
-
-Ở chỉ số triển khai thực tế TPR@ngưỡng, LightGBM phát hiện được 793/1.428 ca gian lận (tỷ lệ bắt giữ đạt 55,53\%) với tỷ lệ báo động nhầm thực tế chỉ 4,22\%, an toàn dưới ngân sách 5\%. So với 644 ca bắt được của Logistic Regression (45,10\%), LightGBM giúp ngân hàng giảm thiểu tới 19,0\% số vụ bỏ sót gian lận (chặn đứng thêm 149 hồ sơ gian lận).
-
-Độ chính xác phát hiện gian lận (Precision) của LightGBM đạt 16,47\% và chỉ số PR-AUC đạt 0,2173, đều vượt trội so với mô hình cơ sở. Mức Precision $\sim 16,5\%$ này là đặc điểm cố hữu của bài toán mất cân bằng cực hạn 1:89, khi mà ngay cả dưới ngân sách FPR khắt khe $\le 5\%$, phần lớn các cảnh báo đưa ra vẫn là báo động giả cần chuyên viên xử lý.
-
-Hiện tượng khoảng cách giữa TPR@FPR5\% (0,580) và TPR@ngưỡng (0,555) của LightGBM giải thích bởi sự trôi dạt phân phối: tỷ lệ gian lận nền ở tháng 7 tăng cao khiến ngưỡng xác suất cố định 0,0478 trở nên khắt khe hơn (FPR co lại còn 4,22\%). Trong vận hành thực tế, ngân hàng nên áp dụng cơ chế tự động hiệu chỉnh ngưỡng định kỳ dựa trên phân vị xác suất của lưu lượng đơn gần nhất.
+Trên tập Test (tháng 7), các kết quả thực nghiệm trong \Cref{tab:tab_results} cho thấy:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Khả năng xếp hạng tổng thể (TPR@FPR5\%):} LightGBM đạt 0,5798, vượt trội mô hình cơ sở Logistic Regression (0,5301). Đối chiếu với mốc tham chiếu bài báo gốc NeurIPS 2022 \cite{jesus2022turning}, LightGBM của nhóm tái lập thành công và vượt nhẹ kết quả công bố ($0,5600$); trong khi Logistic Regression cải thiện rõ rệt so với mốc ước lượng của paper ($\sim 0,5100$) nhờ sự hỗ trợ của các cờ chỉ báo khuyết và chuẩn hóa Robust Scaler.
+  \item \textbf{Hiệu năng tại ngưỡng vận hành cố định (TPR@ngưỡng):} Tại ngưỡng xác suất tối ưu đóng băng từ tập Validation tháng 6, LightGBM đạt tỷ lệ phát hiện gian lận thực tế 55,53\% với tỷ lệ báo động nhầm thực tế chỉ 4,22\%, an toàn dưới ngân sách rủi ro $\text{FPR} \le 5\%$. Mô hình cơ sở Logistic Regression đạt tỷ lệ phát hiện 45,10\% (thấp hơn 10,43 điểm phần trăm) với FPR thực tế là 3,48\%.
+  \item \textbf{Độ chính xác và đường cong PR-AUC:} LightGBM đạt Precision 16,47\% và PR-AUC 0,2173, đều vượt trội so với Logistic Regression (16,24\% và 0,1849). Mức Precision khoảng 16,5\% này phản ánh đặc tính cố hữu của tập dữ liệu mất cân bằng cực hạn 1:89, khi mà ngay cả dưới ngưỡng kiểm soát FPR khắt khe $\le 5\%$, phần lớn các cảnh báo đưa ra vẫn là báo động giả đòi hỏi chuyên viên kiểm tra bổ sung.
+  \item \textbf{Hiện tượng co hẹp FPR do trôi dạt phân phối:} Khoảng cách giữa chỉ số xếp hạng lý thuyết (0,5798) và chỉ số triển khai thực tế (0,5553) của LightGBM bắt nguồn từ hiện tượng trôi dạt phân phối: tỷ lệ gian lận nền ở tháng 7 tăng cao khiến ngưỡng xác suất cố định 0,0478 trở nên khắt khe hơn, kéo FPR thực tế co lại còn 4,22\% (thay vì đạt đúng 5,00\%). Trong vận hành thực tế, ngân hàng có thể áp dụng cơ chế tự động hiệu chỉnh ngưỡng định kỳ dựa trên phân vị xác suất của lưu lượng đơn gần nhất.
+\end{itemize}
 
 \subsubsection{Kiểm định độ tin cậy bằng Bootstrap và phân tích lỗi}
 Vì tập Test chỉ chứa 1.428 trường hợp gian lận, sai số ngẫu nhiên do chọn mẫu có thể lên tới $\pm 2,5$ điểm phần trăm TPR. Để khẳng định ưu thế của LightGBM không phải do may rủi thống kê, nhóm tiến hành kiểm định lấy mẫu lại có hoàn lại dạng cặp phân tầng (Stratified Paired Bootstrap) với 1.000 lần lặp trên tập Test.
@@ -575,6 +593,13 @@ Kết quả ở \Cref{tab:tab_bootstrap} khẳng định toàn bộ khoảng tin
   \caption{Đường cong ROC (trái), Precision-Recall (giữa) và ma trận nhầm lẫn (phải) của Logistic Regression và LightGBM trên tập Test tháng 7.}
   \label{fig:tab_roc_cm}
 \end{figure}
+
+Phân tích ma trận nhầm lẫn (\Cref{fig:tab_roc_cm}, phải) tại ngưỡng vận hành đã đóng băng làm rõ sự khác biệt mang tính quyết định trong bài toán kiểm soát rủi ro ngân hàng:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Khả năng bắt giữ gian lận (True Positives):} Trên tổng số 1.428 ca gian lận thực tế ở tháng 7, LightGBM phát hiện thành công 793 ca (tương ứng $\text{TPR} = 55,53\%$), chặn đứng thêm 149 vụ gian lận so với mức 644 ca ($\text{TPR} = 45,10\%$) của Logistic Regression.
+  \item \textbf{Kiểm soát số ca bỏ lọt (False Negatives):} Số lượng hồ sơ gian lận bị bỏ sót giảm từ 784 hồ sơ (ở Logistic Regression) xuống còn 635 hồ sơ (ở LightGBM), giúp ngân hàng giảm thiểu tới 19,0\% số vụ bỏ sót rủi ro.
+  \item \textbf{Đánh đổi chi phí báo động giả (False Positives):} Để phát hiện thêm 149 hồ sơ gian lận, số ca báo động nhầm của LightGBM tăng từ 3.322 lên 4.023 hồ sơ (tương ứng $\text{FPR} = 4,22\%$). Đây là sự đánh đổi hoàn toàn khả thi trong thực tế vì tỷ lệ báo động giả vẫn nằm an toàn trong trần ngân sách cho phép ($5\%$).
+\end{itemize}
 
 \subsubsection{Khả năng diễn giải mô hình (Feature Importance) và độ hiệu chỉnh xác suất}
 Để kiểm chứng vòng lặp nghiên cứu từ giả thuyết EDA đến mô hình hóa, nhóm trích xuất mức độ quan trọng đặc trưng theo chỉ số tăng độ lợi thông tin (Feature Importance theo Gain) trung bình qua 3 hạt giống ngẫu nhiên của LightGBM (\Cref{fig:tab_feat_imp}).
@@ -616,7 +641,7 @@ Khi xóa hoàn toàn biến độ tuổi (customer\_age) cùng hai biến tỷ l
 \paragraph{b) Điểm đánh đổi trung gian và khuyến nghị vận hành:}
 Bằng cách nhắm mục tiêu FPR 6,5\% trên tập Validation cho nhóm $\ge 50$ tuổi, mô hình duy trì được FPR thực tế 6,01\% và giữ được TPR ở mức cao 59,33\% trên tập Test.
 
-Trong thực tiễn ngân hàng, việc áp ngưỡng phân biệt theo tuổi dễ vướng các rào cản pháp lý như Đạo luật Bình đẳng Cơ hội Tín dụng (ECOA). Khuyến nghị thực tế tốt nhất là: giữ nguyên mô hình đồng nhất nhưng phân luồng các hồ sơ bị cảnh báo thuộc nhóm người cao tuổi sang quy trình xác thực bổ sung linh hoạt (như xác thực video call eKYC) hoặc chuyên viên thẩm định duyệt thủ công, kết hợp hệ thống giám sát thời gian thực đối với các chỉ số công bằng.
+Trong thực tiễn ngân hàng, việc áp ngưỡng phân biệt theo tuổi dễ vướng các rào cản pháp lý và quy chuẩn đạo đức về chống phân biệt đối xử trong cấp tín dụng. Khuyến nghị thực tế tốt nhất là: giữ nguyên mô hình đồng nhất nhưng phân luồng các hồ sơ bị cảnh báo thuộc nhóm người cao tuổi sang quy trình xác thực bổ sung linh hoạt (như xác thực video call eKYC) hoặc chuyên viên thẩm định duyệt thủ công, kết hợp hệ thống giám sát thời gian thực đối với các chỉ số công bằng.
 
 \subsubsection{Kiểm chứng thực nghiệm các quyết định thiết kế}
 Để tổng kết toàn bộ chương, nhóm thực hiện hai thí nghiệm đối chứng quy mô lớn trên cả Logistic Regression và LightGBM nhằm kiểm định giá trị của hai quyết định thiết kế nền tảng trong đề tài:
@@ -674,4 +699,4 @@ Nguy hại hơn, ngưỡng xác suất chọn từ tập Validation ngẫu nhiê
   }
 \end{table}
 
-Kết quả thực nghiệm này khẳng định mạnh mẽ tính đúng đắn và chuẩn mực của toàn bộ quy trình phân tích dữ liệu, xử lý dữ liệu khuyết theo cơ chế sinh và phân chia dữ liệu nghiêm ngặt theo thời gian được thiết lập trong đồ án.
+Kết quả thực nghiệm này khẳng định mạnh mẽ tính đúng đắn và chuẩn mực của toàn bộ quy trình phân tích dữ liệu, xử lý dữ liệu khuyết theo cơ chế sinh và phân chia dữ liệu nghiêm ngặt theo thời gian được thiết lập trong bài tập lớn.
