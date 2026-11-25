@@ -15,7 +15,36 @@ Trong lĩnh vực xử lý ngôn ngữ tự nhiên cho tài chính (Financial NL
 \end{itemize}
 
 \subsubsection{Thu thập ngữ liệu và danh mục thuộc tính}
-Nhóm xây dựng quy trình thu thập tự động từ báo điện tử \textit{VnEconomy.vn} dựa trên tệp \texttt{sitemap.xml} trong giai đoạn từ ngày 05/11/2025 đến ngày 21/11/2026. Quá trình lấy mẫu được kiểm soát phân tầng đều theo tháng nhằm tránh co cụm sự kiện theo thời điểm, khử trùng lặp thời gian thực bằng mã băm MD5 của đường dẫn URL, đồng thời loại trừ các bài viết ngắn dưới 100 từ, ấn phẩm PR/đa phương tiện và chuyên mục \textit{Doanh nghiệp} (vốn giao thoa mạnh về từ vựng báo cáo kết quả kinh doanh với chuyên mục \textit{Chứng khoán}).
+Nhóm xây dựng quy trình thu thập tự động từ báo điện tử \textit{VnEconomy.vn} (\texttt{text/crawler/crawler.py}) dựa trên hệ thống \texttt{sitemap.xml} trong giai đoạn từ ngày 05/11/2025 đến ngày 21/11/2026. Quy trình được thiết kế theo hướng kiểm soát chất lượng và chống thiên lệch ngay từ khâu thu thập dữ liệu thô:
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Kiến trúc thu thập đa luồng từ Sitemap:} Hệ thống truy xuất chỉ mục \texttt{sitemap.xml}, lọc các sitemap con theo tháng (\texttt{/sitemap/news-YYYY-MM}) và sắp xếp giảm dần theo thời gian mới nhất. Các đường dẫn bài viết (\texttt{.htm}) được tải song song qua \texttt{ThreadPoolExecutor} (10 luồng) với \texttt{Session} cục bộ theo luồng, \texttt{pool\_maxsize = 20} và cơ chế thử lại tự động (\texttt{Retry} tối đa 3 lần, \texttt{backoff\_factor = 0,3} cho mã lỗi HTTP 429 và 5xx). Tiến trình được lưu vết (\textit{checkpoint}) định kỳ mỗi 15 giây và sau mỗi tháng ra đồng thời hai định dạng CSV (\texttt{utf-8-sig}) và JSONL để hỗ trợ phục hồi khi gián đoạn.
+  \item \textbf{Chiến lược lấy mẫu phân tầng 2 lượt:} Ở lượt chính (\textit{Pass 1}), hệ thống lấy mẫu phân tầng đều trên cửa sổ 12 tháng gần nhất với hạn mức trần mỗi tháng cho từng lớp là $\lceil 1.000 / 12 \rceil = 84$ bài. Trong từng tháng, danh sách URL được xáo trộn ngẫu nhiên với hạt giống cố định (\texttt{seed = 42}) để bảo đảm bài viết rải đều trong tháng và có thể tái lập kết quả. Nếu sau 12 tháng vẫn còn chuyên mục chưa đủ hạn mức, lượt bù (\textit{Pass 2 -- Fallback}) tự động mở rộng sang các sitemap cũ hơn (gỡ bỏ trần theo tháng) cho đến khi đạt đủ chỉ tiêu.
+  \item \textbf{Kiểm soát chuỗi bài lặp định kỳ:} Ngay tại bước thu thập, hàm \texttt{extract\_series\_prefix} nhận diện tiền tố tiêu đề trước dấu hai chấm (độ dài 3--30 ký tự, ví dụ các bản tin định kỳ như \textit{Blog chứng khoán}) và giới hạn tối đa 5 bài/tháng cho mỗi tiền tố nhằm hạn chế sự chi phối của các bản tin khuôn mẫu.
+  \item \textbf{Lọc nhãn, làm sạch DOM và khử trùng lặp 2 tầng:} Nhãn chuyên mục được xác thực trực tiếp qua thẻ \texttt{meta[property="article:section"]}, chỉ giữ lại 5 chuyên mục mục tiêu và loại trừ các ấn phẩm PR/đa phương tiện cũng như chuyên mục \textit{Doanh nghiệp} (vốn giao thoa mạnh về từ vựng báo cáo kết quả kinh doanh với chuyên mục \textit{Chứng khoán}). Thân bài từ khối \texttt{.article-editor} (hoặc \texttt{.ct-edtior-web}) được làm sạch bằng cách loại bỏ toàn bộ thẻ nhiễu (\texttt{script}, \texttt{style}, \texttt{figure}, \texttt{iframe}, hộp tin liên quan, thẻ \texttt{tags}, thông tin tác giả, bản quyền, nút chia sẻ) trước khi ghép các đoạn \texttt{<p>} và loại bỏ bài ngắn dưới 100 từ. Dữ liệu được khử trùng lặp theo cả URL (mã băm MD5) lẫn tiêu đề chuẩn hóa (bỏ ký tự đặc biệt, viết thường rồi băm MD5), đồng thời chuẩn hóa mốc thời gian về định dạng ISO (\texttt{YYYY-MM-DD HH:MM:SS} và \texttt{YYYY-MM}).
+\end{itemize}
+
+\Cref{tab:text_crawler_config} tóm tắt bộ tham số cấu hình thực thi của quy trình thu thập:
+
+\begin{table}[H]
+  \centering
+  \caption{Cấu hình tham số thực thi của hệ thống thu thập dữ liệu văn bản (\texttt{crawler.py}).}
+  \label{tab:text_crawler_config}
+  \resizebox{0.88\linewidth}{!}{%
+  \begin{tabular}{l l p{0.48\linewidth}}
+    \toprule
+    \textbf{Tham số} & \textbf{Giá trị} & \textbf{Vai trò trong quy trình thu thập} \\
+    \midrule
+    \texttt{target\_per\_category} & 1.000 bài & Chỉ tiêu số lượng cân bằng cho mỗi chuyên mục (tổng 5.000 bài). \\
+    \texttt{months\_window} & 12 tháng & Cửa sổ thời gian ưu tiên cho lượt lấy mẫu phân tầng đều (Pass 1). \\
+    \texttt{monthly\_cap} & 84 bài/tháng/lớp & Trần số lượng mỗi tháng nhằm tránh co cụm dữ liệu theo sự kiện. \\
+    \texttt{max\_series\_per\_month} & 5 bài/tháng & Giới hạn số bài cùng tiền tố chuỗi định kỳ trong một tháng. \\
+    Ngưỡng độ dài thân bài & $\ge 100$ từ & Loại bỏ tin vắn, bài ảnh hoặc nội dung đa phương tiện thiếu ngữ cảnh. \\
+    \texttt{max\_workers} / \texttt{seed} & 10 luồng / 42 & Mức độ song song và hạt giống xáo trộn URL bảo đảm tính tái lập. \\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table}
 
 Kết quả thu được một tập ngữ liệu sạch gồm đúng 5.000 bài báo với 11 trường thông tin, hoàn toàn không có giá trị thiếu và không có bản ghi trùng lặp về mã định danh, URL hay toàn văn. Các bài báo được phân bổ cân bằng tuyệt đối 1.000 bài cho mỗi lớp thuộc 5 chuyên mục: \textit{Bất động sản}, \textit{Chứng khoán}, \textit{Thế giới}, \textit{Thị trường}, và \textit{Tài chính}. Cách phân tầng 5 lớp này bám sát cấu trúc chuyên mục tòa soạn và ánh xạ tương ứng với khung phân loại kinh tế học JEL (\textit{G1: Chứng khoán}, \textit{G2: Tài chính -- Ngân hàng}, \textit{R3: Bất động sản}, \textit{F3: Kinh tế quốc tế}, \textit{E \& L: Thị trường hàng hóa và sản xuất}).
 
