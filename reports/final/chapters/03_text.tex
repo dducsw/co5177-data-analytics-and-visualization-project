@@ -264,7 +264,7 @@ Văn bản thô trước khi đưa vào trích xuất đặc trưng được x�
 Bước phân đoạn giúp rút gọn độ dài trung bình từ 1.075 âm tiết xuống còn 737 token/bài trên tổng cộng 3.684.703 token và 55.653 từ vựng duy nhất. Trong bảng từ vựng này, có tới 32.623 từ (chiếm 58,6\%) chỉ xuất hiện đúng một lần (\textit{hapax legomena}); chỉ cần lọc giữ các từ xuất hiện ở tối thiểu 5 bài viết đã thu gọn kích thước từ điển xuống còn 9.497 từ (17,1\%) nhưng vẫn bao phủ tới 97,9\% tổng số token.
 
 \subsubsection{Biểu diễn đặc trưng TF-IDF và Pipeline chống rò rỉ}
-Toàn bộ bước vector hóa TF-IDF được đóng gói trong pipeline của Scikit-learn và chỉ gọi \texttt{fit} trên các fold huấn luyện nhằm ngăn chặn rò rỉ thông tin từ tập kiểm tra. Trong đó, biểu thức chính quy \texttt{token\_pattern=r"\textbackslash S+"} giữ nguyên các từ ghép nối bằng dấu gạch dưới, còn tùy chọn \texttt{sublinear\_tf=True} giúp giảm nhẹ ảnh hưởng của hiện tượng 9,8\% nội dung sapo lặp lại ở đầu thân bài.
+Toàn bộ bước vector hóa TF-IDF được đóng gói trong pipeline của Scikit-learn và chỉ gọi \texttt{fit} trên các fold huấn luyện nhằm ngăn chặn rò rỉ thông tin từ tập kiểm tra. Trong đó, biểu thức chính quy \texttt{token\_pattern=r"\textbackslash S+"} giữ nguyên các từ ghép nối bằng dấu gạch dưới, còn tùy chọn \texttt{sublinear\_tf=True} giúp giảm nhẹ ảnh hưởng của hiện tượng lặp từ cục bộ (khảo sát tiền xử lý ghi nhận 9,8\% bài viết có phần sapo lặp lại nguyên văn ở đầu thân bài).
 
 Về mặt toán học, trọng số $\text{tf-idf}(t, d)$ của từ khóa $t$ trong văn bản $d$ được tính theo công thức logarit thứ cấp:
 \begin{equation}
