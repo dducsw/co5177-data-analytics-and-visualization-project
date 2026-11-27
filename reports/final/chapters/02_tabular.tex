@@ -18,14 +18,14 @@ Bài báo gốc xử lý hai hạn chế phổ biến của dữ liệu ngân h�
 \end{itemize}
 
 \subsubsection{Phân phối dữ liệu và nhãn}
-Nghiên cứu sử dụng tập dữ liệu cơ sở \texttt{Base.csv} gồm đúng 1.000.000 hồ sơ nộp đơn mở tài khoản trải dài qua 8 tháng liên tục (cột \texttt{month} từ 0 đến 7) với 32 thuộc tính gốc, không có dòng trùng lặp. Dữ liệu được sinh bằng mạng CTGAN kết hợp vi phân riêng tư từ dữ liệu ngân hàng thực tế đã ẩn danh \cite{jesus2022turning}.
+Nghiên cứu sử dụng tập dữ liệu cơ sở (Base) của bộ BAF gồm đúng 1.000.000 hồ sơ nộp đơn mở tài khoản trải dài qua 8 tháng liên tục (từ tháng 0 đến tháng 7) với 32 thuộc tính gốc, không có dòng trùng lặp. Dữ liệu được sinh bằng mạng CTGAN kết hợp vi phân riêng tư từ dữ liệu ngân hàng thực tế đã ẩn danh \cite{jesus2022turning}.
 
-Theo tài liệu đặc tả (Datasheet) kèm theo bài báo NeurIPS 2022, toàn bộ 32 thuộc tính được phân loại thành 8 nhóm đặc trưng logic, được tổng hợp chi tiết trong \Cref{tab:tab_data_dictionary}, gồm: biến mục tiêu \texttt{fraud\_bool} (1 là đơn gian lận, 0 là hợp pháp); nhóm 5 biến phân loại; nhóm 6 cờ nhị phân; nhóm 5 biến hồ sơ cá nhân và cư trú; nhóm 4 biến tài chính và quan hệ ngân hàng; nhóm 4 biến thiết bị, phiên và định danh; nhóm 6 biến vận tốc và cụm địa lý; cùng trục thời gian \texttt{month} (từ tháng 0 đến 7).
+Theo tài liệu đặc tả (Datasheet) kèm theo bài báo NeurIPS 2022, toàn bộ 32 thuộc tính được phân loại thành 8 nhóm đặc trưng logic, được tổng hợp chi tiết trong \Cref{tab:tab_data_dictionary}, gồm: biến mục tiêu phân biệt gian lận và hợp pháp (\texttt{fraud\_bool}, trong đó 1 là gian lận và 0 là hợp pháp); nhóm 5 biến phân loại; nhóm 6 cờ nhị phân; nhóm 5 biến hồ sơ cá nhân và cư trú; nhóm 4 biến tài chính và quan hệ ngân hàng; nhóm 4 biến thiết bị, phiên và định danh; nhóm 6 biến vận tốc và cụm địa lý; cùng biến thời gian theo tháng (từ tháng 0 đến 7).
 
 \begin{footnotesize}
 \setlength{\tabcolsep}{3.5pt}
 \begin{longtable}{>{\raggedright\arraybackslash}p{0.23\linewidth} >{\raggedright\arraybackslash}p{0.15\linewidth} l c >{\raggedright\arraybackslash}p{0.26\linewidth}}
-\caption{Danh mục 32 thuộc tính của tập dữ liệu \texttt{Base.csv}, phân loại theo nhóm đặc trưng và ý nghĩa nghiệp vụ từ Datasheet \cite{jesus2022turning}.} \label{tab:tab_data_dictionary} \\
+\caption{Danh mục 32 thuộc tính của tập dữ liệu cơ sở BAF, phân loại theo nhóm đặc trưng và ý nghĩa nghiệp vụ từ Datasheet \cite{jesus2022turning}.} \label{tab:tab_data_dictionary} \\
 \toprule
 \textbf{Tên thuộc tính} & \textbf{Nhóm đặc trưng} & \textbf{Kiểu dữ liệu} & \textbf{Miền giá trị} & \textbf{Ý nghĩa nghiệp vụ từ Datasheet} \\
 \midrule
@@ -97,7 +97,7 @@ Biến mục tiêu \texttt{fraud\_bool} (\Cref{fig:tab_imbalance}) chỉ ghi nh�
 \begin{figure}[H]
   \centering
   \includegraphics[width=1.0\linewidth]{tabular/c13_f0.png}
-  \caption{Phân phối biến mục tiêu \texttt{fraud\_bool} mất cân bằng cực đoan (1,10\% gian lận so với 98,90\% hợp pháp) trên tập dữ liệu gốc \texttt{Base.csv}.}
+  \caption{Phân phối biến mục tiêu mất cân bằng cực đoan (1,10\% gian lận so với 98,90\% hợp pháp) trên tập dữ liệu BAF.}
   \label{fig:tab_imbalance}
 \end{figure}
 
@@ -124,7 +124,7 @@ Khối lượng hồ sơ nộp vào thay đổi đáng kể theo từng tháng, 
 \begin{figure}[H]
   \centering
   \includegraphics[width=1.0\linewidth]{tabular/c25_f0.png}
-  \caption{Biến động trôi dạt của tỷ lệ gian lận nền theo thời gian qua 8 tháng liên tục trên tập \texttt{Base.csv}.}
+  \caption{Biến động trôi dạt của tỷ lệ gian lận nền theo thời gian qua 8 tháng liên tục trên tập dữ liệu BAF.}
   \label{fig:tab_temporal_drift}
 \end{figure}
 
@@ -134,7 +134,7 @@ Do đó, toàn bộ quy trình nghiên cứu tuân thủ phương pháp phân ch
 
 \begin{table}[H]
   \centering
-  \caption{Cấu trúc phân chia dữ liệu theo trục thời gian (Temporal Split) của tập \texttt{Base.csv}.}
+  \caption{Cấu trúc phân chia dữ liệu theo trục thời gian (Temporal Split) của tập dữ liệu BAF.}
   \label{tab:tab_split}
   \resizebox{\linewidth}{!}{%
   \begin{tabular}{l c r r c c}

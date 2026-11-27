@@ -15,60 +15,60 @@ Trong lĩnh vực xử lý ngôn ngữ tự nhiên cho tài chính (Financial NL
 \end{itemize}
 
 \subsubsection{Thu thập ngữ liệu và danh mục thuộc tính}
-Nhóm xây dựng quy trình thu thập tự động từ báo điện tử \textit{VnEconomy.vn} (\texttt{text/crawler/crawler.py}) dựa trên hệ thống \texttt{sitemap.xml} trong giai đoạn từ ngày 05/11/2025 đến ngày 21/11/2026. Quy trình được thiết kế theo hướng kiểm soát chất lượng và chống thiên lệch ngay từ khâu thu thập dữ liệu thô:
+Nhóm tự xây dựng quy trình thu thập bài viết tự động từ báo điện tử \textit{VnEconomy.vn} thông qua hệ thống sitemap trong giai đoạn từ ngày 05/11/2025 đến ngày 21/11/2026. Quá trình thu thập được thiết kế nhằm kiểm soát chất lượng dữ liệu và hạn chế thiên lệch ngay từ đầu:
 
 \begin{itemize}[leftmargin=*]
-  \item \textbf{Kiến trúc thu thập đa luồng từ Sitemap:} Hệ thống truy xuất chỉ mục \texttt{sitemap.xml}, lọc các sitemap con theo tháng (\texttt{/sitemap/news-YYYY-MM}) và sắp xếp giảm dần theo thời gian mới nhất. Các đường dẫn bài viết (\texttt{.htm}) được tải song song qua \texttt{ThreadPoolExecutor} (10 luồng) với \texttt{Session} cục bộ theo luồng, \texttt{pool\_maxsize = 20} và cơ chế thử lại tự động (\texttt{Retry} tối đa 3 lần, \texttt{backoff\_factor = 0,3} cho mã lỗi HTTP 429 và 5xx). Tiến trình được lưu vết (\textit{checkpoint}) định kỳ mỗi 15 giây và sau mỗi tháng ra đồng thời hai định dạng CSV (\texttt{utf-8-sig}) và JSONL để hỗ trợ phục hồi khi gián đoạn.
-  \item \textbf{Chiến lược lấy mẫu phân tầng 2 lượt:} Ở lượt chính (\textit{Pass 1}), hệ thống lấy mẫu phân tầng đều trên cửa sổ 12 tháng gần nhất với hạn mức trần mỗi tháng cho từng lớp là $\lceil 1.000 / 12 \rceil = 84$ bài. Trong từng tháng, danh sách URL được xáo trộn ngẫu nhiên với hạt giống cố định (\texttt{seed = 42}) để bảo đảm bài viết rải đều trong tháng và có thể tái lập kết quả. Nếu sau 12 tháng vẫn còn chuyên mục chưa đủ hạn mức, lượt bù (\textit{Pass 2 -- Fallback}) tự động mở rộng sang các sitemap cũ hơn (gỡ bỏ trần theo tháng) cho đến khi đạt đủ chỉ tiêu.
-  \item \textbf{Kiểm soát chuỗi bài lặp định kỳ:} Ngay tại bước thu thập, hàm \texttt{extract\_series\_prefix} nhận diện tiền tố tiêu đề trước dấu hai chấm (độ dài 3--30 ký tự, ví dụ các bản tin định kỳ như \textit{Blog chứng khoán}) và giới hạn tối đa 5 bài/tháng cho mỗi tiền tố nhằm hạn chế sự chi phối của các bản tin khuôn mẫu.
-  \item \textbf{Lọc nhãn, làm sạch DOM và khử trùng lặp 2 tầng:} Nhãn chuyên mục được xác thực trực tiếp qua thẻ \texttt{meta[property="article:section"]}, chỉ giữ lại 5 chuyên mục mục tiêu và loại trừ các ấn phẩm PR/đa phương tiện cũng như chuyên mục \textit{Doanh nghiệp} (vốn giao thoa mạnh về từ vựng báo cáo kết quả kinh doanh với chuyên mục \textit{Chứng khoán}). Thân bài từ khối \texttt{.article-editor} (hoặc \texttt{.ct-edtior-web}) được làm sạch bằng cách loại bỏ toàn bộ thẻ nhiễu (\texttt{script}, \texttt{style}, \texttt{figure}, \texttt{iframe}, hộp tin liên quan, thẻ \texttt{tags}, thông tin tác giả, bản quyền, nút chia sẻ) trước khi ghép các đoạn \texttt{<p>} và loại bỏ bài ngắn dưới 100 từ. Dữ liệu được khử trùng lặp theo cả URL (mã băm MD5) lẫn tiêu đề chuẩn hóa (bỏ ký tự đặc biệt, viết thường rồi băm MD5), đồng thời chuẩn hóa mốc thời gian về định dạng ISO (\texttt{YYYY-MM-DD HH:MM:SS} và \texttt{YYYY-MM}).
+  \item \textbf{Thu thập đa luồng từ Sitemap:} Chương trình đọc chỉ mục sitemap theo từng tháng từ mới đến cũ, sau đó tải song song các bài viết trên 10 luồng với phiên kết nối riêng cho mỗi luồng. Khi gặp lỗi giới hạn truy cập hoặc lỗi máy chủ (HTTP 429, 5xx), hệ thống tự động thử lại tối đa 3 lần với thời gian chờ tăng dần. Tiến trình thu thập được lưu checkpoint mỗi 15 giây và sau từng tháng dưới dạng CSV và JSONL để dễ dàng khôi phục nếu quá trình bị gián đoạn.
+  \item \textbf{Lấy mẫu phân tầng theo thời gian (2 lượt):} Ở lượt chính, hệ thống lấy mẫu đều trên 12 tháng gần nhất, giới hạn tối đa $\lceil 1.000 / 12 \rceil = 84$ bài mỗi tháng cho từng chuyên mục. Danh sách bài trong mỗi tháng được xáo trộn ngẫu nhiên với hạt giống cố định (42) để bài viết rải đều trong tháng và tái lập được kết quả. Nếu sau 12 tháng vẫn còn chuyên mục chưa đủ số lượng, lượt bù sẽ tự động mở rộng sang các tháng cũ hơn (không áp trần theo tháng) cho đến khi đạt đủ 1.000 bài.
+  \item \textbf{Giới hạn chuỗi bài lặp định kỳ:} Ngay khi thu thập, hệ thống tách phần tiền tố tiêu đề trước dấu hai chấm (dài 3--30 ký tự, chẳng hạn các bản tin định kỳ như \textit{Blog chứng khoán}) và chỉ giữ tối đa 5 bài mỗi tháng cho mỗi tiền tố để tránh việc các bản tin theo khuôn mẫu lấn át dữ liệu.
+  \item \textbf{Lọc chuyên mục, làm sạch nội dung và khử trùng lặp:} Nhãn chuyên mục được kiểm tra trực tiếp từ thông tin bài viết, chỉ giữ 5 chuyên mục mục tiêu và loại bỏ các bài PR, nội dung đa phương tiện cũng như mục \textit{Doanh nghiệp} (vốn trùng lặp nhiều từ vựng về kết quả kinh doanh với mục \textit{Chứng khoán}). Khi bóc tách phần thân bài, các thành phần nhiễu như mã nhúng, khung ảnh/video, hộp tin liên quan, từ khóa, tên tác giả, bản quyền và nút chia sẻ đều được loại bỏ; các bài ngắn dưới 100 từ cũng bị lọc bỏ. Cuối cùng, dữ liệu được khử trùng lặp hai lớp theo cả đường dẫn và tiêu đề đã chuẩn hóa (bằng mã băm MD5), đồng thời đưa mốc thời gian xuất bản về định dạng chuẩn.
 \end{itemize}
 
-\Cref{tab:text_crawler_config} tóm tắt bộ tham số cấu hình thực thi của quy trình thu thập:
+\Cref{tab:text_crawler_config} tóm tắt các tham số chính của quy trình thu thập:
 
 \begin{table}[H]
   \centering
-  \caption{Cấu hình tham số thực thi của hệ thống thu thập dữ liệu văn bản (\texttt{crawler.py}).}
+  \caption{Cấu hình tham số thực thi của quy trình thu thập dữ liệu văn bản.}
   \label{tab:text_crawler_config}
   \resizebox{0.88\linewidth}{!}{%
   \begin{tabular}{l l p{0.48\linewidth}}
     \toprule
     \textbf{Tham số} & \textbf{Giá trị} & \textbf{Vai trò trong quy trình thu thập} \\
     \midrule
-    \texttt{target\_per\_category} & 1.000 bài & Chỉ tiêu số lượng cân bằng cho mỗi chuyên mục (tổng 5.000 bài). \\
-    \texttt{months\_window} & 12 tháng & Cửa sổ thời gian ưu tiên cho lượt lấy mẫu phân tầng đều (Pass 1). \\
-    \texttt{monthly\_cap} & 84 bài/tháng/lớp & Trần số lượng mỗi tháng nhằm tránh co cụm dữ liệu theo sự kiện. \\
-    \texttt{max\_series\_per\_month} & 5 bài/tháng & Giới hạn số bài cùng tiền tố chuỗi định kỳ trong một tháng. \\
-    Ngưỡng độ dài thân bài & $\ge 100$ từ & Loại bỏ tin vắn, bài ảnh hoặc nội dung đa phương tiện thiếu ngữ cảnh. \\
-    \texttt{max\_workers} / \texttt{seed} & 10 luồng / 42 & Mức độ song song và hạt giống xáo trộn URL bảo đảm tính tái lập. \\
+    Chỉ tiêu mỗi chuyên mục & 1.000 bài & Số lượng bài cân bằng cho từng chuyên mục (tổng 5.000 bài). \\
+    Cửa sổ thời gian ưu tiên & 12 tháng & Khoảng thời gian ưu tiên cho lượt lấy mẫu phân tầng đều. \\
+    Giới hạn theo tháng & 84 bài/tháng/lớp & Mức trần mỗi tháng nhằm tránh dữ liệu bị dồn cục theo sự kiện. \\
+    Giới hạn chuỗi bài định kỳ & 5 bài/tháng & Số bài tối đa cùng tiền tố tiêu đề định kỳ trong một tháng. \\
+    Ngưỡng độ dài thân bài & $\ge 100$ từ & Loại bỏ tin vắn, bài ảnh hoặc nội dung thiếu ngữ cảnh. \\
+    Số luồng / Hạt giống & 10 luồng / 42 & Mức độ tải song song và hạt giống ngẫu nhiên để tái lập kết quả. \\
     \bottomrule
   \end{tabular}%
   }
 \end{table}
 
-Kết quả thu được một tập ngữ liệu sạch gồm đúng 5.000 bài báo với 11 trường thông tin, hoàn toàn không có giá trị thiếu và không có bản ghi trùng lặp về mã định danh, URL hay toàn văn. Các bài báo được phân bổ cân bằng tuyệt đối 1.000 bài cho mỗi lớp thuộc 5 chuyên mục: \textit{Bất động sản}, \textit{Chứng khoán}, \textit{Thế giới}, \textit{Thị trường}, và \textit{Tài chính}. Cách phân tầng 5 lớp này bám sát cấu trúc chuyên mục tòa soạn và ánh xạ tương ứng với khung phân loại kinh tế học JEL (\textit{G1: Chứng khoán}, \textit{G2: Tài chính -- Ngân hàng}, \textit{R3: Bất động sản}, \textit{F3: Kinh tế quốc tế}, \textit{E \& L: Thị trường hàng hóa và sản xuất}).
+Kết quả thu được một tập ngữ liệu sạch gồm đúng 5.000 bài báo với 11 trường thông tin, hoàn toàn không có giá trị thiếu và không có bản ghi trùng lặp về mã định danh, đường dẫn hay toàn văn. Các bài báo được phân bổ cân bằng tuyệt đối 1.000 bài cho mỗi lớp thuộc 5 chuyên mục: \textit{Bất động sản}, \textit{Chứng khoán}, \textit{Thế giới}, \textit{Thị trường}, và \textit{Tài chính}. Cách phân tầng 5 lớp này bám sát cấu trúc chuyên mục tòa soạn và ánh xạ tương ứng với khung phân loại kinh tế học JEL (\textit{G1: Chứng khoán}, \textit{G2: Tài chính -- Ngân hàng}, \textit{R3: Bất động sản}, \textit{F3: Kinh tế quốc tế}, \textit{E \& L: Thị trường hàng hóa và sản xuất}).
 
-\Cref{tab:text_data_dictionary} tổng hợp chi tiết danh mục 11 thuộc tính của tập dữ liệu \texttt{vneconomy\_articles.csv}:
+\Cref{tab:text_data_dictionary} tổng hợp chi tiết 11 trường thông tin của tập dữ liệu vừa thu thập:
 
 \begin{table}[H]
   \centering
-  \caption{Danh mục 11 thuộc tính của tập dữ liệu tin tức kinh tế -- tài chính \texttt{vneconomy\_articles.csv} (5.000 bài báo).}
+  \caption{Danh mục 11 trường thông tin của tập dữ liệu tin tức kinh tế -- tài chính VnEconomy (5.000 bài báo).}
   \label{tab:text_data_dictionary}
   \resizebox{\linewidth}{!}{%
   \begin{tabular}{l l l p{0.46\linewidth}}
     \toprule
-    \textbf{Tên thuộc tính} & \textbf{Nhóm thông tin} & \textbf{Kiểu dữ liệu} & \textbf{Ý nghĩa và vai trò trong nghiên cứu} \\
+    \textbf{Tên trường} & \textbf{Nhóm thông tin} & \textbf{Kiểu dữ liệu} & \textbf{Ý nghĩa và vai trò trong nghiên cứu} \\
     \midrule
     \texttt{id} & Định danh & Chuỗi (MD5) & Mã định danh duy nhất băm từ đường dẫn bài viết (0 trùng lặp). \\
     \texttt{url} & Định danh & Chuỗi (URL) & Đường dẫn gốc của bài báo trên \textit{VnEconomy.vn}. \\
     \texttt{title} & Nội dung văn bản & Chuỗi & Tiêu đề bài báo, dùng để phát hiện tiền tố bản tin lặp định kỳ. \\
     \texttt{summary} & Nội dung văn bản & Chuỗi & Đoạn tóm tắt (sapo) mở đầu bài viết. \\
     \texttt{content} & Nội dung văn bản & Chuỗi & Toàn văn nội dung bài báo (trường đầu vào chính cho phân loại). \\
-    \texttt{word\_count} & Thống kê văn bản & Số nguyên & Số lượng âm tiết trong \texttt{content} (khớp 100\% với tách khoảng trắng). \\
+    \texttt{word\_count} & Thống kê văn bản & Số nguyên & Số lượng âm tiết trong nội dung bài viết (khớp 100\% với tách khoảng trắng). \\
     \texttt{raw\_category} & Nhãn chuyên mục & Phân loại & Tên chuyên mục gốc thu thập từ trang báo. \\
-    \texttt{category} & Nhãn mục tiêu & Phân loại (5 lớp) & Biến mục tiêu chuẩn hóa (trùng khớp 100\% với \texttt{raw\_category}). \\
+    \texttt{category} & Nhãn mục tiêu & Phân loại (5 lớp) & Biến mục tiêu chuẩn hóa (trùng khớp 100\% với chuyên mục gốc). \\
     \texttt{published\_date} & Thời gian & Chuỗi ngày giờ & Thời điểm xuất bản đầy đủ (từ 05/11/2025 đến 21/11/2026). \\
-    \texttt{published\_year\_month} & Thời gian & Chuỗi (\texttt{YYYY-MM}) & Tháng xuất bản dùng để kiểm soát lấy mẫu phân tầng theo thời gian. \\
+    \texttt{published\_year\_month} & Thời gian & Chuỗi (năm--tháng) & Tháng xuất bản dùng để kiểm soát lấy mẫu phân tầng theo thời gian. \\
     \texttt{author} & Siêu dữ liệu & Chuỗi & Tên tác giả/bút danh (loại khỏi đầu vào, chỉ dùng để hậu kiểm rò rỉ). \\
     \bottomrule
   \end{tabular}%
@@ -78,11 +78,11 @@ Kết quả thu được một tập ngữ liệu sạch gồm đúng 5.000 bài
 \subsubsection{Phân chia dữ liệu chống rò rỉ}
 Trong bài toán phân loại văn bản báo chí, việc sử dụng phép chia ngẫu nhiên phân tầng thông thường (\textit{Stratified Random Split}) tiềm ẩn nguy cơ rò rỉ thông tin nghiêm trọng: các bản tin xuất bản định kỳ có cấu trúc câu chữ gần như giống hệt nhau (chỉ thay đổi vài con số ngày tháng hoặc tỷ giá) sẽ bị chia rải rác vào cả tập huấn luyện và tập kiểm tra, dẫn đến hiệu năng đánh giá bị thổi phồng giả tạo.
 
-Để triệt tiêu hoàn toàn nguồn rò rỉ này, toàn bộ 5.000 bài báo được gán nhãn cụm gần trùng (\texttt{dup\_group}) ở bước khám phá và phân chia bằng thuật toán \texttt{StratifiedGroupKFold} theo mã cụm \texttt{dup\_group}. Tập dữ liệu được tách thành 3.933 bài Train/Val (tỷ trọng 78,66\%) và 1.067 bài Test độc lập (tỷ trọng 21,34\%), bảo đảm tuyệt đối 0 cụm trùng lặp giao thoa giữa hai phía (\Cref{tab:text_split} và \Cref{fig:text_split}).
+Để loại bỏ hoàn toàn nguồn rò rỉ này, toàn bộ 5.000 bài báo được gom nhóm các cụm bài gần trùng ở bước khám phá và phân chia bằng thuật toán \texttt{StratifiedGroupKFold} theo từng cụm. Tập dữ liệu được tách thành 3.933 bài Train/Val (tỷ trọng 78,66\%) và 1.067 bài Test độc lập (tỷ trọng 21,34\%), bảo đảm không có cụm bài trùng lặp nào giao thoa giữa hai phía (\Cref{tab:text_split} và \Cref{fig:text_split}).
 
 \begin{table}[H]
   \centering
-  \caption{Cấu trúc phân chia dữ liệu chống rò rỉ theo cụm \texttt{dup\_group} (\texttt{StratifiedGroupKFold}) trên tập 5.000 bài báo.}
+  \caption{Cấu trúc phân chia dữ liệu chống rò rỉ theo cụm bài gần trùng (\texttt{StratifiedGroupKFold}) trên tập 5.000 bài báo.}
   \label{tab:text_split}
   \resizebox{0.82\linewidth}{!}{%
   \begin{tabular}{l r r r c}
